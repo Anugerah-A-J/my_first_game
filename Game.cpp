@@ -1,13 +1,14 @@
 #include "Game.h"
+#include "Parameter.h"
 
 Game::Game():
     window{
-        sf::VideoMode(window_width, window_height), 
+        sf::VideoMode(Parameter::window_width, Parameter::window_height), 
         "My First Game"
     },
     fence{}
 {
-    window.clear(window_color);
+    window.clear(Parameter::window_color());
     window.setPosition(sf::Vector2i(0, 0));
 }
 
@@ -39,7 +40,7 @@ void Game::run()
 
         sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
 
-        window.clear(window_color);
+        window.clear(Parameter::window_color());
 
         window.draw(white_king.get_king());
         window.draw(white_king.get_throne());

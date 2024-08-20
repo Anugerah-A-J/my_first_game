@@ -1,18 +1,18 @@
 #include "White_king.h"
 
 White_king::White_king():
-    king{Game::radius},
+    king{Parameter::radius},
     throne{sf::Vector2f(
-        king.getRadius() + 2 * Game::space,
-        king.getRadius() + 2 * Game::space
+        king.getRadius() + 2 * Parameter::space,
+        king.getRadius() + 2 * Parameter::space
     )}
 {
     king.move(
-        Game::window_width - 3 * Game::space - Game::radius - Game::line_width,
-        Game::window_height / 2 - Game::line_width
+        Parameter::window_width - 3 * Parameter::space - Parameter::radius,
+        Parameter::window_height / 2
     );
     king.setFillColor(sf::Color::White);
-    king.setOutlineThickness(Game::line_width);
+    king.setOutlineThickness(Parameter::line_width);
     king.setOutlineColor(sf::Color::White);
 
     throne.move(
@@ -23,7 +23,7 @@ White_king::White_king():
         + king.getRadius() - throne.getSize().y / 2
     );
     throne.setFillColor(sf::Color::Transparent);
-    throne.setOutlineThickness(Game::line_width);
+    throne.setOutlineThickness(Parameter::line_width);
     throne.setOutlineColor(sf::Color::White);
 }
 

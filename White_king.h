@@ -2,7 +2,7 @@
 #define WHITE_KING_H
 #pragma once
 
-#include "Game.h"
+#include "Parameter.h"
 
 class White_king
 {

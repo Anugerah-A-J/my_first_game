@@ -2,7 +2,7 @@
 #define BLACK_KING_H
 #pragma once
 
-#include "Game.h"
+#include "Parameter.h"
 
 class Black_king
 {
