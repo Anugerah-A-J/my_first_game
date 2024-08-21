@@ -1,6 +1,6 @@
 {
     "code-runner.executorMap": {
         // "cpp": "cd $dir && g++ $fileName -c -ID:/c++/SFML-2.6.1/include && g++ *.o -o my_first_game -LD:/c++/SFML-2.6.1/lib -lsfml-graphics -lsfml-window -lsfml-system && my_first_game",
-        "cpp": "cd $dir && g++ *.cpp -c -ID:/c++/SFML-2.6.1/include && g++ *.o -o my_first_game -LD:/c++/SFML-2.6.1/lib -lsfml-graphics -lsfml-window -lsfml-system && my_first_game",
+        "cpp": "cd $dir && g++ *.cpp -c -ID:/c++/allegro_32/include && g++ *.o -o my_first_game -LD:/c++/allegro_32/lib -lallegro && my_first_game",
     }
 }

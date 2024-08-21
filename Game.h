@@ -2,6 +2,7 @@
 #define GAME_H
 #pragma once
 
+#include <string>
 #include "Parameter.h"
 #include "Fence.h"
 #include "White_king.h"
@@ -14,11 +15,11 @@ public:
     // ~Game();
     void run();
 private:
+    void Game::must_init(bool test, const std::string& description);
     // std::vector<sf::Shape> map;
     Fence fence;
     White_king white_king;
     Black_king black_king;
-    sf::RenderWindow window;
 };
 
 #endif

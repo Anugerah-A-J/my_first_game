@@ -1,19 +1,20 @@
+#include "Parameter.h"
+#include "Rectangle.h"
+#include "Circle.h"
 #ifndef BLACK_KING_H
 #define BLACK_KING_H
-#pragma once
 
-#include "Parameter.h"
+#pragma once
 
 class Black_king
 {
 public:
     Black_king();
     // ~Black_king();
-    const sf::RectangleShape& get_throne() const {return throne;};
-    const sf::CircleShape& get_king() const {return king;};
+    void draw() const;
 private:
-    sf::RectangleShape throne;
-    sf::CircleShape king;
+    Rectangle throne;
+    Circle king;
 };
 
 #endif

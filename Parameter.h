@@ -2,7 +2,7 @@
 #define PARAMETER_H
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <allegro5/allegro5.h>
 
 class Parameter
 {
@@ -12,9 +12,9 @@ public:
     static constexpr float space{20.f};
     static constexpr float line_width{2.f};
     static constexpr float radius{5.f};
-    static sf::Color window_color()
+    static ALLEGRO_COLOR window_color()
     {
-        return sf::Color(17, 17, 17, 255);
+        return al_map_rgba_f(0.1, 0.1, 0.1, 1);
     };
 private:
 };

@@ -1,6 +1,8 @@
 #include "Black_king.h"
 
 Black_king::Black_king():
+    king{},
+    throne{},
     king{Parameter::radius},
     throne{sf::Vector2f(
         king.getRadius() + 2 * Parameter::space,
