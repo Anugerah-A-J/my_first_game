@@ -1,10 +1,10 @@
+#ifndef BLACK_KING_H
+#define BLACK_KING_H
+#pragma once
+
 #include "Parameter.h"
 #include "Rectangle.h"
 #include "Circle.h"
-#ifndef BLACK_KING_H
-#define BLACK_KING_H
-
-#pragma once
 
 class Black_king
 {

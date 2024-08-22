@@ -1,4 +1,5 @@
 #include "Rectangle.h"
+#include <allegro5/allegro_primitives.h>
 
 Rectangle::Rectangle(float x1, float y1, float x2, float y2, ALLEGRO_COLOR color, float thickness):
     x1{x1}, 

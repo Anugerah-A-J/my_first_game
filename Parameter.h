@@ -1,8 +1,8 @@
+#include <allegro5/allegro5.h>
+
 #ifndef PARAMETER_H
 #define PARAMETER_H
 #pragma once
-
-#include <allegro5/allegro5.h>
 
 class Parameter
 {

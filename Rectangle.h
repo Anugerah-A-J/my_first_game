@@ -1,9 +1,7 @@
-#include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_color.h>
 
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
-
 #pragma once
 
 class Rectangle

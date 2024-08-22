@@ -3,17 +3,18 @@
 #pragma once
 
 #include "Parameter.h"
+#include "Rectangle.h"
+#include "Filled_circle.h"
 
 class White_king
 {
 public:
     White_king();
     // ~White_king();
-    const sf::RectangleShape& get_throne() const {return throne;};
-    const sf::CircleShape& get_king() const {return king;};
+    void draw() const;
 private:
-    sf::RectangleShape throne;
-    sf::CircleShape king;
+    Rectangle throne;
+    Filled_circle king;
 };
 
 #endif

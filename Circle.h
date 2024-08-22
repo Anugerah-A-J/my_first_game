@@ -1,7 +1,7 @@
 #include <allegro5/color.h>
+
 #ifndef CIRCLE_H
 #define CIRCLE_H
-
 #pragma once
 
 class Circle

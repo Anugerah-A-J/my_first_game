@@ -1,7 +1,10 @@
 #include "Game.h"
-#include "Parameter.h"
+#include <allegro5/allegro5.h>
 
-Game::Game()
+Game::Game():
+    fence{},
+    black_king{},
+    white_king{}
 {
 }
 
@@ -28,7 +31,7 @@ void Game::run()
     ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
     must_init(queue, "queue");
 
-    ALLEGRO_DISPLAY* disp = al_create_display(640, 480);
+    ALLEGRO_DISPLAY* disp = al_create_display(Parameter::window_width, Parameter::window_height);
     must_init(disp, "display");
 
     al_register_event_source(queue, al_get_keyboard_event_source());
@@ -63,6 +66,9 @@ void Game::run()
         if(redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(Parameter::window_color());
+            fence.draw();
+            black_king.draw();
+            white_king.draw();
 
             al_flip_display();
 
