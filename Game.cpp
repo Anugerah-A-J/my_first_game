@@ -1,41 +1,55 @@
 #include "Game.h"
+#include "Parameter.h"
 #include <allegro5/allegro5.h>
+#include <allegro5/allegro_primitives.h>
+#include <fstream>
 
 Game::Game():
+    al_init_success{al_init()},
+    al_install_keyboard_success{al_install_keyboard()},
+    timer{al_create_timer(1.0 / 30.0)},
+    queue{al_create_event_queue()},
+    display{al_create_display(Parameter::window_width, Parameter::window_height)},
+    al_init_primitives_addon_success{al_init_primitives_addon()},
     fence{},
     black_king{},
     white_king{}
 {
+    std::ofstream Log{"log.txt"};
+    Log << "errors:";
+    Log.close();
+
+    check(al_init_success, "allegro");
+    check(al_install_keyboard_success, "keyboard");
+    check(timer, "timer");
+    check(queue, "queue");
+    check(display, "display");
+    check(al_init_primitives_addon_success,"primitives");
 }
 
-// Game::~Game()
-// {
-
-// }
-void Game::must_init(bool test, const std::string& description)
+Game::~Game()
 {
-    if(test) return;
+    al_destroy_display(display);
+    al_destroy_timer(timer);
+    al_destroy_event_queue(queue);
+}
 
-    printf("couldn't initialize %s\n", description);
+void Game::check(bool test, const std::string& description)
+{
+    std::ofstream Log{"log.txt", std::ios::app};
+    
+    if(test) 
+        return;
+
+    Log << "\ncouldn't initialize " << description;
+    Log.close();
     exit(1);
 }
 
 void Game::run()
 {
-    must_init(al_init(), "allegro");
-    must_init(al_install_keyboard(), "keyboard");
-
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
-    must_init(timer, "timer");
-
-    ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
-    must_init(queue, "queue");
-
-    ALLEGRO_DISPLAY* disp = al_create_display(Parameter::window_width, Parameter::window_height);
-    must_init(disp, "display");
-
     al_register_event_source(queue, al_get_keyboard_event_source());
-    al_register_event_source(queue, al_get_display_event_source(disp));
+    al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
 
     bool done = false;
@@ -43,6 +57,7 @@ void Game::run()
     ALLEGRO_EVENT event;
 
     al_start_timer(timer);
+
     while(1)
     {
         al_wait_for_event(queue, &event);
@@ -66,17 +81,13 @@ void Game::run()
         if(redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(Parameter::window_color());
-            fence.draw();
             black_king.draw();
             white_king.draw();
+            fence.draw();
 
             al_flip_display();
 
             redraw = false;
         }
     }
-
-    al_destroy_display(disp);
-    al_destroy_timer(timer);
-    al_destroy_event_queue(queue);
 }
