@@ -16,6 +16,7 @@ public:
     {
         return al_map_rgba_f(0.1, 0.1, 0.1, 1);
     };
+    static constexpr float reach_radius{200.f};
 private:
 };
 

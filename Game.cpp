@@ -5,12 +5,25 @@
 #include <fstream>
 
 Game::Game():
-    al_init_success{al_init()},
-    al_install_keyboard_success{al_install_keyboard()},
-    timer{al_create_timer(1.0 / 30.0)},
-    queue{al_create_event_queue()},
-    display{al_create_display(Parameter::window_width, Parameter::window_height)},
-    al_init_primitives_addon_success{al_init_primitives_addon()},
+    al_init_success{ al_init() },
+    
+    al_init_primitives_addon_success{ al_init_primitives_addon() },
+    
+    al_install_keyboard_success{ al_install_keyboard() },
+    
+    al_install_mouse_success{ al_install_mouse() },
+    
+    timer{ al_create_timer(1.0 / 30.0) },
+    
+    queue{ al_create_event_queue() },
+    
+    display{
+        al_create_display(
+            Parameter::window_width, 
+            Parameter::window_height
+        )
+    },
+
     fence{},
     black_king{},
     white_king{}
@@ -21,6 +34,7 @@ Game::Game():
 
     check(al_init_success, "allegro");
     check(al_install_keyboard_success, "keyboard");
+    check(al_install_mouse_success, "mouse");
     check(timer, "timer");
     check(queue, "queue");
     check(display, "display");
@@ -46,11 +60,22 @@ void Game::check(bool test, const std::string& description)
     exit(1);
 }
 
+void Game::update_aim(int x, int y)
+{
+    if (black_king.pointed_by(x, y))
+    {
+        aim.set_cx(x);
+        aim.set_cy(y);
+        aim.show();
+    }
+}
+
 void Game::run()
 {
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
+    al_register_event_source(queue, al_get_mouse_event_source());
 
     bool done = false;
     bool redraw = true;
@@ -69,7 +94,12 @@ void Game::run()
                 redraw = true;
                 break;
 
+            case ALLEGRO_EVENT_MOUSE_AXES:
+                update_aim(event.mouse.x, event.mouse.y);
+                break;
+
             case ALLEGRO_EVENT_KEY_DOWN:
+
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 done = true;
                 break;
@@ -81,6 +111,9 @@ void Game::run()
         if(redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(Parameter::window_color());
+
+            aim.draw();
+            clipper.draw();
             black_king.draw();
             white_king.draw();
             fence.draw();
