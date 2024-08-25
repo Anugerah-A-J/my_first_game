@@ -127,6 +127,8 @@ void Game::run()
             white_king.draw();
             fence.draw();
 
+            // al_draw_filled_rectangle(0, 0, 340, 340, al_map_rgba_f(1, 1, 1, 0));
+
             al_flip_display();
 
             redraw = false;

@@ -1,12 +1,13 @@
 #include "Aim.h"
 #include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
+#include <cmath>
 
 Aim::Aim():
     cx{0},
     cy{0},
     r{Parameter::reach_radius},
-    color{al_map_rgba_f(1, 1, 1, 0)},
+    color{Parameter::window_color()},
     thickness{Parameter::line_width},
     x{cx},
     y{cy},
@@ -67,8 +68,9 @@ void Aim::set_center(float cx, float cy)
 
 void Aim::update_xy(float mouse_x, float mouse_y)
 {
-    bool b {mouse_x > cx};
-    float sin    {(mouse_y - cy) / r};
+    float delta_x {mouse_x - cx};
+    float delta_y {cy - mouse_y};
+    float sin {delta_y / sqrtf(delta_x * delta_x + delta_y * delta_y)};
 
     if (sin <= 1 && sin >= Parameter::sin_75)
     {
@@ -77,28 +79,28 @@ void Aim::update_xy(float mouse_x, float mouse_y)
     }
     else if (sin <= Parameter::sin_75 && sin >= Parameter::sin_45)
     {
-        x = b ? xs.at(1) : xs.at(11);
-        y = b ? ys.at(1) : ys.at(11);
+        x = delta_x > 0 ? xs.at(1) : xs.at(11);
+        y = delta_x > 0 ? ys.at(1) : ys.at(11);
     }
     else if (sin <= Parameter::sin_45 && sin >= Parameter::sin_15)
     {
-        x = b ? xs.at(2) : xs.at(10);
-        y = b ? ys.at(2) : ys.at(10);
+        x = delta_x > 0 ? xs.at(2) : xs.at(10);
+        y = delta_x > 0 ? ys.at(2) : ys.at(10);
     }
     else if (sin <= Parameter::sin_15 && sin >= -Parameter::sin_15)
     {
-        x = b ? xs.at(3) : xs.at(9);
-        y = b ? ys.at(3) : ys.at(9);
+        x = delta_x > 0 ? xs.at(3) : xs.at(9);
+        y = delta_x > 0 ? ys.at(3) : ys.at(9);
     }
     else if (sin <= -Parameter::sin_15 && sin >= -Parameter::sin_45)
     {
-        x = b ? xs.at(4) : xs.at(8);
-        y = b ? ys.at(4) : ys.at(8);
+        x = delta_x > 0 ? xs.at(4) : xs.at(8);
+        y = delta_x > 0 ? ys.at(4) : ys.at(8);
     }
     else if (sin <= -Parameter::sin_45 && sin >= -Parameter::sin_75)
     {
-        x = b ? xs.at(5) : xs.at(7);
-        y = b ? ys.at(5) : ys.at(7);
+        x = delta_x > 0 ? xs.at(5) : xs.at(7);
+        y = delta_x > 0 ? ys.at(5) : ys.at(7);
     }
     else if (sin <= -Parameter::sin_75 && sin >= -1)
     {
@@ -109,7 +111,7 @@ void Aim::update_xy(float mouse_x, float mouse_y)
 
 void Aim::hide()
 {
-    color = al_map_rgba_f(1, 1, 1, 0);
+    color = Parameter::window_color();
 }
 
 void Aim::show()
