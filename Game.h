@@ -3,9 +3,13 @@
 #include "White_king.h"
 #include "Black_king.h"
 #include "Aim.h"
+#include "Clipper.h"
+#include <allegro5/allegro5.h>
 #ifndef GAME_H
 #define GAME_H
 #pragma once
+
+enum class Turn{ white, black };
 
 class Game
 {
@@ -24,6 +28,8 @@ private:
     ALLEGRO_TIMER* const timer;
     ALLEGRO_EVENT_QUEUE* const queue;
     ALLEGRO_DISPLAY* const display;
+
+    Turn turn;
     
     Clipper clipper;
     Fence fence;

@@ -1,4 +1,5 @@
 #include <allegro5/color.h>
+#include <array>
 #ifndef AIM_H
 #define AIM_H
 #pragma once
@@ -8,10 +9,8 @@ class Aim
 public:
     Aim();
     void draw() const;
-    void set_cx(float cx);
-    void set_cy(float cy);
-    void update_x(float mouse_x);
-    void update_y(float mouse_y);
+    void set_center(float cx, float cy);
+    void update_xy(float mouse_x, float mouse_y);
     void hide();
     void show();
 private:
@@ -22,6 +21,8 @@ private:
     float thickness;
     float x;
     float y;
+    std::array<float, 12> xs; // 12 like clock
+    std::array<float, 12> ys; // 12 like clock
 };
 
 #endif

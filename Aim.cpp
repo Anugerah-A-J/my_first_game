@@ -5,11 +5,13 @@
 Aim::Aim():
     cx{0},
     cy{0},
-    r{Parameter::radius},
+    r{Parameter::reach_radius},
     color{al_map_rgba_f(1, 1, 1, 0)},
     thickness{Parameter::line_width},
     x{cx},
-    y{cy}
+    y{cy},
+    xs{},
+    ys{}
 {
 }
 
@@ -19,26 +21,90 @@ void Aim::draw() const
     al_draw_line(cx, cy, x, y, color, thickness);
 }
 
-void Aim::set_cx(float cx)
+void Aim::set_center(float cx, float cy)
 {
     this->cx = cx;
-    this->x = cx;
-}
-
-void Aim::set_cy(float cy)
-{
     this->cy = cy;
+    this->x = cx;
     this->y = cy;
+
+    xs.at(0) = cx;
+    ys.at(0) = cy - r;
+
+    xs.at(1) = cx + r / 2;
+    ys.at(1) = cy - r / 2 * Parameter::sqrt_3;
+    
+    xs.at(2) = cx + r / 2 * Parameter::sqrt_3;
+    ys.at(2) = cy - r / 2;
+
+    xs.at(3) = cx + r;
+    ys.at(3) = cy;
+
+    xs.at(4) = xs.at(2);
+    ys.at(4) = cy + r / 2;
+
+    xs.at(5) = xs.at(1);
+    ys.at(5) = cy + r / 2 * Parameter::sqrt_3;
+
+    xs.at(6) = xs.at(0);
+    ys.at(6) = cy + r;
+
+    xs.at(7) = cx - r / 2;
+    ys.at(7) = ys.at(5);
+
+    xs.at(8) = cx - r / 2 * Parameter::sqrt_3;
+    ys.at(8) = ys.at(4);
+
+    xs.at(9) = cx - r;
+    ys.at(9) = ys.at(3);
+
+    xs.at(10) = xs.at(8);
+    ys.at(10) = ys.at(2);
+
+    xs.at(11) = xs.at(7);
+    ys.at(11) = ys.at(1);
 }
 
-void Aim::update_x(float mouse_x)
+void Aim::update_xy(float mouse_x, float mouse_y)
 {
-    this->x = x;
-}
+    bool b {mouse_x > cx};
+    float sin    {(mouse_y - cy) / r};
 
-void Aim::update_y(float mouse_y)
-{
-    this->y = y;
+    if (sin <= 1 && sin >= Parameter::sin_75)
+    {
+        x = xs.at(0);
+        y = ys.at(0);
+    }
+    else if (sin <= Parameter::sin_75 && sin >= Parameter::sin_45)
+    {
+        x = b ? xs.at(1) : xs.at(11);
+        y = b ? ys.at(1) : ys.at(11);
+    }
+    else if (sin <= Parameter::sin_45 && sin >= Parameter::sin_15)
+    {
+        x = b ? xs.at(2) : xs.at(10);
+        y = b ? ys.at(2) : ys.at(10);
+    }
+    else if (sin <= Parameter::sin_15 && sin >= -Parameter::sin_15)
+    {
+        x = b ? xs.at(3) : xs.at(9);
+        y = b ? ys.at(3) : ys.at(9);
+    }
+    else if (sin <= -Parameter::sin_15 && sin >= -Parameter::sin_45)
+    {
+        x = b ? xs.at(4) : xs.at(8);
+        y = b ? ys.at(4) : ys.at(8);
+    }
+    else if (sin <= -Parameter::sin_45 && sin >= -Parameter::sin_75)
+    {
+        x = b ? xs.at(5) : xs.at(7);
+        y = b ? ys.at(5) : ys.at(7);
+    }
+    else if (sin <= -Parameter::sin_75 && sin >= -1)
+    {
+        x = xs.at(6);
+        y = ys.at(6);
+    }
 }
 
 void Aim::hide()

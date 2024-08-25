@@ -8,6 +8,9 @@ class White_king
 public:
     White_king();
     void draw() const;
+    bool pointed_by(int x, int y) const;
+    float get_cx() const;
+    float get_cy() const;
 private:
     float cx;
     float cy;

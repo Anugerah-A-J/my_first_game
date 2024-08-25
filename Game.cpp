@@ -1,6 +1,5 @@
 #include "Game.h"
 #include "Parameter.h"
-#include <allegro5/allegro5.h>
 #include <allegro5/allegro_primitives.h>
 #include <fstream>
 
@@ -24,9 +23,13 @@ Game::Game():
         )
     },
 
+    turn{Turn::white},
+
+    clipper{},
     fence{},
     black_king{},
-    white_king{}
+    white_king{},
+    aim{}
 {
     std::ofstream Log{"log.txt"};
     Log << "errors:";
@@ -62,12 +65,18 @@ void Game::check(bool test, const std::string& description)
 
 void Game::update_aim(int x, int y)
 {
-    if (black_king.pointed_by(x, y))
+    if (turn == Turn::black && black_king.pointed_by(x, y))
     {
-        aim.set_cx(x);
-        aim.set_cy(y);
+        aim.set_center(black_king.get_cx(), black_king.get_cy());
         aim.show();
     }
+    else if (turn == Turn::white && white_king.pointed_by(x, y))
+    {
+        aim.set_center(white_king.get_cx(), white_king.get_cy());
+        aim.show();
+    }
+
+    aim.update_xy(x, y);
 }
 
 void Game::run()
