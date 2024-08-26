@@ -5,6 +5,9 @@
 #include "Aim.h"
 #include "Clipper.h"
 #include <allegro5/allegro5.h>
+#include <vector>
+#include "White_pawn.h"
+#include "Black_pawn.h"
 #ifndef GAME_H
 #define GAME_H
 #pragma once
@@ -38,8 +41,13 @@ private:
     Aim aim;
 
     void update_aim(int x, int y);
-    // White_pawns white_pawns;
-    // Black_pawns black_pawns;
+
+    std::vector<White_pawn> white_pawn;
+    std::vector<Black_pawn> black_pawn;
+
+    int index_of_pawn_pointed_by(int x, int y);
+    void produce_pawn(unsigned int button, int x, int y);
+
     // Boxes boxes;
     // Trees trees;
     // Xs xs;

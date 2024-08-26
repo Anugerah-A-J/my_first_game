@@ -13,6 +13,8 @@ public:
     void update_xy(float mouse_x, float mouse_y);
     void hide();
     void show();
+    float get_x() const;
+    float get_y() const;
 private:
     float cx;
     float cy;

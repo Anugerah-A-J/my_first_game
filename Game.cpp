@@ -24,12 +24,13 @@ Game::Game():
     },
 
     turn{Turn::white},
-
     clipper{},
     fence{},
-    black_king{},
     white_king{},
-    aim{}
+    black_king{},
+    aim{},
+    white_pawn{},
+    black_pawn{}
 {
     std::ofstream Log{"log.txt"};
     Log << "errors:";
@@ -69,14 +70,67 @@ void Game::update_aim(int x, int y)
     {
         aim.set_center(black_king.get_cx(), black_king.get_cy());
         aim.show();
+        aim.update_xy(x, y);
+        return;
     }
-    else if (turn == Turn::white && white_king.pointed_by(x, y))
+    if (turn == Turn::white && white_king.pointed_by(x, y))
     {
         aim.set_center(white_king.get_cx(), white_king.get_cy());
+        aim.show();
+        aim.update_xy(x, y);
+        return;
+    }
+
+    int i {index_of_pawn_pointed_by(x, y)};
+
+    if (turn == Turn::white && i != -1)
+    {
+        aim.set_center(white_pawn.at(i).get_cx(), white_pawn.at(i).get_cy());
+        aim.show();
+    }
+    else if (turn == Turn::black && i != -1)
+    {
+        aim.set_center(black_pawn.at(i).get_cx(), black_pawn.at(i).get_cy());
         aim.show();
     }
 
     aim.update_xy(x, y);
+}
+
+int Game::index_of_pawn_pointed_by(int x, int y)
+{
+    if (turn == Turn::white)
+        for (int i = 0; i < white_pawn.size(); i++)
+            if (white_pawn.at(i).pointed_by(x, y))
+                return i;
+
+    else if (turn == Turn::black)
+        for (int i = 0; i < black_pawn.size(); i++)
+            if (black_pawn.at(i).pointed_by(x, y))
+                return i;
+    
+    return -1;
+}
+
+void Game::produce_pawn(unsigned int button, int x, int y)
+{
+    if (button != 1)
+        return;
+
+    add another guard here for clicking when there is no aim (using bool aim_on, aim does not need show() and hide())
+
+    aim.hide();
+
+    if (turn == Turn::white)
+    {
+        turn = Turn::black;
+        white_pawn.emplace_back(White_pawn(aim.get_x(), aim.get_y()));
+    }
+    else if (turn == Turn::black)
+    {
+        turn = Turn::white;
+        black_pawn.emplace_back(Black_pawn(aim.get_x(), aim.get_y()));
+    }
 }
 
 void Game::run()
@@ -100,11 +154,16 @@ void Game::run()
         {
             case ALLEGRO_EVENT_TIMER:
                 // game logic goes here.
+                // move_pawn();
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
                 update_aim(event.mouse.x, event.mouse.y);
+                break;
+
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                produce_pawn(event.mouse.button, event.mouse.x, event.mouse.y);
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -126,6 +185,12 @@ void Game::run()
             black_king.draw();
             white_king.draw();
             fence.draw();
+
+            for (White_pawn& wp : white_pawn)
+                wp.draw();
+
+            for (Black_pawn& bp : black_pawn)
+                bp.draw();
 
             // al_draw_filled_rectangle(0, 0, 340, 340, al_map_rgba_f(1, 1, 1, 0));
 

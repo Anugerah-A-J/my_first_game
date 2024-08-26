@@ -118,3 +118,13 @@ void Aim::show()
 {
     color = al_map_rgba_f(1, 1, 1, 1);
 }
+
+float Aim::get_x() const
+{
+    return x;
+}
+
+float Aim::get_y() const
+{
+    return y;
+}
