@@ -11,8 +11,8 @@ public:
     void draw() const;
     void set_center(float cx, float cy);
     void update_xy(float mouse_x, float mouse_y);
-    void hide();
-    void show();
+    // void hide();
+    // void show();
     float get_x() const;
     float get_y() const;
 private:

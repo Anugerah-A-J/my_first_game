@@ -39,7 +39,7 @@ private:
     White_king white_king;
     Black_king black_king;
     Aim aim;
-
+    bool aim_on;
     void update_aim(int x, int y);
 
     std::vector<White_pawn> white_pawn;
@@ -48,9 +48,11 @@ private:
     int index_of_pawn_pointed_by(int x, int y);
     void produce_pawn(unsigned int button, int x, int y);
 
-    // Boxes boxes;
-    // Trees trees;
-    // Xs xs;
+    // Box box; // yellow
+    // Tree tree; // green
+    // X x; // red
+    // Glass glass; // white
+    void log(const std::string& description);
 };
 
 #endif

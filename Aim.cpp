@@ -7,7 +7,7 @@ Aim::Aim():
     cx{0},
     cy{0},
     r{Parameter::reach_radius},
-    color{Parameter::window_color()},
+    color{al_map_rgba_f(1, 1, 1, 1)},
     thickness{Parameter::line_width},
     x{cx},
     y{cy},
@@ -109,15 +109,15 @@ void Aim::update_xy(float mouse_x, float mouse_y)
     }
 }
 
-void Aim::hide()
-{
-    color = Parameter::window_color();
-}
+// void Aim::hide()
+// {
+//     color = Parameter::window_color();
+// }
 
-void Aim::show()
-{
-    color = al_map_rgba_f(1, 1, 1, 1);
-}
+// void Aim::show()
+// {
+//     color = al_map_rgba_f(1, 1, 1, 1);
+// }
 
 float Aim::get_x() const
 {

@@ -29,11 +29,11 @@ Game::Game():
     white_king{},
     black_king{},
     aim{},
+    aim_on{false},
     white_pawn{},
     black_pawn{}
 {
     std::ofstream Log{"log.txt"};
-    Log << "errors:";
     Log.close();
 
     check(al_init_success, "allegro");
@@ -69,14 +69,14 @@ void Game::update_aim(int x, int y)
     if (turn == Turn::black && black_king.pointed_by(x, y))
     {
         aim.set_center(black_king.get_cx(), black_king.get_cy());
-        aim.show();
+        aim_on = true;
         aim.update_xy(x, y);
         return;
     }
     if (turn == Turn::white && white_king.pointed_by(x, y))
     {
         aim.set_center(white_king.get_cx(), white_king.get_cy());
-        aim.show();
+        aim_on = true;
         aim.update_xy(x, y);
         return;
     }
@@ -86,15 +86,17 @@ void Game::update_aim(int x, int y)
     if (turn == Turn::white && i != -1)
     {
         aim.set_center(white_pawn.at(i).get_cx(), white_pawn.at(i).get_cy());
-        aim.show();
+        aim_on = true;
     }
     else if (turn == Turn::black && i != -1)
     {
         aim.set_center(black_pawn.at(i).get_cx(), black_pawn.at(i).get_cy());
-        aim.show();
+        aim_on = true;
+        log("\nblack pawn is pointed");
     }
 
-    aim.update_xy(x, y);
+    if (aim_on)
+        aim.update_xy(x, y);
 }
 
 int Game::index_of_pawn_pointed_by(int x, int y)
@@ -104,7 +106,7 @@ int Game::index_of_pawn_pointed_by(int x, int y)
             if (white_pawn.at(i).pointed_by(x, y))
                 return i;
 
-    else if (turn == Turn::black)
+    if (turn == Turn::black) // else if fails
         for (int i = 0; i < black_pawn.size(); i++)
             if (black_pawn.at(i).pointed_by(x, y))
                 return i;
@@ -114,12 +116,13 @@ int Game::index_of_pawn_pointed_by(int x, int y)
 
 void Game::produce_pawn(unsigned int button, int x, int y)
 {
-    if (button != 1)
+    if (button != 1 || !aim_on)
         return;
 
-    add another guard here for clicking when there is no aim (using bool aim_on, aim does not need show() and hide())
+    // add another guard here for clicking when there is no aim (using bool aim_on, aim does not need show() and hide())
 
-    aim.hide();
+    // aim.hide();
+    aim_on = false;
 
     if (turn == Turn::white)
     {
@@ -131,6 +134,13 @@ void Game::produce_pawn(unsigned int button, int x, int y)
         turn = Turn::white;
         black_pawn.emplace_back(Black_pawn(aim.get_x(), aim.get_y()));
     }
+}
+
+void Game::log(const std::string &description)
+{
+    std::ofstream Log{"log.txt", std::ios::app};
+    Log << description;
+    Log.close();
 }
 
 void Game::run()
@@ -180,7 +190,9 @@ void Game::run()
         {
             al_clear_to_color(Parameter::window_color());
 
-            aim.draw();
+            if (aim_on)
+                aim.draw();
+            
             clipper.draw();
             black_king.draw();
             white_king.draw();
