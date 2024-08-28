@@ -1,12 +1,12 @@
 #include <allegro5/color.h>
-#ifndef WHITE_KING_H
-#define WHITE_KING_H
+#ifndef MAGENTA_KING_H
+#define MAGENTA_KING_H
 #pragma once
 
-class White_king
+class Magenta_king
 {
 public:
-    White_king();
+    Magenta_king();
     void draw() const;
     bool pointed_by(int x, int y) const;
     float get_cx() const;

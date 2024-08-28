@@ -1,13 +1,13 @@
 #include <allegro5/color.h>
-#ifndef BLACK_PAWN_H
-#define BLACK_PAWN_H
+#ifndef CYAN_PAWN_H
+#define CYAN_PAWN_H
 
 #pragma once
 
-class Black_pawn
+class Cyan_pawn
 {
 public:
-    Black_pawn(float cx, float cy);
+    Cyan_pawn(float cx, float cy);
     void draw() const;
     bool pointed_by(int x, int y) const;
     float get_cx() const;

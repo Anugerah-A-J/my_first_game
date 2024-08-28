@@ -1,12 +1,12 @@
-#include "Black_king.h"
+#include "Cyan_king.h"
 #include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
 
-Black_king::Black_king():
+Cyan_king::Cyan_king():
     cx{Parameter::space * 3 + Parameter::radius},
     cy{Parameter::window_height / 2},
     r{Parameter::radius},
-    color{al_map_rgba_f(1, 1, 1, 1)},
+    color{al_map_rgba_f(0, 1, 1, 1)},
     thickness{Parameter::line_width},
     x1{Parameter::space * 2},
     y1{Parameter::window_height / 2 - Parameter::radius - Parameter::space},
@@ -15,13 +15,13 @@ Black_king::Black_king():
 {
 }
 
-void Black_king::draw() const
+void Cyan_king::draw() const
 {
     al_draw_rectangle(x1, y1, x2, y2, color, thickness);
-    al_draw_circle(cx, cy, r, color, thickness);
+    al_draw_filled_circle(cx, cy, r, color);
 }
 
-bool Black_king::pointed_by(int x, int y) const
+bool Cyan_king::pointed_by(int x, int y) const
 {
     float rx{ x - cx };
     float ry{ y - cy };
@@ -29,12 +29,12 @@ bool Black_king::pointed_by(int x, int y) const
     return rx * rx + ry * ry <= r * r;
 }
 
-float Black_king::get_cx() const
+float Cyan_king::get_cx() const
 {
     return cx;
 }
 
-float Black_king::get_cy() const
+float Cyan_king::get_cy() const
 {
     return cy;
 }

@@ -1,18 +1,18 @@
 #include <string>
 #include "Fence.h"
-#include "White_king.h"
-#include "Black_king.h"
+#include "Magenta_king.h"
+#include "Cyan_king.h"
 #include "Aim.h"
 #include "Clipper.h"
 #include <allegro5/allegro5.h>
 #include <vector>
-#include "White_pawn.h"
-#include "Black_pawn.h"
+#include "Magenta_pawn.h"
+#include "Cyan_pawn.h"
 #ifndef GAME_H
 #define GAME_H
 #pragma once
 
-enum class Turn{ white, black };
+enum class Turn{ magenta, cyan };
 
 class Game
 {
@@ -36,17 +36,21 @@ private:
     
     Clipper clipper;
     Fence fence;
-    White_king white_king;
-    Black_king black_king;
+    Magenta_king magenta_king;
+    Cyan_king cyan_king;
     Aim aim;
     bool aim_on;
     void update_aim(int x, int y);
 
-    std::vector<White_pawn> white_pawn;
-    std::vector<Black_pawn> black_pawn;
+    std::vector<Magenta_pawn> magenta_pawn;
+    std::vector<Cyan_pawn> cyan_pawn;
 
     int index_of_pawn_pointed_by(int x, int y);
     void produce_pawn(unsigned int button, int x, int y);
+
+    bool pawn_arrive;
+    unsigned int pawn_step_count;
+    Pawn_mover pawn_mover;
 
     // Box box; // yellow
     // Tree tree; // green

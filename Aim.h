@@ -15,6 +15,8 @@ public:
     // void show();
     float get_x() const;
     float get_y() const;
+    void magenta();
+    void cyan();
 private:
     float cx;
     float cy;

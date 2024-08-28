@@ -23,15 +23,17 @@ Game::Game():
         )
     },
 
-    turn{Turn::white},
+    turn{Turn::magenta},
     clipper{},
     fence{},
-    white_king{},
-    black_king{},
+    magenta_king{},
+    cyan_king{},
     aim{},
     aim_on{false},
-    white_pawn{},
-    black_pawn{}
+    magenta_pawn{},
+    cyan_pawn{},
+    pawn_arrive{false},
+    pawn_step_count{0}
 {
     std::ofstream Log{"log.txt"};
     Log.close();
@@ -66,16 +68,16 @@ void Game::check(bool test, const std::string& description)
 
 void Game::update_aim(int x, int y)
 {
-    if (turn == Turn::black && black_king.pointed_by(x, y))
+    if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
     {
-        aim.set_center(black_king.get_cx(), black_king.get_cy());
+        aim.set_center(cyan_king.get_cx(), cyan_king.get_cy());
         aim_on = true;
         aim.update_xy(x, y);
         return;
     }
-    if (turn == Turn::white && white_king.pointed_by(x, y))
+    if (turn == Turn::magenta && magenta_king.pointed_by(x, y))
     {
-        aim.set_center(white_king.get_cx(), white_king.get_cy());
+        aim.set_center(magenta_king.get_cx(), magenta_king.get_cy());
         aim_on = true;
         aim.update_xy(x, y);
         return;
@@ -83,16 +85,16 @@ void Game::update_aim(int x, int y)
 
     int i {index_of_pawn_pointed_by(x, y)};
 
-    if (turn == Turn::white && i != -1)
+    if (turn == Turn::magenta && i != -1)
     {
-        aim.set_center(white_pawn.at(i).get_cx(), white_pawn.at(i).get_cy());
+        aim.set_center(magenta_pawn.at(i).get_cx(), magenta_pawn.at(i).get_cy());
         aim_on = true;
     }
-    else if (turn == Turn::black && i != -1)
+    else if (turn == Turn::cyan && i != -1)
     {
-        aim.set_center(black_pawn.at(i).get_cx(), black_pawn.at(i).get_cy());
+        aim.set_center(cyan_pawn.at(i).get_cx(), cyan_pawn.at(i).get_cy());
         aim_on = true;
-        log("\nblack pawn is pointed");
+        log("\ncyan pawn is pointed");
     }
 
     if (aim_on)
@@ -101,38 +103,44 @@ void Game::update_aim(int x, int y)
 
 int Game::index_of_pawn_pointed_by(int x, int y)
 {
-    if (turn == Turn::white)
-        for (int i = 0; i < white_pawn.size(); i++)
-            if (white_pawn.at(i).pointed_by(x, y))
+    if (turn == Turn::magenta)
+    {
+        for (int i = 0; i < magenta_pawn.size(); i++)
+        {
+            if (magenta_pawn.at(i).pointed_by(x, y))
                 return i;
-
-    if (turn == Turn::black) // else if fails
-        for (int i = 0; i < black_pawn.size(); i++)
-            if (black_pawn.at(i).pointed_by(x, y))
+        }
+    }
+    else if (turn == Turn::cyan)
+    {
+        for (int i = 0; i < cyan_pawn.size(); i++)
+        {
+            if (cyan_pawn.at(i).pointed_by(x, y))
                 return i;
+        }
+    }
     
     return -1;
 }
 
 void Game::produce_pawn(unsigned int button, int x, int y)
 {
-    if (button != 1 || !aim_on)
+    if (button != 1 || !aim_on || !pawn_arrive)
         return;
 
-    // add another guard here for clicking when there is no aim (using bool aim_on, aim does not need show() and hide())
-
-    // aim.hide();
     aim_on = false;
 
-    if (turn == Turn::white)
+    if (turn == Turn::magenta)
     {
-        turn = Turn::black;
-        white_pawn.emplace_back(White_pawn(aim.get_x(), aim.get_y()));
+        turn = Turn::cyan;
+        aim.cyan();
+        magenta_pawn.emplace_back(Magenta_pawn(aim.get_x(), aim.get_y()));
     }
-    else if (turn == Turn::black)
+    else if (turn == Turn::cyan)
     {
-        turn = Turn::white;
-        black_pawn.emplace_back(Black_pawn(aim.get_x(), aim.get_y()));
+        turn = Turn::magenta;
+        aim.magenta();
+        cyan_pawn.emplace_back(Cyan_pawn(aim.get_x(), aim.get_y()));
     }
 }
 
@@ -194,14 +202,14 @@ void Game::run()
                 aim.draw();
             
             clipper.draw();
-            black_king.draw();
-            white_king.draw();
+            cyan_king.draw();
+            magenta_king.draw();
             fence.draw();
 
-            for (White_pawn& wp : white_pawn)
+            for (Magenta_pawn& wp : magenta_pawn)
                 wp.draw();
 
-            for (Black_pawn& bp : black_pawn)
+            for (Cyan_pawn& bp : cyan_pawn)
                 bp.draw();
 
             // al_draw_filled_rectangle(0, 0, 340, 340, al_map_rgba_f(1, 1, 1, 0));

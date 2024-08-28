@@ -1,23 +1,26 @@
 #include <allegro5/color.h>
-#ifndef WHITE_PAWN_H
-#define WHITE_PAWN_H
-
+#ifndef CYAN_KING_H
+#define CYAN_KING_H
 #pragma once
 
-class White_pawn
+class Cyan_king
 {
 public:
-    White_pawn(float cx, float cy);
+    Cyan_king();
     void draw() const;
     bool pointed_by(int x, int y) const;
     float get_cx() const;
     float get_cy() const;
-    void move(float dx, float dy);
 private:
     float cx;
     float cy;
     float r;
     ALLEGRO_COLOR color;
+    float thickness;
+    float x1;
+    float y1;
+    float x2;
+    float y2;
 };
 
 #endif
