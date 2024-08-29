@@ -1,10 +1,12 @@
 #include <allegro5/color.h>
+#include "Pawn.h"
 #ifndef CYAN_PAWN_H
 #define CYAN_PAWN_H
 
 #pragma once
 
-class Cyan_pawn
+class Cyan_pawn:
+    public Pawn
 {
 public:
     Cyan_pawn(float cx, float cy);
@@ -12,7 +14,7 @@ public:
     bool pointed_by(int x, int y) const;
     float get_cx() const;
     float get_cy() const;
-    void move(float dx, float dy);
+    void move(float dx, float dy) override;
 private:
     float cx;
     float cy;

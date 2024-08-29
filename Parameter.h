@@ -13,7 +13,7 @@ public:
     static constexpr float line_width {2.f};
     static constexpr float radius {7.f};
     static constexpr float reach_radius {300.f};
-    static constexpr unsigned int move_step {2};
+    static constexpr unsigned int move_step {10};
 
     static ALLEGRO_COLOR window_color()
     {

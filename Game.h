@@ -8,6 +8,7 @@
 #include <vector>
 #include "Magenta_pawn.h"
 #include "Cyan_pawn.h"
+#include "Pawn_mover.h"
 #ifndef GAME_H
 #define GAME_H
 #pragma once
@@ -20,6 +21,7 @@ public:
     Game();
     ~Game();
     void run();
+    static void log(const std::string& description);
 private:
     void check(bool test, const std::string& description);
 
@@ -48,15 +50,12 @@ private:
     int index_of_pawn_pointed_by(int x, int y);
     void produce_pawn(unsigned int button, int x, int y);
 
-    bool pawn_arrive;
-    unsigned int pawn_step_count;
     Pawn_mover pawn_mover;
 
     // Box box; // yellow
     // Tree tree; // green
     // X x; // red
     // Glass glass; // white
-    void log(const std::string& description);
 };
 
 #endif

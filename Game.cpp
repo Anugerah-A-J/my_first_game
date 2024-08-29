@@ -32,8 +32,7 @@ Game::Game():
     aim_on{false},
     magenta_pawn{},
     cyan_pawn{},
-    pawn_arrive{false},
-    pawn_step_count{0}
+    pawn_mover{}
 {
     std::ofstream Log{"log.txt"};
     Log.close();
@@ -125,7 +124,7 @@ int Game::index_of_pawn_pointed_by(int x, int y)
 
 void Game::produce_pawn(unsigned int button, int x, int y)
 {
-    if (button != 1 || !aim_on || !pawn_arrive)
+    if (button != 1 || !aim_on || !pawn_mover.finish())
         return;
 
     aim_on = false;
@@ -134,14 +133,18 @@ void Game::produce_pawn(unsigned int button, int x, int y)
     {
         turn = Turn::cyan;
         aim.cyan();
-        magenta_pawn.emplace_back(Magenta_pawn(aim.get_x(), aim.get_y()));
+        magenta_pawn.emplace_back(Magenta_pawn(aim.get_cx(), aim.get_cy()));
+        pawn_mover.set_pawn(&magenta_pawn.back());
     }
     else if (turn == Turn::cyan)
     {
         turn = Turn::magenta;
         aim.magenta();
-        cyan_pawn.emplace_back(Cyan_pawn(aim.get_x(), aim.get_y()));
+        cyan_pawn.emplace_back(Cyan_pawn(aim.get_cx(), aim.get_cy()));
+        pawn_mover.set_pawn(&cyan_pawn.back());
     }
+    
+    pawn_mover.update_dxdy(aim.get_cx(), aim.get_cy(), aim.get_x(), aim.get_y());
 }
 
 void Game::log(const std::string &description)
@@ -153,6 +156,8 @@ void Game::log(const std::string &description)
 
 void Game::run()
 {
+    log("game init success");
+
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -172,7 +177,9 @@ void Game::run()
         {
             case ALLEGRO_EVENT_TIMER:
                 // game logic goes here.
-                // move_pawn();
+                if (!pawn_mover.finish())
+                    pawn_mover.move();
+                    
                 redraw = true;
                 break;
 
@@ -206,13 +213,11 @@ void Game::run()
             magenta_king.draw();
             fence.draw();
 
-            for (Magenta_pawn& wp : magenta_pawn)
-                wp.draw();
+            for (Magenta_pawn& mp : magenta_pawn)
+                mp.draw();
 
-            for (Cyan_pawn& bp : cyan_pawn)
-                bp.draw();
-
-            // al_draw_filled_rectangle(0, 0, 340, 340, al_map_rgba_f(1, 1, 1, 0));
+            for (Cyan_pawn& cp : cyan_pawn)
+                cp.draw();
 
             al_flip_display();
 

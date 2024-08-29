@@ -109,6 +109,16 @@ void Aim::update_xy(float mouse_x, float mouse_y)
     }
 }
 
+float Aim::get_cx() const
+{
+    return cx;
+}
+
+float Aim::get_cy() const
+{
+    return cy;
+}
+
 float Aim::get_x() const
 {
     return x;
