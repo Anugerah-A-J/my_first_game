@@ -41,7 +41,6 @@ private:
     Magenta_king magenta_king;
     Cyan_king cyan_king;
     Aim aim;
-    bool aim_on;
     void update_aim(int x, int y);
 
     std::vector<Magenta_pawn> magenta_pawn;

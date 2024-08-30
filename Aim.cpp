@@ -4,109 +4,56 @@
 #include <cmath>
 
 Aim::Aim():
-    cx{0},
-    cy{0},
-    r{Parameter::reach_radius},
+    cx{0}, cy{0},
+    r{4 * Parameter::radius},
+    x{0}, y{0},
+    x1{0}, y1{0},
+    x2{0}, y2{0},
+    x3{0}, y3{0},
     color{al_map_rgba_f(1, 0, 1, 1)},
     thickness{Parameter::line_width},
-    x{cx},
-    y{cy},
-    xs{},
-    ys{}
+    visible{false}
 {
 }
 
 void Aim::draw() const
 {
+    if (!visible)
+        return;
+    
     al_draw_circle(cx, cy, r, color, thickness);
-    al_draw_line(cx, cy, x, y, color, thickness);
+    al_draw_triangle(x1, y1, x2, y2, x3, y3, color, thickness);
 }
 
 void Aim::set_center(float cx, float cy)
 {
     this->cx = cx;
     this->cy = cy;
-    this->x = cx;
-    this->y = cy;
-
-    xs.at(0) = cx;
-    ys.at(0) = cy - r;
-
-    xs.at(1) = cx + r / 2;
-    ys.at(1) = cy - r / 2 * Parameter::sqrt_3;
-    
-    xs.at(2) = cx + r / 2 * Parameter::sqrt_3;
-    ys.at(2) = cy - r / 2;
-
-    xs.at(3) = cx + r;
-    ys.at(3) = cy;
-
-    xs.at(4) = xs.at(2);
-    ys.at(4) = cy + r / 2;
-
-    xs.at(5) = xs.at(1);
-    ys.at(5) = cy + r / 2 * Parameter::sqrt_3;
-
-    xs.at(6) = xs.at(0);
-    ys.at(6) = cy + r;
-
-    xs.at(7) = cx - r / 2;
-    ys.at(7) = ys.at(5);
-
-    xs.at(8) = cx - r / 2 * Parameter::sqrt_3;
-    ys.at(8) = ys.at(4);
-
-    xs.at(9) = cx - r;
-    ys.at(9) = ys.at(3);
-
-    xs.at(10) = xs.at(8);
-    ys.at(10) = ys.at(2);
-
-    xs.at(11) = xs.at(7);
-    ys.at(11) = ys.at(1);
 }
 
 void Aim::update_xy(float mouse_x, float mouse_y)
 {
-    float delta_x {mouse_x - cx};
-    float delta_y {cy - mouse_y};
-    float sin {delta_y / sqrtf(delta_x * delta_x + delta_y * delta_y)};
+    if (!visible)
+        return;
 
-    if (sin <= 1 && sin >= Parameter::sin_75)
-    {
-        x = xs.at(0);
-        y = ys.at(0);
-    }
-    else if (sin <= Parameter::sin_75 && sin >= Parameter::sin_45)
-    {
-        x = delta_x > 0 ? xs.at(1) : xs.at(11);
-        y = delta_x > 0 ? ys.at(1) : ys.at(11);
-    }
-    else if (sin <= Parameter::sin_45 && sin >= Parameter::sin_15)
-    {
-        x = delta_x > 0 ? xs.at(2) : xs.at(10);
-        y = delta_x > 0 ? ys.at(2) : ys.at(10);
-    }
-    else if (sin <= Parameter::sin_15 && sin >= -Parameter::sin_15)
-    {
-        x = delta_x > 0 ? xs.at(3) : xs.at(9);
-        y = delta_x > 0 ? ys.at(3) : ys.at(9);
-    }
-    else if (sin <= -Parameter::sin_15 && sin >= -Parameter::sin_45)
-    {
-        x = delta_x > 0 ? xs.at(4) : xs.at(8);
-        y = delta_x > 0 ? ys.at(4) : ys.at(8);
-    }
-    else if (sin <= -Parameter::sin_45 && sin >= -Parameter::sin_75)
-    {
-        x = delta_x > 0 ? xs.at(5) : xs.at(7);
-        y = delta_x > 0 ? ys.at(5) : ys.at(7);
-    }
-    else if (sin <= -Parameter::sin_75 && sin >= -1)
-    {
-        x = xs.at(6);
-        y = ys.at(6);
-    }
+    float dx {mouse_x - cx};
+    float dy {mouse_y - cy};
+    float dr {sqrtf(dx * dx + dy * dy)};
+
+    x = (cx - dx) / dr * r;
+    y = (cy - dy) / dr * r;
+
+    x1 = (cx + dx) / dr * r;
+    y1 = (cy + dy) / dr * r;
+
+    float temp_x {(x1 + dx) / dr * Parameter::triangle_height};
+    float temp_y {(y1 + dy) / dr * Parameter::triangle_height};
+
+    x2 = (temp_x + dy) / dr * Parameter::triangle_height / Parameter::sqrt_3;
+    y2 = (temp_y - dx) / dr * Parameter::triangle_height / Parameter::sqrt_3;
+
+    x3 = (temp_x - dy) / dr * Parameter::triangle_height / Parameter::sqrt_3;
+    y3 = (temp_y + dx) / dr * Parameter::triangle_height / Parameter::sqrt_3;
 }
 
 float Aim::get_cx() const
@@ -137,4 +84,19 @@ void Aim::magenta()
 void Aim::cyan()
 {
     color = al_map_rgba_f(0, 1, 1, 1);
+}
+
+void Aim::show()
+{
+    visible = true;
+}
+
+void Aim::hide()
+{
+    visible = false;
+}
+
+bool Aim::get_visible() const
+{
+    return visible;
 }

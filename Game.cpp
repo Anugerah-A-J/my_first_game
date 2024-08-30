@@ -29,7 +29,6 @@ Game::Game():
     magenta_king{},
     cyan_king{},
     aim{},
-    aim_on{false},
     magenta_pawn{},
     cyan_pawn{},
     pawn_mover{}
@@ -70,14 +69,14 @@ void Game::update_aim(int x, int y)
     if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
     {
         aim.set_center(cyan_king.get_cx(), cyan_king.get_cy());
-        aim_on = true;
+        aim.show();
         aim.update_xy(x, y);
         return;
     }
     if (turn == Turn::magenta && magenta_king.pointed_by(x, y))
     {
         aim.set_center(magenta_king.get_cx(), magenta_king.get_cy());
-        aim_on = true;
+        aim.show();
         aim.update_xy(x, y);
         return;
     }
@@ -87,17 +86,16 @@ void Game::update_aim(int x, int y)
     if (turn == Turn::magenta && i != -1)
     {
         aim.set_center(magenta_pawn.at(i).get_cx(), magenta_pawn.at(i).get_cy());
-        aim_on = true;
+        aim.show();
     }
     else if (turn == Turn::cyan && i != -1)
     {
         aim.set_center(cyan_pawn.at(i).get_cx(), cyan_pawn.at(i).get_cy());
-        aim_on = true;
+        aim.show();
         log("\ncyan pawn is pointed");
     }
 
-    if (aim_on)
-        aim.update_xy(x, y);
+    aim.update_xy(x, y);
 }
 
 int Game::index_of_pawn_pointed_by(int x, int y)
@@ -124,10 +122,10 @@ int Game::index_of_pawn_pointed_by(int x, int y)
 
 void Game::produce_pawn(unsigned int button, int x, int y)
 {
-    if (button != 1 || !aim_on || !pawn_mover.finish())
+    if (button != 1 || !aim.get_visible() || !pawn_mover.finish())
         return;
 
-    aim_on = false;
+    aim.hide();
 
     if (turn == Turn::magenta)
     {
@@ -205,9 +203,7 @@ void Game::run()
         {
             al_clear_to_color(Parameter::window_color());
 
-            if (aim_on)
-                aim.draw();
-            
+            aim.draw();
             clipper.draw();
             cyan_king.draw();
             magenta_king.draw();
