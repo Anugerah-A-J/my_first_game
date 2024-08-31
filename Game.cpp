@@ -54,13 +54,10 @@ Game::~Game()
 
 void Game::check(bool test, const std::string& description)
 {
-    std::ofstream Log{"log.txt", std::ios::app};
-    
     if(test) 
         return;
 
-    Log << "\ncouldn't initialize " << description;
-    Log.close();
+    log("\ncouldn't initialize " + description);
     exit(1);
 }
 
@@ -92,7 +89,6 @@ void Game::update_aim(int x, int y)
     {
         aim.set_center(cyan_pawn.at(i).get_cx(), cyan_pawn.at(i).get_cy());
         aim.show();
-        log("\ncyan pawn is pointed");
     }
 
     aim.update_xy(x, y);

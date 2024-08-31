@@ -5,7 +5,7 @@
 
 Aim::Aim():
     cx{0}, cy{0},
-    r{4 * Parameter::radius},
+    r{Parameter::reach_radius},
     x{0}, y{0},
     x1{0}, y1{0},
     x2{0}, y2{0},
@@ -23,6 +23,7 @@ void Aim::draw() const
     
     al_draw_circle(cx, cy, r, color, thickness);
     al_draw_triangle(x1, y1, x2, y2, x3, y3, color, thickness);
+    // al_draw_line(cx, cy, x, y, color, thickness);
 }
 
 void Aim::set_center(float cx, float cy)
@@ -36,24 +37,24 @@ void Aim::update_xy(float mouse_x, float mouse_y)
     if (!visible)
         return;
 
-    float dx {mouse_x - cx};
-    float dy {mouse_y - cy};
-    float dr {sqrtf(dx * dx + dy * dy)};
+    float vx {mouse_x - cx};
+    float vy {mouse_y - cy};
+    float v_mag {sqrtf(vx * vx + vy * vy)};
 
-    x = (cx - dx) / dr * r;
-    y = (cy - dy) / dr * r;
+    x = cx - vx / v_mag * r;
+    y = cy - vy / v_mag * r;
 
-    x1 = (cx + dx) / dr * r;
-    y1 = (cy + dy) / dr * r;
+    x1 = cx + vx / v_mag * Parameter::radius * 2;
+    y1 = cy + vy / v_mag * Parameter::radius * 2;
 
-    float temp_x {(x1 + dx) / dr * Parameter::triangle_height};
-    float temp_y {(y1 + dy) / dr * Parameter::triangle_height};
+    float temp_x {x1 + vx / v_mag * Parameter::triangle_height};
+    float temp_y {y1 + vy / v_mag * Parameter::triangle_height};
 
-    x2 = (temp_x + dy) / dr * Parameter::triangle_height / Parameter::sqrt_3;
-    y2 = (temp_y - dx) / dr * Parameter::triangle_height / Parameter::sqrt_3;
+    x2 = temp_x + vy / v_mag * Parameter::triangle_height / Parameter::sqrt_3;
+    y2 = temp_y - vx / v_mag * Parameter::triangle_height / Parameter::sqrt_3;
 
-    x3 = (temp_x - dy) / dr * Parameter::triangle_height / Parameter::sqrt_3;
-    y3 = (temp_y + dx) / dr * Parameter::triangle_height / Parameter::sqrt_3;
+    x3 = temp_x - vy / v_mag * Parameter::triangle_height / Parameter::sqrt_3;
+    y3 = temp_y + vx / v_mag * Parameter::triangle_height / Parameter::sqrt_3;
 }
 
 float Aim::get_cx() const
