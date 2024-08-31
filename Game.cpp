@@ -24,13 +24,13 @@ Game::Game():
     },
 
     turn{Turn::magenta},
-    pawn_mover{},
     clipper{},
     fence{&pawn_mover},
     magenta_king{},
     cyan_king{},
     aim{},
-    pawn{}
+    pawn_container{},
+    pawn_mover{}
 {
     std::ofstream Log{"log.txt"};
     Log.close();
@@ -77,15 +77,25 @@ void Game::update_aim(int x, int y)
         return;
     }
 
-    if (turn == Turn::magenta && pawn.get_cyan_pointed_by() != nullptr)
+    if (turn == Turn::magenta)
     {
-        aim.set_center(magenta_pawn.at(i).get_cx(), magenta_pawn.at(i).get_cy());
-        aim.show();
+    	Magenta_pawn* mp { pawn_container.get_magenta_pointed_by(x, y) };
+
+    	if (mp != nullptr)
+    	{
+    		aim.set_center(mp->get_cx(), mp->get_cy());
+    		aim.show();
+    	}
     }
-    else if (turn == Turn::cyan && pawn.get_magenta_pointed_by() != nullptr)
+    else if (turn == Turn::cyan)
     {
-        aim.set_center(cyan_pawn.at(i).get_cx(), cyan_pawn.at(i).get_cy());
-        aim.show();
+    	Cyan_pawn* cp { pawn_container.get_cyan_pointed_by(x, y) };
+
+    	if (cp != nullptr)
+    	{
+    		aim.set_center(cp->get_cx(), cp->get_cy());
+    		aim.show();
+    	}
     }
 
     aim.update_xy(x, y);
@@ -102,15 +112,15 @@ void Game::produce_pawn(unsigned int button, int x, int y)
     {
         turn = Turn::cyan;
         aim.cyan();
-        magenta_pawn.emplace_back(Magenta_pawn(aim.get_cx(), aim.get_cy()));
-        pawn_mover.set_pawn(&magenta_pawn.back());
+        pawn_container.add_magenta(aim.get_cx(), aim.get_cy());
+        pawn_mover.set_pawn(pawn_container.newest_magenta());
     }
     else if (turn == Turn::cyan)
     {
         turn = Turn::magenta;
         aim.magenta();
-        cyan_pawn.emplace_back(Cyan_pawn(aim.get_cx(), aim.get_cy()));
-        pawn_mover.set_pawn(&cyan_pawn.back());
+        pawn_container.add_cyan(aim.get_cx(), aim.get_cy());
+        pawn_mover.set_pawn(pawn_container.newest_cyan());
     }
     
     pawn_mover.update_dxdy(aim.get_cx(), aim.get_cy(), aim.get_x(), aim.get_y());
@@ -178,7 +188,7 @@ void Game::run()
             cyan_king.draw();
             magenta_king.draw();
             fence.draw();
-            pawn.draw();
+            pawn_container.draw();
 
             al_flip_display();
 

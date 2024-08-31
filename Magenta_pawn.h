@@ -6,7 +6,7 @@
 #pragma once
 
 class Magenta_pawn:
-    // public Pawn
+     public Pawn
 {
 public:
     Magenta_pawn(float cx, float cy);

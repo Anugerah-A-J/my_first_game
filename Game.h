@@ -7,6 +7,7 @@
 #include <allegro5/allegro5.h>
 #include <vector>
 #include "Pawn_mover.h"
+#include "Pawn_container.h"
 #ifndef GAME_H
 #define GAME_H
 #pragma once
@@ -34,8 +35,6 @@ private:
 
     Turn turn;
 
-    Pawn_mover pawn_mover;
-    
     Clipper clipper;
     Fence fence;
     Magenta_king magenta_king;
@@ -43,7 +42,8 @@ private:
     Aim aim;
     void update_aim(int x, int y);
 
-    Pawn pawn;
+    Pawn_container pawn_container;
+    Pawn_mover pawn_mover;
 
     void produce_pawn(unsigned int button, int x, int y);
 

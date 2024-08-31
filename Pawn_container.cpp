@@ -1,34 +1,54 @@
-#include "Pawn.h"
+#include "Pawn_container.h"
 
-Pawn::Pawn():
-    magenta_pawn{},
-    cyan_pawn{}
+Pawn_container::Pawn_container():
+    magenta{},
+    cyan{}
 {
 }
 
-void Pawn::draw() const
+void Pawn_container::draw() const
 {
-    for (auto& x : magenta_pawn)
+    for (auto& x : magenta)
         x.draw();
 
-    for (auto& x : cyan_pawn)
+    for (auto& x : cyan)
         x.draw();
 }
 
-Magenta_pawn* Pawn::get_magenta_pointed_by(int x, int y) const
+Magenta_pawn* Pawn_container::get_magenta_pointed_by(int x, int y) const
 {
-    for (auto& x : magenta_pawn)
-        if (x.pointed_by(x, y))
+    for (auto& mp : magenta)
+        if (mp.pointed_by(x, y))
             return &x;
     
     return nullptr;
 }
 
-Cyan_pawn* Pawn::get_cyan_pointed_by(int x, int y) const
+Cyan_pawn* Pawn_container::get_cyan_pointed_by(int x, int y) const
 {
-    for (auto& x : cyan_pawn)
-        if (x.pointed_by(x, y))
+    for (auto& cp : cyan)
+        if (cp.pointed_by(x, y))
             return &x;
 
     return nullptr;
+}
+
+void Pawn_container::add_magenta(float cx, float cy)
+{
+	magenta.emplace_back(Magenta_pawn(cx, cy));
+}
+
+void Pawn_container::add_cyan(float cx, float cy)
+{
+	cyan.emplace_back(Cyan_pawn(cx, cy));
+}
+
+Magenta_pawn* Pawn_container::newest_magenta() const
+{
+	return magenta.back();
+}
+
+Cyan_pawn* Pawn_container::newest_cyan() const
+{
+	return cyan.back();
 }

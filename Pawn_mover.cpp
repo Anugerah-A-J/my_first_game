@@ -1,8 +1,10 @@
 #include "Pawn_mover.h"
 #include "Parameter.h"
-#include "Game.h"
+//#include "Game.h"
+#include "Magenta_pawn.h"
 
-Pawn_mover::Pawn_mover():
+Pawn_mover::Pawn_mover(Pawn_container* pawn_container):
+	pawn_container{pawn_container},
     pawn{nullptr},
     pawn_step_count{Parameter::move_step},
     dx{0},
@@ -48,6 +50,10 @@ Pawn *Pawn_mover::get_pawn() const
 
 void Pawn_mover::kill_pawn()
 {
-    delete pawn;
+    Magenta_pawn* mp { dynamic_cast<Magenta_pawn*>(pawn) };
+
+    if (mp == nullptr)
+
+
     pawn = nullptr;
 }
