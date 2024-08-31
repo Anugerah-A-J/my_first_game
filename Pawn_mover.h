@@ -11,7 +11,10 @@ public:
     void set_pawn(Pawn* pawn);
     void update_dxdy(float x_start, float y_start, float x_finish, float y_finish);
     void move();
-    bool finish() const;
+    bool is_finish() const;
+    void finish();
+    Pawn* get_pawn() const;
+    void kill_pawn();
 private:
     Pawn* pawn;
     unsigned int pawn_step_count;

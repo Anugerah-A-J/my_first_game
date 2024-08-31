@@ -18,7 +18,7 @@ public:
 
     static ALLEGRO_COLOR window_color()
     {
-        return al_map_rgba_f(0.2, 0.2, 0.2, 1);
+        return al_map_rgba_f(0.1, 0.1, 0.1, 1);
     };
     
     static constexpr float sqrt_2 {1.41421356237309504880};

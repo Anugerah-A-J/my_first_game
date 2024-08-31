@@ -24,14 +24,30 @@ void Pawn_mover::update_dxdy(float x_start, float y_start, float x_finish, float
 
 void Pawn_mover::move()
 {
-    if (pawn == nullptr)
+    if (pawn == nullptr || pawn_step_count == Parameter::move_step)
         return;
     
     pawn->move(dx, dy);
     pawn_step_count ++;
 }
 
-bool Pawn_mover::finish() const
+bool Pawn_mover::is_finish() const
 {
     return pawn_step_count == Parameter::move_step;
+}
+
+void Pawn_mover::finish()
+{
+    pawn_step_count = Parameter::move_step;
+}
+
+Pawn *Pawn_mover::get_pawn() const
+{
+    return pawn;
+}
+
+void Pawn_mover::kill_pawn()
+{
+    delete pawn;
+    pawn = nullptr;
 }

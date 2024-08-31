@@ -6,8 +6,6 @@
 #include "Clipper.h"
 #include <allegro5/allegro5.h>
 #include <vector>
-#include "Magenta_pawn.h"
-#include "Cyan_pawn.h"
 #include "Pawn_mover.h"
 #ifndef GAME_H
 #define GAME_H
@@ -35,6 +33,8 @@ private:
     ALLEGRO_DISPLAY* const display;
 
     Turn turn;
+
+    Pawn_mover pawn_mover;
     
     Clipper clipper;
     Fence fence;
@@ -43,13 +43,9 @@ private:
     Aim aim;
     void update_aim(int x, int y);
 
-    std::vector<Magenta_pawn> magenta_pawn;
-    std::vector<Cyan_pawn> cyan_pawn;
+    Pawn pawn;
 
-    int index_of_pawn_pointed_by(int x, int y);
     void produce_pawn(unsigned int button, int x, int y);
-
-    Pawn_mover pawn_mover;
 
     // Box box; // yellow
     // Tree tree; // green
