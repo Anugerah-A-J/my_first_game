@@ -15,12 +15,11 @@ public:
     float get_cx() const override;
     float get_cy() const override;
     void move(float dx, float dy) override;
+    bool is_dead() const override;
+    void dying() override;
 private:
-    float cx;
-    float cy;
-    float r;
-    ALLEGRO_COLOR color;
-    float thickness;
+    float cx, cy, r;
+    float red, green, blue;
 };
 
 #endif

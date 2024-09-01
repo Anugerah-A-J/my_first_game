@@ -1,5 +1,4 @@
-#include <allegro5/allegro5.h>
-
+#include <allegro5/color.h>
 #ifndef PARAMETER_H
 #define PARAMETER_H
 #pragma once
@@ -16,9 +15,13 @@ public:
     static constexpr float triangle_height {10.f};
     static constexpr unsigned int move_step {10};
 
+    static constexpr float window_red {0.1};
+    static constexpr float window_green {0.1};
+    static constexpr float window_blue {0.1};
+
     static ALLEGRO_COLOR window_color()
     {
-        return al_map_rgba_f(0.1, 0.1, 0.1, 1);
+        return al_map_rgb_f(window_red, window_green, window_blue);
     };
     
     static constexpr float sqrt_2 {1.41421356237309504880};

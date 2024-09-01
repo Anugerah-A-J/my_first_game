@@ -52,9 +52,9 @@ void Pawn_mover::kill_pawn()
     Magenta_pawn* mp { dynamic_cast<Magenta_pawn*>(pawn) };
 
     if (mp == nullptr)
-        pawn_container->remove_newest_cyan();
+        pawn_container->kill_newest_cyan();
     else
-        pawn_container->remove_newest_magenta();
+        pawn_container->kill_newest_magenta();
 
     pawn = nullptr;
 }

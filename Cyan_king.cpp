@@ -6,7 +6,7 @@ Cyan_king::Cyan_king():
     cx{Parameter::space * 3 + Parameter::radius},
     cy{Parameter::window_height / 2},
     r{Parameter::radius},
-    color{al_map_rgba_f(0, 1, 1, 1)},
+    color{al_map_rgb_f(0, 1, 1)},
     thickness{Parameter::line_width},
     x1{Parameter::space * 2},
     y1{Parameter::window_height / 2 - Parameter::radius - Parameter::space},

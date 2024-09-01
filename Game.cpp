@@ -158,6 +158,7 @@ void Game::run()
                 // game logic goes here.
                 pawn_mover.move();
                 fence.check();
+                pawn_container.update();
                 log("\ntimer is ticking");
                 redraw = true;
                 break;

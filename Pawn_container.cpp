@@ -2,7 +2,9 @@
 
 Pawn_container::Pawn_container():
     magenta{},
-    cyan{}
+    cyan{},
+    magenta_dying_pawn{nullptr},
+    cyan_dying_pawn{nullptr}
 {
 }
 
@@ -55,12 +57,36 @@ Cyan_pawn* Pawn_container::newest_cyan() const
 	return const_cast<Cyan_pawn*>(&cyan.back());
 }
 
-void Pawn_container::remove_newest_magenta()
+void Pawn_container::kill_newest_magenta()
 {
-    magenta.pop_back();
+    magenta_dying_pawn = &magenta.back();
 }
 
-void Pawn_container::remove_newest_cyan()
+void Pawn_container::kill_newest_cyan()
 {
-    cyan.pop_back();
+    cyan_dying_pawn = &cyan.back();
+}
+
+void Pawn_container::update()
+{
+    if (magenta_dying_pawn != nullptr)
+    {
+        magenta_dying_pawn->dying();
+
+        if (magenta_dying_pawn->is_dead())
+        {
+            magenta.pop_back();
+            magenta_dying_pawn = nullptr;
+        }
+    }
+    else if (cyan_dying_pawn != nullptr)
+    {
+        cyan_dying_pawn->dying();
+
+        if (cyan_dying_pawn->is_dead())
+        {
+            cyan.pop_back();
+            cyan_dying_pawn = nullptr;
+        }
+    }
 }

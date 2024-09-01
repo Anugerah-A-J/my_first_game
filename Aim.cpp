@@ -10,7 +10,7 @@ Aim::Aim():
     x1{0}, y1{0},
     x2{0}, y2{0},
     x3{0}, y3{0},
-    color{al_map_rgba_f(1, 0, 1, 1)},
+    color{al_map_rgb_f(1, 0, 1)},
     thickness{Parameter::line_width},
     visible{false}
 {
@@ -79,12 +79,12 @@ float Aim::get_y() const
 
 void Aim::magenta()
 {
-    color = al_map_rgba_f(1, 0, 1, 1);
+    color = al_map_rgb_f(1, 0, 1);
 }
 
 void Aim::cyan()
 {
-    color = al_map_rgba_f(0, 1, 1, 1);
+    color = al_map_rgb_f(0, 1, 1);
 }
 
 void Aim::show()

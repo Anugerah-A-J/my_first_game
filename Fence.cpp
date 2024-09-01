@@ -7,7 +7,7 @@ Fence::Fence(Pawn_mover* pm):
     y1{Parameter::space},
     x2{Parameter::window_width - 2 * Parameter::space},
     y2{Parameter::window_height - Parameter::space},
-    color{al_map_rgba_f(1, 0, 0, 1)},
+    color{al_map_rgb_f(1, 0, 0)},
     thickness{Parameter::line_width},
     pm{pm}
 {

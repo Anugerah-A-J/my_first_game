@@ -6,14 +6,15 @@ Cyan_pawn::Cyan_pawn(float cx, float cy):
     cx{cx},
     cy{cy},
     r{Parameter::radius},
-    color{al_map_rgba_f(0, 1, 1, 1)},
-    thickness{Parameter::line_width}
+    red{0},
+    green{1},
+    blue{1}
 {
 }
 
 void Cyan_pawn::draw() const
 {
-    al_draw_filled_circle(cx, cy, r, color);
+    al_draw_filled_circle(cx, cy, r, al_map_rgb_f(red, green, blue));
 }
 
 bool Cyan_pawn::pointed_by(int x, int y) const
@@ -38,4 +39,23 @@ void Cyan_pawn::move(float dx, float dy)
 {
     cx += dx;
     cy += dy;
+}
+
+bool Cyan_pawn::is_dead() const
+{
+    return red <= Parameter::window_red &&
+        green <= Parameter::window_green &&
+        blue <= Parameter::window_blue;
+}
+
+void Cyan_pawn::dying()
+{
+    if (red > Parameter::window_red)
+        red -= 0.1;
+
+    if (green > Parameter::window_green)
+        green -= 0.1;
+
+    if (blue > Parameter::window_blue)
+        blue -= 0.1;
 }
