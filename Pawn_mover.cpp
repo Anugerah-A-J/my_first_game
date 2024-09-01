@@ -1,6 +1,5 @@
 #include "Pawn_mover.h"
 #include "Parameter.h"
-//#include "Game.h"
 #include "Magenta_pawn.h"
 
 Pawn_mover::Pawn_mover(Pawn_container* pawn_container):
@@ -53,7 +52,9 @@ void Pawn_mover::kill_pawn()
     Magenta_pawn* mp { dynamic_cast<Magenta_pawn*>(pawn) };
 
     if (mp == nullptr)
-
+        pawn_container->remove_newest_cyan();
+    else
+        pawn_container->remove_newest_magenta();
 
     pawn = nullptr;
 }

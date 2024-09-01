@@ -17,18 +17,20 @@ void Pawn_container::draw() const
 
 Magenta_pawn* Pawn_container::get_magenta_pointed_by(int x, int y) const
 {
-    for (auto& mp : magenta)
-        if (mp.pointed_by(x, y))
-            return &x;
+    for (auto& m : magenta)
+        if (m.pointed_by(x, y))
+            return const_cast<Magenta_pawn*>(&m);
     
     return nullptr;
 }
 
 Cyan_pawn* Pawn_container::get_cyan_pointed_by(int x, int y) const
 {
-    for (auto& cp : cyan)
-        if (cp.pointed_by(x, y))
-            return &x;
+    Cyan_pawn* cp {nullptr};
+
+    for (auto& c : cyan)
+        if (c.pointed_by(x, y))
+            return const_cast<Cyan_pawn*>(&c);
 
     return nullptr;
 }
@@ -45,10 +47,20 @@ void Pawn_container::add_cyan(float cx, float cy)
 
 Magenta_pawn* Pawn_container::newest_magenta() const
 {
-	return magenta.back();
+    return const_cast<Magenta_pawn*>(&magenta.back());
 }
 
 Cyan_pawn* Pawn_container::newest_cyan() const
 {
-	return cyan.back();
+	return const_cast<Cyan_pawn*>(&cyan.back());
+}
+
+void Pawn_container::remove_newest_magenta()
+{
+    magenta.pop_back();
+}
+
+void Pawn_container::remove_newest_cyan()
+{
+    cyan.pop_back();
 }

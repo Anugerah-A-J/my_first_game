@@ -34,6 +34,8 @@ private:
     ALLEGRO_DISPLAY* const display;
 
     Turn turn;
+    Pawn_mover pawn_mover;
+    Pawn_container pawn_container;
 
     Clipper clipper;
     Fence fence;
@@ -42,8 +44,6 @@ private:
     Aim aim;
     void update_aim(int x, int y);
 
-    Pawn_container pawn_container;
-    Pawn_mover pawn_mover;
 
     void produce_pawn(unsigned int button, int x, int y);
 

@@ -17,6 +17,8 @@ public:
     void add_cyan(float cx, float cy);
     Magenta_pawn* newest_magenta() const;
     Cyan_pawn* newest_cyan() const;
+    void remove_newest_magenta();
+    void remove_newest_cyan();
 private:
     std::vector<Magenta_pawn> magenta;
     std::vector<Cyan_pawn> cyan;

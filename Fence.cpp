@@ -20,11 +20,14 @@ void Fence::draw() const
 
 void Fence::check()
 {
+    if (pm->get_pawn() == nullptr)
+        return;
+        
     bool pawn_is_inside {
         pm->get_pawn()->get_cx() > x1 + Parameter::radius &&
         pm->get_pawn()->get_cx() < x2 - Parameter::radius &&
         pm->get_pawn()->get_cy() > y1 + Parameter::radius &&
-        pm->get_pawn()->get_cy() > y2 - Parameter::radius
+        pm->get_pawn()->get_cy() < y2 - Parameter::radius
     };
 
     if (pawn_is_inside)

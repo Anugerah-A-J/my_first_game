@@ -24,13 +24,13 @@ Game::Game():
     },
 
     turn{Turn::magenta},
+    pawn_container{},
+    pawn_mover{&pawn_container},
     clipper{},
     fence{&pawn_mover},
     magenta_king{},
     cyan_king{},
-    aim{},
-    pawn_container{},
-    pawn_mover{}
+    aim{}
 {
     std::ofstream Log{"log.txt"};
     Log.close();
@@ -158,15 +158,18 @@ void Game::run()
                 // game logic goes here.
                 pawn_mover.move();
                 fence.check();
+                log("\ntimer is ticking");
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
                 update_aim(event.mouse.x, event.mouse.y);
+                log("\nmouse is moved");
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 produce_pawn(event.mouse.button, event.mouse.x, event.mouse.y);
+                log("\nmouse is clicked");
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -193,6 +196,7 @@ void Game::run()
             al_flip_display();
 
             redraw = false;
+            log("\ndrawing....");
         }
     }
 }
