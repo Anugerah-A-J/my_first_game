@@ -16,6 +16,8 @@ public:
     void finish();
     Pawn* get_pawn() const;
     void kill_pawn();
+    float get_dx() const;
+    float get_dy() const;
 private:
     Pawn_container* pawn_container;
     Pawn* pawn;

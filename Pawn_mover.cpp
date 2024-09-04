@@ -58,3 +58,13 @@ void Pawn_mover::kill_pawn()
 
     pawn = nullptr;
 }
+
+float Pawn_mover::get_dx() const
+{
+    return dx;
+}
+
+float Pawn_mover::get_dy() const
+{
+    return dy;
+}

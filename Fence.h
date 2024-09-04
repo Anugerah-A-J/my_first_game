@@ -10,6 +10,7 @@ public:
     Fence(Pawn_mover* pm);
     void draw() const;
     void check();
+    void resolve();
 private:
     float x1;
     float y1;
