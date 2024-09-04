@@ -13,7 +13,7 @@ public:
 	virtual float get_cx() const = 0;
 	virtual float get_cy() const = 0;
 	virtual void move(float dx, float dy) = 0;
-	virtual bool is_dead() const = 0;
+	virtual bool is_dead() = 0;
     virtual void dying() = 0;
 };
 

@@ -41,11 +41,20 @@ void Magenta_pawn::move(float dx, float dy)
     cy += dy;
 }
 
-bool Magenta_pawn::is_dead() const
+bool Magenta_pawn::is_dead()
 {
-    return red <= Parameter::window_red &&
-        green <= Parameter::window_green &&
-        blue <= Parameter::window_blue;
+    if (
+        red > Parameter::window_red ||
+        green > Parameter::window_green ||
+        blue > Parameter::window_blue
+    )
+        return false;
+
+    red = Parameter::window_red;
+    green = Parameter::window_green;
+    blue = Parameter::window_blue;
+    
+    return true;
 }
 
 void Magenta_pawn::dying()

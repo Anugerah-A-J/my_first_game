@@ -13,7 +13,7 @@ public:
     float get_cx() const override;
     float get_cy() const override;
     void move(float dx, float dy) override;
-    bool is_dead() const override;
+    bool is_dead() override;
     void dying() override;
 private:
     float cx, cy, r;

@@ -41,11 +41,20 @@ void Cyan_pawn::move(float dx, float dy)
     cy += dy;
 }
 
-bool Cyan_pawn::is_dead() const
+bool Cyan_pawn::is_dead()
 {
-    return red <= Parameter::window_red &&
-        green <= Parameter::window_green &&
-        blue <= Parameter::window_blue;
+    if (
+        red > Parameter::window_red ||
+        green > Parameter::window_green ||
+        blue > Parameter::window_blue
+    )
+        return false;
+
+    red = Parameter::window_red;
+    green = Parameter::window_green;
+    blue = Parameter::window_blue;
+    
+    return true;
 }
 
 void Cyan_pawn::dying()
