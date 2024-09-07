@@ -23,7 +23,7 @@ void Aim::draw() const
     
     al_draw_circle(cx, cy, r, color, thickness);
     al_draw_triangle(x1, y1, x2, y2, x3, y3, color, thickness);
-    // al_draw_line(cx, cy, x, y, color, thickness);
+    al_draw_line(cx, cy, x, y, color, thickness);
 }
 
 void Aim::set_center(float cx, float cy)

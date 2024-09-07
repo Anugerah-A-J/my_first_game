@@ -12,6 +12,10 @@ public:
     void check();
     void resolve();
 private:
+    void resolve_left();
+    void resolve_right();
+    void resolve_top();
+    void resolve_bottom();
     float x1;
     float y1;
     float x2;
