@@ -24,13 +24,12 @@ Game::Game():
     },
 
     turn{Turn::magenta},
-    pawn_container{},
-    pawn_mover{&pawn_container},
-    clipper{},
-    fence{&pawn_mover},
+    fence{},
     magenta_king{},
     cyan_king{},
-    aim{}
+    aim{},
+    clipper{},
+    pawn_container{}
 {
     std::ofstream Log{"log.txt"};
     Log.close();
@@ -58,6 +57,16 @@ void Game::check(bool test, const std::string& description)
 
     log("\ncouldn't initialize " + description);
     exit(1);
+}
+
+void Game::draw() const
+{
+    aim.draw();
+    clipper.draw();
+    cyan_king.draw();
+    magenta_king.draw();
+    fence.draw();
+    pawn_container.draw();
 }
 
 void Game::update_aim(int x, int y)
@@ -101,9 +110,25 @@ void Game::update_aim(int x, int y)
     aim.update_xy(x, y);
 }
 
-void Game::produce_pawn(unsigned int button, int x, int y)
+void Game::logic()
 {
-    if (button != 1 || !aim.get_visible() || !pawn_mover.is_finish())
+    pawn_container.move();
+    
+    Pawn* moving_pawn {pawn_container.get_moving_pawn()};
+    
+    if (moving_pawn != nullptr && !fence.contain(moving_pawn))
+    {
+        fence.resolve(moving_pawn);
+        pawn_container.kill_moving_pawn();
+        moving_pawn->stop();
+    }
+    // pawn_container.detect();
+    pawn_container.update();
+}
+
+void Game::produce_pawn(int x, int y)
+{
+    if (!aim.get_visible() || pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step)
         return;
 
     aim.hide();
@@ -113,17 +138,15 @@ void Game::produce_pawn(unsigned int button, int x, int y)
         turn = Turn::cyan;
         aim.cyan();
         pawn_container.add_magenta(aim.get_cx(), aim.get_cy());
-        pawn_mover.set_pawn(pawn_container.newest_magenta());
     }
     else if (turn == Turn::cyan)
     {
         turn = Turn::magenta;
         aim.magenta();
         pawn_container.add_cyan(aim.get_cx(), aim.get_cy());
-        pawn_mover.set_pawn(pawn_container.newest_cyan());
     }
     
-    pawn_mover.update_dxdy(aim.get_cx(), aim.get_cy(), aim.get_x(), aim.get_y());
+    pawn_container.update_dxdy(aim.get_x(), aim.get_y());
 }
 
 void Game::log(const std::string &description)
@@ -156,20 +179,24 @@ void Game::run()
         {
             case ALLEGRO_EVENT_TIMER:
                 // game logic goes here.
-                pawn_mover.move();
-                fence.check();
-                pawn_container.update();
+                logic();
+
                 log("\ntimer is ticking");
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
+                
                 update_aim(event.mouse.x, event.mouse.y);
+                
                 log("\nmouse is moved");
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                produce_pawn(event.mouse.button, event.mouse.x, event.mouse.y);
+                
+                if (event.mouse.button == 1)
+                    produce_pawn(event.mouse.x, event.mouse.y);
+                
                 log("\nmouse is clicked");
                 break;
 
@@ -186,16 +213,8 @@ void Game::run()
         if(redraw && al_is_event_queue_empty(queue))
         {
             al_clear_to_color(Parameter::window_color());
-
-            aim.draw();
-            clipper.draw();
-            cyan_king.draw();
-            magenta_king.draw();
-            fence.draw();
-            pawn_container.draw();
-
+            draw();
             al_flip_display();
-
             redraw = false;
             log("\ndrawing....");
         }

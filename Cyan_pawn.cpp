@@ -1,15 +1,13 @@
 #include "Cyan_pawn.h"
-#include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
 
 Cyan_pawn::Cyan_pawn(float cx, float cy):
     cx{cx},
-    cy{cy},
-    r{Parameter::radius},
-    red{0},
-    green{1},
-    blue{1}
+    cy{cy}
 {
+    move_step_count = 0;
+    dx = 0;
+    dy = 0;
 }
 
 void Cyan_pawn::draw() const
@@ -35,10 +33,46 @@ float Cyan_pawn::get_cy() const
     return cy;
 }
 
+void Cyan_pawn::move()
+{
+    if (move_step_count == Parameter::move_step)
+        return;
+    
+    move_step_count ++;
+    cx += dx;
+    cy += dy;
+}
+
 void Cyan_pawn::move(float dx, float dy)
 {
     cx += dx;
     cy += dy;
+}
+
+unsigned int Cyan_pawn::get_move_step_count() const
+{
+    return move_step_count;
+}
+
+void Cyan_pawn::update_dxdy(float x_finish, float y_finish)
+{
+    dx = (x_finish - cx) / Parameter::move_step;
+    dy = (y_finish - cy) / Parameter::move_step;
+}
+
+void Cyan_pawn::stop()
+{
+    move_step_count = Parameter::move_step;
+}
+
+float Cyan_pawn::get_dx() const
+{
+    return dx;
+}
+
+float Cyan_pawn::get_dy() const
+{
+    return dy;
 }
 
 bool Cyan_pawn::is_dead()

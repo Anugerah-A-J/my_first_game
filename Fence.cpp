@@ -2,153 +2,137 @@
 #include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
 
-Fence::Fence(Pawn_mover* pm):
-    x1{2 * Parameter::space},
-    y1{Parameter::space},
-    x2{Parameter::window_width - 2 * Parameter::space},
-    y2{Parameter::window_height - Parameter::space},
-    color{al_map_rgb_f(1, 0, 0)},
-    thickness{Parameter::line_width},
-    pm{pm}
-{
-}
-
 void Fence::draw() const
 {
     al_draw_rectangle(x1, y1, x2, y2, color, thickness);
 }
 
-void Fence::check()
+bool Fence::contain(Pawn* pawn)
 {
-    if (pm->get_pawn() == nullptr)
-        return;
-        
     bool pawn_is_inside {
-        pm->get_pawn()->get_cx() > x1 + Parameter::radius &&
-        pm->get_pawn()->get_cx() < x2 - Parameter::radius &&
-        pm->get_pawn()->get_cy() > y1 + Parameter::radius &&
-        pm->get_pawn()->get_cy() < y2 - Parameter::radius
+        pawn->get_cx() > x1 + Parameter::radius &&
+        pawn->get_cx() < x2 - Parameter::radius &&
+        pawn->get_cy() > y1 + Parameter::radius &&
+        pawn->get_cy() < y2 - Parameter::radius
     };
 
     if (pawn_is_inside)
-        return;
+        return true;
 
-    pm->finish();
-    resolve();
-    pm->kill_pawn();
+    return false;
 }
 
-void Fence::resolve()
+void Fence::resolve(Pawn* pawn)
 {
-    if (pm->get_pawn()->get_cx() < x1 + Parameter::radius && 
-        pm->get_pawn()->get_cy() >= y1 + Parameter::radius &&
-        pm->get_pawn()->get_cy() <= y2 - Parameter::radius) resolve_left();
+    if (pawn->get_cx() < x1 + Parameter::radius && 
+        pawn->get_cy() >= y1 + Parameter::radius &&
+        pawn->get_cy() <= y2 - Parameter::radius) resolve_left(pawn);
         
-    else if (pm->get_pawn()->get_cx() > x2 - Parameter::radius &&
-        pm->get_pawn()->get_cy() >= y1 + Parameter::radius &&
-        pm->get_pawn()->get_cy() <= y2 - Parameter::radius) resolve_right();
+    else if (pawn->get_cx() > x2 - Parameter::radius &&
+        pawn->get_cy() >= y1 + Parameter::radius &&
+        pawn->get_cy() <= y2 - Parameter::radius) resolve_right(pawn);
         
-    else if (pm->get_pawn()->get_cy() < y1 + Parameter::radius &&
-        pm->get_pawn()->get_cx() >= x1 + Parameter::radius &&
-        pm->get_pawn()->get_cx() <= x2 - Parameter::radius) resolve_top();
+    else if (pawn->get_cy() < y1 + Parameter::radius &&
+        pawn->get_cx() >= x1 + Parameter::radius &&
+        pawn->get_cx() <= x2 - Parameter::radius) resolve_top(pawn);
         
-    else if (pm->get_pawn()->get_cy() > y2 - Parameter::radius &&
-        pm->get_pawn()->get_cx() >= x1 + Parameter::radius &&
-        pm->get_pawn()->get_cx() <= x2 - Parameter::radius) resolve_bottom();
+    else if (pawn->get_cy() > y2 - Parameter::radius &&
+        pawn->get_cx() >= x1 + Parameter::radius &&
+        pawn->get_cx() <= x2 - Parameter::radius) resolve_bottom(pawn);
         
-    else if (pm->get_pawn()->get_cx() < x1 + Parameter::radius && 
-        pm->get_pawn()->get_cy() < y1 + Parameter::radius)
+    else if (pawn->get_cx() < x1 + Parameter::radius && 
+        pawn->get_cy() < y1 + Parameter::radius)
     {
         float tan {
-            y1 + Parameter::radius - pm->get_pawn()->get_cy() /
-            x1 + Parameter::radius - pm->get_pawn()->get_cx()
+            y1 + Parameter::radius - pawn->get_cy() /
+            x1 + Parameter::radius - pawn->get_cx()
         };
 
-        float tan_d {pm->get_dy() / pm->get_dx()};
+        float tan_d {pawn->get_dy() / pawn->get_dx()};
 
         if (tan_d >= tan)
-            resolve_left();
+            resolve_left(pawn);
         else if (tan_d < tan)
-            resolve_top();
+            resolve_top(pawn);
     }
 
-    else if (pm->get_pawn()->get_cx() > x2 - Parameter::radius && 
-        pm->get_pawn()->get_cy() > y2 - Parameter::radius)
+    else if (pawn->get_cx() > x2 - Parameter::radius && 
+        pawn->get_cy() > y2 - Parameter::radius)
     {
         float tan {
-            y2 - Parameter::radius - pm->get_pawn()->get_cy() /
-            x2 - Parameter::radius - pm->get_pawn()->get_cx()
+            y2 - Parameter::radius - pawn->get_cy() /
+            x2 - Parameter::radius - pawn->get_cx()
         };
 
-        float tan_d {pm->get_dy() / pm->get_dx()};
+        float tan_d {pawn->get_dy() / pawn->get_dx()};
 
         if (tan_d >= tan)
-            resolve_right();
+            resolve_right(pawn);
         else if (tan_d < tan)
-            resolve_bottom();
+            resolve_bottom(pawn);
     }
 
-    else if (pm->get_pawn()->get_cx() < x1 + Parameter::radius && 
-        pm->get_pawn()->get_cy() > y2 - Parameter::radius)
+    else if (pawn->get_cx() < x1 + Parameter::radius && 
+        pawn->get_cy() > y2 - Parameter::radius)
     {
         float tan {
-            y2 - Parameter::radius - pm->get_pawn()->get_cy() /
-            x1 + Parameter::radius - pm->get_pawn()->get_cx()
+            y2 - Parameter::radius - pawn->get_cy() /
+            x1 + Parameter::radius - pawn->get_cx()
         };
 
-        float tan_d {pm->get_dy() / pm->get_dx()};
+        float tan_d {pawn->get_dy() / pawn->get_dx()};
 
         if (tan_d <= tan)
-            resolve_left();
+            resolve_left(pawn);
         else if (tan_d > tan)
-            resolve_bottom();
+            resolve_bottom(pawn);
     }
 
-    else if (pm->get_pawn()->get_cx() > x2 - Parameter::radius && 
-        pm->get_pawn()->get_cy() < y1 + Parameter::radius)
+    else if (pawn->get_cx() > x2 - Parameter::radius && 
+        pawn->get_cy() < y1 + Parameter::radius)
     {
         float tan {
-            y1 + Parameter::radius - pm->get_pawn()->get_cy() /
-            x2 - Parameter::radius - pm->get_pawn()->get_cx()
+            y1 + Parameter::radius - pawn->get_cy() /
+            x2 - Parameter::radius - pawn->get_cx()
         };
 
-        float tan_d {pm->get_dy() / pm->get_dx()};
+        float tan_d {pawn->get_dy() / pawn->get_dx()};
 
         if (tan_d <= tan)
-            resolve_right();
+            resolve_right(pawn);
         else if (tan_d > tan)
-            resolve_top();
+            resolve_top(pawn);
     }
 }
 
-void Fence::resolve_left()
+void Fence::resolve_left(Pawn* pawn)
 {
-    float dx {x1 + Parameter::radius - pm->get_pawn()->get_cx()};
-    float dy {dx / pm->get_dx() * pm->get_dy()};
+    float dx {x1 + Parameter::radius - pawn->get_cx()};
+    float dy {dx / pawn->get_dx() * pawn->get_dy()};
 
-    pm->get_pawn()->move(dx, dy);
+    pawn->move(dx, dy);
 }
 
-void Fence::resolve_right()
+void Fence::resolve_right(Pawn* pawn)
 {
-    float dx {x2 - Parameter::radius - pm->get_pawn()->get_cx()};
-    float dy {dx / pm->get_dx() * pm->get_dy()};
+    float dx {x2 - Parameter::radius - pawn->get_cx()};
+    float dy {dx / pawn->get_dx() * pawn->get_dy()};
 
-    pm->get_pawn()->move(dx, dy);
+    pawn->move(dx, dy);
 }
 
-void Fence::resolve_top()
+void Fence::resolve_top(Pawn* pawn)
 {
-    float dy {y1 + Parameter::radius - pm->get_pawn()->get_cy()};
-    float dx {dy / pm->get_dy() * pm->get_dx()};
+    float dy {y1 + Parameter::radius - pawn->get_cy()};
+    float dx {dy / pawn->get_dy() * pawn->get_dx()};
 
-    pm->get_pawn()->move(dx, dy);
+    pawn->move(dx, dy);
 }
 
-void Fence::resolve_bottom()
+void Fence::resolve_bottom(Pawn* pawn)
 {
-    float dy {y2 - Parameter::radius - pm->get_pawn()->get_cy()};
-    float dx {dy / pm->get_dy() * pm->get_dx()};
+    float dy {y2 - Parameter::radius - pawn->get_cy()};
+    float dx {dy / pawn->get_dy() * pawn->get_dx()};
 
-    pm->get_pawn()->move(dx, dy);
+    pawn->move(dx, dy);
 }

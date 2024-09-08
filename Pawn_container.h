@@ -9,22 +9,27 @@
 class Pawn_container
 {
 public:
-    Pawn_container();
     void draw() const;
     Magenta_pawn* get_magenta_pointed_by(int x, int y) const;
     Cyan_pawn* get_cyan_pointed_by(int x, int y) const;
     void add_magenta(float cx, float cy);
     void add_cyan(float cx, float cy);
-    Magenta_pawn* newest_magenta() const;
-    Cyan_pawn* newest_cyan() const;
-    void kill_newest_magenta();
-    void kill_newest_cyan();
+
+    // Magenta_pawn* newest_magenta() const;
+    // Cyan_pawn* newest_cyan() const;
+    // void kill_newest_cyan();
+    // void check();
+
+    void move();
+    void update_dxdy(float x_finish, float y_finish);
+    Pawn* get_moving_pawn() const;
+    void kill_moving_pawn();
     void update();
 private:
-    Pawn* magenta_dying_pawn;
-    Pawn* cyan_dying_pawn;
-    std::vector<Magenta_pawn> magenta;
-    std::vector<Cyan_pawn> cyan;
+    std::vector<Magenta_pawn> magenta {};
+    std::vector<Cyan_pawn> cyan       {};
+    Pawn* moving_pawn                 {nullptr};
+    std::vector<Pawn*> dying_pawn     {};
 };
 
 #endif

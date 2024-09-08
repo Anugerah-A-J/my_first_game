@@ -1,6 +1,6 @@
 {
     "code-runner.executorMap": {
-        "cpp": "cd $dir && g++ *.cpp -c -ID:/c++/allegro_32/include && g++ *.o -o my_first_game -LD:/c++/allegro_32/lib -lallegro -lallegro_primitives && my_first_game",
+        "cpp": "cd $dir && mingw32-make && my_first_game",
     },
     "files.associations": {
         "array": "cpp",
@@ -51,6 +51,6 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
     }
 }

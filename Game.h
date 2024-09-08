@@ -6,7 +6,6 @@
 #include "Clipper.h"
 #include <allegro5/allegro5.h>
 #include <vector>
-#include "Pawn_mover.h"
 #include "Pawn_container.h"
 #ifndef GAME_H
 #define GAME_H
@@ -23,6 +22,10 @@ public:
     static void log(const std::string& description);
 private:
     void check(bool test, const std::string& description);
+    void draw() const;
+    void update_aim(int x, int y);
+    void produce_pawn(int x, int y);
+    void logic();
 
     bool al_init_success;
     bool al_init_primitives_addon_success;
@@ -34,19 +37,15 @@ private:
     ALLEGRO_DISPLAY* const display;
 
     Turn turn;
-    Pawn_mover pawn_mover;
-    Pawn_container pawn_container;
 
-    Clipper clipper;
     Fence fence;
     Magenta_king magenta_king;
     Cyan_king cyan_king;
     Aim aim;
-    void update_aim(int x, int y);
+    Clipper clipper;
+    Pawn_container pawn_container;
 
-
-    void produce_pawn(unsigned int button, int x, int y);
-
+    // Map Map_1:
     // Box box; // yellow
     // Tree tree; // green
     // X x; // red

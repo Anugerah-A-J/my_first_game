@@ -1,5 +1,6 @@
 #include <allegro5/color.h>
-#include "Pawn_mover.h"
+#include "Pawn.h"
+#include "Parameter.h"
 #ifndef FENCE_H
 #define FENCE_H
 #pragma once
@@ -7,22 +8,20 @@
 class Fence
 {
 public:
-    Fence(Pawn_mover* pm);
     void draw() const;
-    void check();
-    void resolve();
+    bool contain(Pawn* pawn);
+    void resolve(Pawn* pawn);
 private:
-    void resolve_left();
-    void resolve_right();
-    void resolve_top();
-    void resolve_bottom();
-    float x1;
-    float y1;
-    float x2;
-    float y2;
-    ALLEGRO_COLOR color;
-    float thickness;
-    Pawn_mover* pm;
+    void resolve_left(Pawn* pawn);
+    void resolve_right(Pawn* pawn);
+    void resolve_top(Pawn* pawn);
+    void resolve_bottom(Pawn* pawn);
+    float x1            {2 * Parameter::space};
+    float y1            {Parameter::space};
+    float x2            {Parameter::window_width - 2 * Parameter::space};
+    float y2            {Parameter::window_height - Parameter::space};
+    ALLEGRO_COLOR color {al_map_rgb_f(1, 0, 0)};
+    float thickness     {Parameter::line_width};
 };
 
 #endif

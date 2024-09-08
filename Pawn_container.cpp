@@ -1,12 +1,5 @@
 #include "Pawn_container.h"
-
-Pawn_container::Pawn_container():
-    magenta{},
-    cyan{},
-    magenta_dying_pawn{nullptr},
-    cyan_dying_pawn{nullptr}
-{
-}
+#include "Parameter.h"
 
 void Pawn_container::draw() const
 {
@@ -40,53 +33,65 @@ Cyan_pawn* Pawn_container::get_cyan_pointed_by(int x, int y) const
 void Pawn_container::add_magenta(float cx, float cy)
 {
 	magenta.emplace_back(Magenta_pawn(cx, cy));
+    moving_pawn = &magenta.back();
 }
 
 void Pawn_container::add_cyan(float cx, float cy)
 {
 	cyan.emplace_back(Cyan_pawn(cx, cy));
-}
-
-Magenta_pawn* Pawn_container::newest_magenta() const
-{
-    return const_cast<Magenta_pawn*>(&magenta.back());
-}
-
-Cyan_pawn* Pawn_container::newest_cyan() const
-{
-	return const_cast<Cyan_pawn*>(&cyan.back());
-}
-
-void Pawn_container::kill_newest_magenta()
-{
-    magenta_dying_pawn = &magenta.back();
-}
-
-void Pawn_container::kill_newest_cyan()
-{
-    cyan_dying_pawn = &cyan.back();
+    moving_pawn = &cyan.back();
 }
 
 void Pawn_container::update()
 {
-    if (magenta_dying_pawn != nullptr)
+    for (auto x: dying_pawn)
     {
-        magenta_dying_pawn->dying();
+        if (x == nullptr)
+            continue;
 
-        if (magenta_dying_pawn->is_dead())
+        x->dying();
+
+        Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(x) };
+
+        if (killed_pawn != nullptr && x->is_dead())
         {
             magenta.pop_back();
-            magenta_dying_pawn = nullptr;
+            x = nullptr;
         }
-    }
-    else if (cyan_dying_pawn != nullptr)
-    {
-        cyan_dying_pawn->dying();
-
-        if (cyan_dying_pawn->is_dead())
+        else if (killed_pawn == nullptr && x->is_dead())
         {
             cyan.pop_back();
-            cyan_dying_pawn = nullptr;
+            x = nullptr;
         }
     }
+}
+
+void Pawn_container::move()
+{
+    if (moving_pawn == nullptr)
+        return;
+    
+    moving_pawn->move();
+}
+
+void Pawn_container::update_dxdy(float x_finish, float y_finish)
+{
+    moving_pawn->update_dxdy(x_finish, y_finish);
+}
+
+Pawn *Pawn_container::get_moving_pawn() const
+{
+    return moving_pawn;
+}
+
+void Pawn_container::kill_moving_pawn()
+{
+    Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(moving_pawn) };
+
+    if (killed_pawn == nullptr)
+        dying_pawn.emplace_back(&cyan.back());
+    else
+        dying_pawn.emplace_back(&magenta.back());
+
+    moving_pawn = nullptr;
 }
