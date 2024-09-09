@@ -17,7 +17,6 @@ public:
 
     void move() override;
 	void move(float dx, float dy) override;
-    unsigned int get_move_step_count() const override;
     void update_dxdy(float x_finish, float y_finish) override;
     void stop() override;
     float get_dx() const override;
@@ -25,12 +24,14 @@ public:
     
     bool is_dead() override;
     void dying() override;
+    void trigger_dying() override;
 private:
     float cx, cy;
-    float r     {Parameter::radius};
-    float red   {0};
-    float green {1};
-    float blue  {1};
+    float r       {Parameter::radius};
+    float red     {0};
+    float green   {1};
+    float blue    {1};
+    bool is_dying {false};
 };
 
 #endif

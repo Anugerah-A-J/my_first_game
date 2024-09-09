@@ -1,5 +1,6 @@
 #include "Pawn_container.h"
 #include "Parameter.h"
+#include <algorithm>
 
 void Pawn_container::draw() const
 {
@@ -42,28 +43,25 @@ void Pawn_container::add_cyan(float cx, float cy)
     moving_pawn = &cyan.back();
 }
 
-void Pawn_container::update()
+void Pawn_container::remove_dead_pawn()
 {
-    for (auto x: dying_pawn)
-    {
-        if (x == nullptr)
-            continue;
+    magenta.erase(
+        std::remove_if(
+            magenta.begin(), 
+            magenta.end(), 
+            [](Magenta_pawn& mp){return mp.is_dead();}
+        ),
+        magenta.end()
+    );
 
-        x->dying();
-
-        Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(x) };
-
-        if (killed_pawn != nullptr && x->is_dead())
-        {
-            magenta.pop_back();
-            x = nullptr;
-        }
-        else if (killed_pawn == nullptr && x->is_dead())
-        {
-            cyan.pop_back();
-            x = nullptr;
-        }
-    }
+    cyan.erase(
+        std::remove_if(
+            cyan.begin(), 
+            cyan.end(), 
+            [](Cyan_pawn& cp){return cp.is_dead();}
+        ),
+        cyan.end()
+    );
 }
 
 void Pawn_container::move()
@@ -86,12 +84,21 @@ Pawn *Pawn_container::get_moving_pawn() const
 
 void Pawn_container::kill_moving_pawn()
 {
-    Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(moving_pawn) };
+    // Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(moving_pawn) };
 
-    if (killed_pawn == nullptr)
-        dying_pawn.emplace_back(&cyan.back());
-    else
-        dying_pawn.emplace_back(&magenta.back());
-
+    // if (killed_pawn == nullptr)
+    //     killed_pawn.emplace_back(&cyan.back());
+    // else
+    //     killed_pawn.emplace_back(&magenta.back());
+    moving_pawn->trigger_dying();
     moving_pawn = nullptr;
+}
+
+void Pawn_container::dying()
+{
+    for (auto& mp: magenta)
+        mp.dying();
+    
+    for (auto& cp: cyan)
+        cp.dying();
 }

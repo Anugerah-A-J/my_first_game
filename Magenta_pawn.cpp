@@ -1,5 +1,6 @@
 #include "Magenta_pawn.h"
 #include <allegro5/allegro_primitives.h>
+// #include <iostream>
 
 Magenta_pawn::Magenta_pawn(float cx, float cy):
     cx{cx},
@@ -49,11 +50,6 @@ void Magenta_pawn::move(float dx, float dy)
     cy += dy;
 }
 
-unsigned int Magenta_pawn::get_move_step_count() const
-{
-    return move_step_count;
-}
-
 void Magenta_pawn::update_dxdy(float x_finish, float y_finish)
 {
     dx = (x_finish - cx) / Parameter::move_step;
@@ -93,6 +89,9 @@ bool Magenta_pawn::is_dead()
 
 void Magenta_pawn::dying()
 {
+    if (!is_dying)
+        return;
+
     if (red > Parameter::window_red)
         red -= 0.1;
 
@@ -101,4 +100,9 @@ void Magenta_pawn::dying()
 
     if (blue > Parameter::window_blue)
         blue -= 0.1;
+}
+
+void Magenta_pawn::trigger_dying()
+{
+    is_dying = true;
 }

@@ -119,16 +119,17 @@ void Game::logic()
     if (moving_pawn != nullptr && !fence.contain(moving_pawn))
     {
         fence.resolve(moving_pawn);
-        pawn_container.kill_moving_pawn();
+        pawn_container.kill_moving_pawn(); // set
         moving_pawn->stop();
     }
+    pawn_container.dying();
     // pawn_container.detect();
-    pawn_container.update();
+    pawn_container.remove_dead_pawn();
 }
 
 void Game::produce_pawn(int x, int y)
 {
-    if (!aim.get_visible() || pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step)
+    if (!aim.get_visible() || Pawn::get_move_step_count() != Parameter::move_step)
         return;
 
     aim.hide();

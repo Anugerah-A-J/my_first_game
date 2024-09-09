@@ -95,4 +95,12 @@ Pawn_container.o Pawn_container.d : Pawn_container.cpp Pawn_container.h Magenta_
  D:/c++/mingw32/include/c++/13.1.0/cstddef \
  D:/c++/mingw32/include/c++/13.1.0/bits/uses_allocator.h \
  D:/c++/mingw32/include/c++/13.1.0/bits/uses_allocator_args.h \
- D:/c++/mingw32/include/c++/13.1.0/tuple
+ D:/c++/mingw32/include/c++/13.1.0/tuple \
+ D:/c++/mingw32/include/c++/13.1.0/algorithm \
+ D:/c++/mingw32/include/c++/13.1.0/bits/stl_algo.h \
+ D:/c++/mingw32/include/c++/13.1.0/bits/algorithmfwd.h \
+ D:/c++/mingw32/include/c++/13.1.0/bits/stl_heap.h \
+ D:/c++/mingw32/include/c++/13.1.0/bits/uniform_int_dist.h \
+ D:/c++/mingw32/include/c++/13.1.0/bits/stl_tempbuf.h \
+ D:/c++/mingw32/include/c++/13.1.0/pstl/glue_algorithm_defs.h \
+ D:/c++/mingw32/include/c++/13.1.0/pstl/execution_defs.h

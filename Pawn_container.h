@@ -24,12 +24,12 @@ public:
     void update_dxdy(float x_finish, float y_finish);
     Pawn* get_moving_pawn() const;
     void kill_moving_pawn();
-    void update();
+    void dying();
+    void remove_dead_pawn();
 private:
     std::vector<Magenta_pawn> magenta {};
     std::vector<Cyan_pawn> cyan       {};
     Pawn* moving_pawn                 {nullptr};
-    std::vector<Pawn*> dying_pawn     {};
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "Cyan_pawn.h"
 #include <allegro5/allegro_primitives.h>
+// #include <iostream>
 
 Cyan_pawn::Cyan_pawn(float cx, float cy):
     cx{cx},
@@ -49,11 +50,6 @@ void Cyan_pawn::move(float dx, float dy)
     cy += dy;
 }
 
-unsigned int Cyan_pawn::get_move_step_count() const
-{
-    return move_step_count;
-}
-
 void Cyan_pawn::update_dxdy(float x_finish, float y_finish)
 {
     dx = (x_finish - cx) / Parameter::move_step;
@@ -93,6 +89,9 @@ bool Cyan_pawn::is_dead()
 
 void Cyan_pawn::dying()
 {
+    if (!is_dying)
+        return;
+        
     if (red > Parameter::window_red)
         red -= 0.1;
 
@@ -101,4 +100,9 @@ void Cyan_pawn::dying()
 
     if (blue > Parameter::window_blue)
         blue -= 0.1;
+}
+
+void Cyan_pawn::trigger_dying()
+{
+    is_dying = true;
 }

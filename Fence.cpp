@@ -1,6 +1,7 @@
 #include "Fence.h"
 #include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
+// #include <iostream>
 
 void Fence::draw() const
 {
@@ -9,6 +10,7 @@ void Fence::draw() const
 
 bool Fence::contain(Pawn* pawn)
 {
+    // if (pawn == nullptr) std::cout << "nullptr ";
     bool pawn_is_inside {
         pawn->get_cx() > x1 + Parameter::radius &&
         pawn->get_cx() < x2 - Parameter::radius &&
