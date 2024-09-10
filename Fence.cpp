@@ -1,5 +1,4 @@
 #include "Fence.h"
-#include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
 // #include <iostream>
 

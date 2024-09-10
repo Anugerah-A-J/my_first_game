@@ -71,6 +71,12 @@ void Game::draw() const
 
 void Game::update_aim(int x, int y)
 {
+    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+        return;
+
+    if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+        return;
+
     if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
     {
         aim.set_center(cyan_king.get_cx(), cyan_king.get_cy());
@@ -88,7 +94,7 @@ void Game::update_aim(int x, int y)
 
     if (turn == Turn::magenta)
     {
-    	Magenta_pawn* mp { pawn_container.get_magenta_pointed_by(x, y) };
+    	Pawn* mp { pawn_container.get_magenta_pointed_by(x, y) };
 
     	if (mp != nullptr)
     	{
@@ -98,7 +104,7 @@ void Game::update_aim(int x, int y)
     }
     else if (turn == Turn::cyan)
     {
-    	Cyan_pawn* cp { pawn_container.get_cyan_pointed_by(x, y) };
+    	Pawn* cp { pawn_container.get_cyan_pointed_by(x, y) };
 
     	if (cp != nullptr)
     	{
@@ -114,22 +120,31 @@ void Game::logic()
 {
     pawn_container.move();
     
-    Pawn* moving_pawn {pawn_container.get_moving_pawn()};
-    
-    if (moving_pawn != nullptr && !fence.contain(moving_pawn))
+    if (pawn_container.get_moving_pawn() != nullptr && !fence.contain(pawn_container.get_moving_pawn()))
     {
-        fence.resolve(moving_pawn);
-        pawn_container.kill_moving_pawn(); // set
-        moving_pawn->stop();
+        fence.resolve(pawn_container.get_moving_pawn());
+        pawn_container.add_dying_pawn(pawn_container.get_moving_pawn());
+        pawn_container.stop();
     }
-    pawn_container.dying();
-    // pawn_container.detect();
+
+    // if (turn == Turn::magenta)
+    //     pawn_container.trigger_dying_magenta();
+    // else if (turn == Turn::cyan)
+    //     pawn_container.trigger_dying_cyan();
+
+    pawn_container.die();
     pawn_container.remove_dead_pawn();
 }
 
 void Game::produce_pawn(int x, int y)
 {
-    if (!aim.get_visible() || Pawn::get_move_step_count() != Parameter::move_step)
+    if (!aim.get_visible()) // wait for pawn to be selected
+        return;
+    
+    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+        return;
+
+    if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
         return;
 
     aim.hide();

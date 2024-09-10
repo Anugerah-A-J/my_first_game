@@ -1,7 +1,7 @@
 #include <string>
 #include "Fence.h"
-#include "Magenta_king.h"
-#include "Cyan_king.h"
+#include "King_magenta.h"
+#include "King_cyan.h"
 #include "Aim.h"
 #include "Clipper.h"
 #include <allegro5/allegro5.h>
@@ -39,8 +39,8 @@ private:
     Turn turn;
 
     Fence fence;
-    Magenta_king magenta_king;
-    Cyan_king cyan_king;
+    King_magenta magenta_king;
+    King_cyan cyan_king;
     Aim aim;
     Clipper clipper;
     Pawn_container pawn_container;

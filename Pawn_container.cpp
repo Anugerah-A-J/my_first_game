@@ -4,42 +4,40 @@
 
 void Pawn_container::draw() const
 {
-    for (auto& x : magenta)
-        x.draw();
+    for (auto& m : magenta)
+        m.draw();
 
-    for (auto& x : cyan)
-        x.draw();
+    for (auto& c : cyan)
+        c.draw();
 }
 
-Magenta_pawn* Pawn_container::get_magenta_pointed_by(int x, int y) const
+Pawn* Pawn_container::get_magenta_pointed_by(int x, int y) const
 {
     for (auto& m : magenta)
         if (m.pointed_by(x, y))
-            return const_cast<Magenta_pawn*>(&m);
+            return const_cast<Pawn*>(&m);
     
     return nullptr;
 }
 
-Cyan_pawn* Pawn_container::get_cyan_pointed_by(int x, int y) const
+Pawn* Pawn_container::get_cyan_pointed_by(int x, int y) const
 {
-    Cyan_pawn* cp {nullptr};
-
     for (auto& c : cyan)
         if (c.pointed_by(x, y))
-            return const_cast<Cyan_pawn*>(&c);
+            return const_cast<Pawn*>(&c);
 
     return nullptr;
 }
 
 void Pawn_container::add_magenta(float cx, float cy)
 {
-	magenta.emplace_back(Magenta_pawn(cx, cy));
+	magenta.emplace_back(Pawn(cx, cy, 1, 0, 1));
     moving_pawn = &magenta.back();
 }
 
 void Pawn_container::add_cyan(float cx, float cy)
 {
-	cyan.emplace_back(Cyan_pawn(cx, cy));
+	cyan.emplace_back(Pawn(cx, cy, 0, 1, 1));
     moving_pawn = &cyan.back();
 }
 
@@ -49,7 +47,7 @@ void Pawn_container::remove_dead_pawn()
         std::remove_if(
             magenta.begin(), 
             magenta.end(), 
-            [](Magenta_pawn& mp){return mp.is_dead();}
+            [](Pawn& mp){return mp.is_dead();}
         ),
         magenta.end()
     );
@@ -58,10 +56,15 @@ void Pawn_container::remove_dead_pawn()
         std::remove_if(
             cyan.begin(), 
             cyan.end(), 
-            [](Cyan_pawn& cp){return cp.is_dead();}
+            [](Pawn& cp){return cp.is_dead();}
         ),
         cyan.end()
     );
+}
+
+bool Pawn_container::dying_pawn_is_empty()
+{
+    return dying_pawn.size() == 0;
 }
 
 void Pawn_container::move()
@@ -70,6 +73,12 @@ void Pawn_container::move()
         return;
     
     moving_pawn->move();
+}
+
+void Pawn_container::stop()
+{
+    moving_pawn->stop();
+    moving_pawn = nullptr;
 }
 
 void Pawn_container::update_dxdy(float x_finish, float y_finish)
@@ -82,23 +91,16 @@ Pawn *Pawn_container::get_moving_pawn() const
     return moving_pawn;
 }
 
-void Pawn_container::kill_moving_pawn()
+void Pawn_container::add_dying_pawn(Pawn* pawn)
 {
-    // Magenta_pawn* killed_pawn { dynamic_cast<Magenta_pawn*>(moving_pawn) };
+    if (pawn == nullptr)
+        return;
 
-    // if (killed_pawn == nullptr)
-    //     killed_pawn.emplace_back(&cyan.back());
-    // else
-    //     killed_pawn.emplace_back(&magenta.back());
-    moving_pawn->trigger_dying();
-    moving_pawn = nullptr;
+    dying_pawn.emplace_back(pawn);
 }
 
-void Pawn_container::dying()
+void Pawn_container::die()
 {
-    for (auto& mp: magenta)
-        mp.dying();
-    
-    for (auto& cp: cyan)
-        cp.dying();
+    for (auto& d: dying_pawn)
+        d->die();
 }

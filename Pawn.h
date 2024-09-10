@@ -1,30 +1,32 @@
 #include "Parameter.h"
-#ifndef PAWN_H_
-#define PAWN_H_
+#ifndef PAWN_H
+#define PAWN_H
+#pragma once
 
-class Pawn {
+class Pawn
+{
 public:
-	virtual float get_cx() const = 0;
-	virtual float get_cy() const = 0;
-	virtual float get_dx() const = 0;
-	virtual float get_dy() const = 0;
+    Pawn(float cx, float cy, float red, float green, float blue);
+    void draw() const;
+    bool pointed_by(int x, int y) const;
+    float get_cx() const;
+    float get_cy() const;
 
-	virtual void move() = 0;
-	virtual void move(float dx, float dy) = 0;
-	static unsigned int get_move_step_count() {return move_step_count;};
-	virtual void update_dxdy(float x_finish, float y_finish) = 0;
-	virtual void stop() = 0;
-	
-	virtual bool is_dead() = 0;
-    virtual void dying() = 0;
-	virtual void trigger_dying() = 0;
-protected:
-	// static unsigned int move_step_count;
-    // static float dx;
-    // static float dy;
-	inline static unsigned int move_step_count {Parameter::move_step};
-	inline static float dx {0};
-	inline static float dy {0};
+    void move();
+	void move(float dx, float dy);
+    void update_dxdy(float x_finish, float y_finish);
+    void stop();
+    float get_dx() const;
+	float get_dy() const;
+
+    bool is_dead();
+    void die();
+private:
+    inline static unsigned int move_step_count {0};
+	inline static float dx                     {0};
+	inline static float dy                     {0};
+    float cx, cy, r {Parameter::radius};
+    float red, green, blue;
 };
 
 #endif

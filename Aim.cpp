@@ -1,20 +1,6 @@
 #include "Aim.h"
-#include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
 #include <cmath>
-
-Aim::Aim():
-    cx{0}, cy{0},
-    r{Parameter::reach_radius},
-    x{0}, y{0},
-    x1{0}, y1{0},
-    x2{0}, y2{0},
-    x3{0}, y3{0},
-    color{al_map_rgb_f(1, 0, 1)},
-    thickness{Parameter::line_width},
-    visible{false}
-{
-}
 
 void Aim::draw() const
 {
