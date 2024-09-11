@@ -71,7 +71,7 @@ void Game::draw() const
 
 void Game::update_aim(int x, int y)
 {
-    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+    if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
 
     if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
@@ -141,7 +141,7 @@ void Game::produce_pawn(int x, int y)
     if (!aim.get_visible()) // wait for pawn to be selected
         return;
     
-    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+    if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
 
     if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead

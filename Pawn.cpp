@@ -70,6 +70,11 @@ float Pawn::get_dy() const
     return dy;
 }
 
+unsigned int Pawn::get_move_step_count() const
+{
+    return move_step_count;
+}
+
 bool Pawn::is_dead()
 {
     if (

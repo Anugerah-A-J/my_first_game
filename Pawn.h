@@ -18,11 +18,12 @@ public:
     void stop();
     float get_dx() const;
 	float get_dy() const;
+    unsigned int get_move_step_count() const;
 
     bool is_dead();
     void die();
 private:
-    inline static unsigned int move_step_count {0};
+    inline static unsigned int move_step_count {Parameter::move_step};
 	inline static float dx                     {0};
 	inline static float dy                     {0};
     float cx, cy, r {Parameter::radius};

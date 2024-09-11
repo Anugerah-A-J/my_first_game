@@ -43,28 +43,24 @@ void Pawn_container::add_cyan(float cx, float cy)
 
 void Pawn_container::remove_dead_pawn()
 {
-    magenta.erase(
-        std::remove_if(
-            magenta.begin(), 
-            magenta.end(), 
-            [](Pawn& mp){return mp.is_dead();}
-        ),
-        magenta.end()
-    );
-
-    cyan.erase(
-        std::remove_if(
-            cyan.begin(), 
-            cyan.end(), 
-            [](Pawn& cp){return cp.is_dead();}
-        ),
-        cyan.end()
-    );
+    for(int i{0}; i != dying_pawn.size(); i++)
+    {
+        if (dying_pawn.at(i)->is_dead() && dying_pawn.at(i) >= &magenta.front() && dying_pawn.at(i) <= &magenta.back())
+        {
+            magenta.erase(magenta.begin() + (dying_pawn.at(i) - &magenta.front()));
+            dying_pawn.erase(dying_pawn.begin() + i);
+        }
+        else if (dying_pawn.at(i)->is_dead() && dying_pawn.at(i) >= &cyan.front() && dying_pawn.at(i) <= &cyan.back())
+        {
+            cyan.erase(cyan.begin() + (dying_pawn.at(i) - &cyan.front()));
+            dying_pawn.erase(dying_pawn.begin() + i);
+        }
+    }
 }
 
 bool Pawn_container::dying_pawn_is_empty()
 {
-    return dying_pawn.size() == 0;
+    return dying_pawn.empty();
 }
 
 void Pawn_container::move()
