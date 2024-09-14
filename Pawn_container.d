@@ -171,4 +171,20 @@ Pawn_container.o Pawn_container.d : Pawn_container.cpp Pawn_container.h Pawn.h P
  D:/c++/mingw32/include/c++/13.1.0/bits/basic_ios.tcc \
  D:/c++/mingw32/include/c++/13.1.0/bits/ostream.tcc \
  D:/c++/mingw32/include/c++/13.1.0/istream \
- D:/c++/mingw32/include/c++/13.1.0/bits/istream.tcc
+ D:/c++/mingw32/include/c++/13.1.0/bits/istream.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/cmath \
+ D:/c++/mingw32/i686-w64-mingw32/include/math.h \
+ D:/c++/mingw32/include/c++/13.1.0/bits/specfun.h \
+ D:/c++/mingw32/include/c++/13.1.0/limits \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/gamma.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/special_function_util.h \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/bessel_function.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/beta_function.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/ell_integral.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/exp_integral.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/hypergeometric.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/legendre_function.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/modified_bessel_func.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/poly_hermite.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/poly_laguerre.tcc \
+ D:/c++/mingw32/include/c++/13.1.0/tr1/riemann_zeta.tcc

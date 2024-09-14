@@ -18,9 +18,8 @@ public:
     void stop();
     void update_dxdy(float x_finish, float y_finish);
     Pawn* get_moving_pawn() const;
-    void add_dying_pawn(Pawn* pawn);
-    // void trigger_dying_magenta();
-    // void trigger_dying_cyan();
+    void add_moving_pawn_to_dying_pawn();
+    void add_dying_reachable_pawn_to_dying_pawn();
     void die();
     void remove_dead_pawn();
     bool dying_pawn_is_empty();
@@ -28,8 +27,8 @@ private:
     std::vector<Pawn> magenta {};
     std::vector<Pawn> cyan {};
     Pawn* moving_pawn {nullptr}; // set by add_magenta and add_cyan, reset by stop()
-    std::vector<Pawn*> dying_pawn {};
-    std::vector<Pawn*> reachable_pawn {};
+    std::vector<Pawn*> dying_pawn {}; // set by add_moving_pawn_to_dying_pawn() and add_dying_reachable_pawn_to_dying_pawn(), reset by remove_dead_pawn()
+    std::vector<Pawn*> alive_reachable_pawn {}; // set and reset by add_magenta() and add_cyan()
 };
 
 #endif

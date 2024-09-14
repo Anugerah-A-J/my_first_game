@@ -69,13 +69,10 @@ void Game::draw() const
 void Game::update_aim(int x, int y)
 {
     if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
-    // if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
-    // std::cout << "there is no moving pawn\n";
 
     if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
         return;
-    // std::cout << "there is no dying pawn\n";
 
     if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
     {
@@ -119,21 +116,17 @@ void Game::update_aim(int x, int y)
 void Game::logic()
 {
     pawn_container.move();
-    
-    if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
-        pawn_container.stop();
+
+    pawn_container.add_dying_reachable_pawn_to_dying_pawn();
     
     if (pawn_container.get_moving_pawn() != nullptr && !fence.contain(pawn_container.get_moving_pawn()))
     {
         fence.resolve(pawn_container.get_moving_pawn());
-        pawn_container.add_dying_pawn(pawn_container.get_moving_pawn());
+        pawn_container.add_moving_pawn_to_dying_pawn();
         pawn_container.stop();
     }
-
-    // if (turn == Turn::magenta)
-    //     pawn_container.trigger_dying_magenta();
-    // else if (turn == Turn::cyan)
-    //     pawn_container.trigger_dying_cyan();
+    else if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
+        pawn_container.stop();
 
     pawn_container.die();
     pawn_container.remove_dead_pawn();
@@ -143,16 +136,12 @@ void Game::produce_pawn(int x, int y)
 {
     if (!aim.get_visible()) // wait for pawn to be selected
         return;
-    // std::cout << "selection has been made\n";
 
     if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
-    // if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
-    // std::cout << "there is no moving pawn\n";
 
     if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
         return;
-    // std::cout << "there is no dying pawn\n";
 
     aim.hide();
 
@@ -161,14 +150,12 @@ void Game::produce_pawn(int x, int y)
         turn = Turn::cyan;
         aim.cyan();
         pawn_container.add_magenta(aim.get_cx(), aim.get_cy());
-        // std::cout << "magenta pawn is added\n";
     }
     else if (turn == Turn::cyan)
     {
         turn = Turn::magenta;
         aim.magenta();
         pawn_container.add_cyan(aim.get_cx(), aim.get_cy());
-        // std::cout << "cyan pawn is added\n";
     }
     
     pawn_container.update_dxdy(aim.get_x(), aim.get_y());

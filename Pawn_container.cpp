@@ -2,6 +2,7 @@
 #include "Parameter.h"
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 void Pawn_container::draw() const
 {
@@ -35,6 +36,19 @@ void Pawn_container::add_magenta(float cx, float cy)
 	magenta.emplace_back(Pawn(cx, cy, 1, 0, 1));
     moving_pawn = &magenta.back();
     moving_pawn->reset_move_step_count();
+
+    float rx{0}, ry{0}, r{0};
+    alive_reachable_pawn.clear();
+
+    for (auto& c: cyan)
+    {
+        rx = c.get_cx() - cx;
+        ry = c.get_cy() - cy;
+        r = std::sqrt(rx*rx + ry*ry);
+
+        if (r <= Parameter::reach_radius + 2 * Parameter::radius)
+            alive_reachable_pawn.push_back(&c);
+    }
 }
 
 void Pawn_container::add_cyan(float cx, float cy)
@@ -42,22 +56,37 @@ void Pawn_container::add_cyan(float cx, float cy)
 	cyan.emplace_back(Pawn(cx, cy, 0, 1, 1));
     moving_pawn = &cyan.back();
     moving_pawn->reset_move_step_count();
+
+    float rx{0}, ry{0}, r{0};
+    alive_reachable_pawn.clear();
+
+    for (auto& m: magenta)
+    {
+        rx = m.get_cx() - cx;
+        ry = m.get_cy() - cy;
+        r = std::sqrt(rx*rx + ry*ry);
+
+        if (r <= Parameter::reach_radius + 2 * Parameter::radius)
+            alive_reachable_pawn.push_back(&m);
+    }
 }
 
 void Pawn_container::remove_dead_pawn()
 {
-    for(int i{0}; i < dying_pawn.size(); i++)
+    for (std::vector<Pawn*>::iterator it = dying_pawn.begin(); it != dying_pawn.end();)
     {
-        if (dying_pawn.at(i)->is_dead() && dying_pawn.at(i) >= &magenta.front() && dying_pawn.at(i) <= &magenta.back())
+        if ((*it)->is_dead() && *it >= &magenta.front() && *it <= &magenta.back())
         {
-            magenta.erase(magenta.begin() + (dying_pawn.at(i) - &magenta.front()));
-            dying_pawn.erase(dying_pawn.begin() + i);
+            magenta.erase(magenta.begin() + (*it - &magenta.front()));
+            it = dying_pawn.erase(it);
         }
-        else if (dying_pawn.at(i)->is_dead() && dying_pawn.at(i) >= &cyan.front() && dying_pawn.at(i) <= &cyan.back())
+        else if ((*it)->is_dead() && *it >= &cyan.front() && *it <= &cyan.back())
         {
-            cyan.erase(cyan.begin() + (dying_pawn.at(i) - &cyan.front()));
-            dying_pawn.erase(dying_pawn.begin() + i);
+            cyan.erase(cyan.begin() + (*it - &cyan.front()));
+            it = dying_pawn.erase(it);
         }
+        else
+            ++it;
     }
 }
 
@@ -90,12 +119,35 @@ Pawn *Pawn_container::get_moving_pawn() const
     return moving_pawn;
 }
 
-void Pawn_container::add_dying_pawn(Pawn* pawn)
+void Pawn_container::add_moving_pawn_to_dying_pawn()
 {
-    if (pawn == nullptr)
+    if (moving_pawn == nullptr)
         return;
 
-    dying_pawn.emplace_back(pawn);
+    dying_pawn.push_back(moving_pawn);
+}
+
+void Pawn_container::add_dying_reachable_pawn_to_dying_pawn()
+{
+    if (alive_reachable_pawn.empty())
+        return;
+
+    float rx{0}, ry{0}, r{0};
+
+    for (std::vector<Pawn*>::iterator it = alive_reachable_pawn.begin(); it != alive_reachable_pawn.end();)
+    {
+        rx = (*it)->get_cx() - moving_pawn->get_cx();
+        ry = (*it)->get_cy() - moving_pawn->get_cy();
+        r = rx * rx + ry * ry;
+
+        if (r <= Parameter::radius * 2)
+        {
+            dying_pawn.push_back(*it);
+            it = alive_reachable_pawn.erase(it);
+        }
+        else
+            ++it;
+    }
 }
 
 void Pawn_container::die()
