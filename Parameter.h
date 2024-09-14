@@ -18,6 +18,7 @@ public:
     static constexpr float window_red {0.1};
     static constexpr float window_green {0.1};
     static constexpr float window_blue {0.1};
+    static constexpr float color_transition_rate {0.1};
 
     static ALLEGRO_COLOR window_color()
     {

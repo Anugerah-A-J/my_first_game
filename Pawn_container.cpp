@@ -1,6 +1,7 @@
 #include "Pawn_container.h"
 #include "Parameter.h"
 #include <algorithm>
+#include <iostream>
 
 void Pawn_container::draw() const
 {
@@ -33,17 +34,19 @@ void Pawn_container::add_magenta(float cx, float cy)
 {
 	magenta.emplace_back(Pawn(cx, cy, 1, 0, 1));
     moving_pawn = &magenta.back();
+    moving_pawn->reset_move_step_count();
 }
 
 void Pawn_container::add_cyan(float cx, float cy)
 {
 	cyan.emplace_back(Pawn(cx, cy, 0, 1, 1));
     moving_pawn = &cyan.back();
+    moving_pawn->reset_move_step_count();
 }
 
 void Pawn_container::remove_dead_pawn()
 {
-    for(int i{0}; i != dying_pawn.size(); i++)
+    for(int i{0}; i < dying_pawn.size(); i++)
     {
         if (dying_pawn.at(i)->is_dead() && dying_pawn.at(i) >= &magenta.front() && dying_pawn.at(i) <= &magenta.back())
         {

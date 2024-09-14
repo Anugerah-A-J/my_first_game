@@ -19,7 +19,6 @@ public:
     Game();
     ~Game();
     void run();
-    static void log(const std::string& description);
 private:
     void check(bool test, const std::string& description);
     void draw() const;

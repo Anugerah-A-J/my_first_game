@@ -170,8 +170,8 @@ Game.o Game.d : Game.cpp Game.h D:/c++/mingw32/include/c++/13.1.0/string \
  D:/c++/mingw32/include/c++/13.1.0/bits/vector.tcc Pawn_container.h \
  D:/c++/allegro_32/include/allegro5/allegro_primitives.h \
  D:/c++/allegro_32/include/allegro5/allegro.h \
- D:/c++/mingw32/include/c++/13.1.0/fstream \
- D:/c++/mingw32/include/c++/13.1.0/istream \
+ D:/c++/mingw32/include/c++/13.1.0/iostream \
+ D:/c++/mingw32/include/c++/13.1.0/ostream \
  D:/c++/mingw32/include/c++/13.1.0/ios \
  D:/c++/mingw32/include/c++/13.1.0/exception \
  D:/c++/mingw32/include/c++/13.1.0/bits/exception_ptr.h \
@@ -206,10 +206,6 @@ Game.o Game.d : Game.cpp Game.h D:/c++/mingw32/include/c++/13.1.0/string \
  D:/c++/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/ctype_inline.h \
  D:/c++/mingw32/include/c++/13.1.0/bits/locale_facets.tcc \
  D:/c++/mingw32/include/c++/13.1.0/bits/basic_ios.tcc \
- D:/c++/mingw32/include/c++/13.1.0/ostream \
  D:/c++/mingw32/include/c++/13.1.0/bits/ostream.tcc \
- D:/c++/mingw32/include/c++/13.1.0/bits/istream.tcc \
- D:/c++/mingw32/include/c++/13.1.0/bits/codecvt.h \
- D:/c++/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/basic_file.h \
- D:/c++/mingw32/include/c++/13.1.0/i686-w64-mingw32/bits/c++io.h \
- D:/c++/mingw32/include/c++/13.1.0/bits/fstream.tcc
+ D:/c++/mingw32/include/c++/13.1.0/istream \
+ D:/c++/mingw32/include/c++/13.1.0/bits/istream.tcc

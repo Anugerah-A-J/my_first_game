@@ -1,5 +1,6 @@
 #include "Pawn.h"
 #include <allegro5/allegro_primitives.h>
+#include <cstdlib>
 
 Pawn::Pawn(float cx, float cy, float red, float green, float blue):
     cx{cx},
@@ -12,7 +13,7 @@ Pawn::Pawn(float cx, float cy, float red, float green, float blue):
 
 void Pawn::draw() const
 {
-    al_draw_filled_circle(cx, cy, r, al_map_rgb_f(red, green, blue));
+    al_draw_filled_circle(cx, cy, r, al_map_rgba_f(red, green, blue, alpha));
 }
 
 bool Pawn::pointed_by(int x, int y) const
@@ -75,18 +76,30 @@ unsigned int Pawn::get_move_step_count() const
     return move_step_count;
 }
 
+void Pawn::reset_move_step_count()
+{
+    move_step_count = 0;
+}
+
 bool Pawn::is_dead()
 {
     if (
-        red > Parameter::window_red ||
-        green > Parameter::window_green ||
-        blue > Parameter::window_blue
+        std::abs(Parameter::window_red - red) > Parameter::color_transition_rate / 2 ||
+        std::abs(Parameter::window_green - green) > Parameter::color_transition_rate / 2 ||
+        std::abs(Parameter::window_blue - blue) > Parameter::color_transition_rate / 2
     )
         return false;
 
-    red = Parameter::window_red;
-    green = Parameter::window_green;
-    blue = Parameter::window_blue;
+    else if (
+        std::abs(Parameter::window_red - red) <= Parameter::color_transition_rate / 2 ||
+        std::abs(Parameter::window_green - green) <= Parameter::color_transition_rate / 2 ||
+        std::abs(Parameter::window_blue - blue) <= Parameter::color_transition_rate / 2
+    ){
+        red = Parameter::window_red;
+        green = Parameter::window_green;
+        blue = Parameter::window_blue;
+        alpha = 0;
+    }
     
     return true;
 }
@@ -96,7 +109,8 @@ void Pawn::die()
     if (is_dead())
         return;
 
-    red += 0.1 * (Parameter::window_red - red);
-    green += 0.1 * (Parameter::window_green - green);
-    blue += 0.1 * (Parameter::window_blue - blue);
+    red += Parameter::color_transition_rate * (Parameter::window_red - red);
+    green += Parameter::color_transition_rate * (Parameter::window_green - green);
+    blue += Parameter::color_transition_rate * (Parameter::window_blue - blue);
+    alpha -= Parameter::color_transition_rate;
 }

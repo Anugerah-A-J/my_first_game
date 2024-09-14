@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Parameter.h"
 #include <allegro5/allegro_primitives.h>
-#include <fstream>
+#include <iostream>
 
 Game::Game():
     al_init_success{ al_init() },
@@ -31,9 +31,6 @@ Game::Game():
     clipper{},
     pawn_container{}
 {
-    std::ofstream Log{"log.txt"};
-    Log.close();
-
     check(al_init_success, "allegro");
     check(al_install_keyboard_success, "keyboard");
     check(al_install_mouse_success, "mouse");
@@ -55,7 +52,7 @@ void Game::check(bool test, const std::string& description)
     if(test) 
         return;
 
-    log("\ncouldn't initialize " + description);
+    std::cout << "couldn't initialize " << description << "\n";
     exit(1);
 }
 
@@ -71,11 +68,14 @@ void Game::draw() const
 
 void Game::update_aim(int x, int y)
 {
-    if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
+    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+    // if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
+    // std::cout << "there is no moving pawn\n";
 
-    if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+    if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
         return;
+    // std::cout << "there is no dying pawn\n";
 
     if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
     {
@@ -120,6 +120,9 @@ void Game::logic()
 {
     pawn_container.move();
     
+    if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
+        pawn_container.stop();
+    
     if (pawn_container.get_moving_pawn() != nullptr && !fence.contain(pawn_container.get_moving_pawn()))
     {
         fence.resolve(pawn_container.get_moving_pawn());
@@ -140,12 +143,16 @@ void Game::produce_pawn(int x, int y)
 {
     if (!aim.get_visible()) // wait for pawn to be selected
         return;
-    
-    if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
-        return;
+    // std::cout << "selection has been made\n";
 
-    if (pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
+    // if (pawn_container.get_moving_pawn()->get_move_step_count() != Parameter::move_step) // wait for moving pawn to stop
         return;
+    // std::cout << "there is no moving pawn\n";
+
+    if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+        return;
+    // std::cout << "there is no dying pawn\n";
 
     aim.hide();
 
@@ -154,28 +161,21 @@ void Game::produce_pawn(int x, int y)
         turn = Turn::cyan;
         aim.cyan();
         pawn_container.add_magenta(aim.get_cx(), aim.get_cy());
+        // std::cout << "magenta pawn is added\n";
     }
     else if (turn == Turn::cyan)
     {
         turn = Turn::magenta;
         aim.magenta();
         pawn_container.add_cyan(aim.get_cx(), aim.get_cy());
+        // std::cout << "cyan pawn is added\n";
     }
     
     pawn_container.update_dxdy(aim.get_x(), aim.get_y());
 }
 
-void Game::log(const std::string &description)
-{
-    std::ofstream Log{"log.txt", std::ios::app};
-    Log << description;
-    Log.close();
-}
-
 void Game::run()
 {
-    log("game init success");
-
     al_register_event_source(queue, al_get_keyboard_event_source());
     al_register_event_source(queue, al_get_display_event_source(display));
     al_register_event_source(queue, al_get_timer_event_source(timer));
@@ -197,7 +197,6 @@ void Game::run()
                 // game logic goes here.
                 logic();
 
-                log("\ntimer is ticking");
                 redraw = true;
                 break;
 
@@ -205,7 +204,6 @@ void Game::run()
                 
                 update_aim(event.mouse.x, event.mouse.y);
                 
-                log("\nmouse is moved");
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
@@ -213,7 +211,6 @@ void Game::run()
                 if (event.mouse.button == 1)
                     produce_pawn(event.mouse.x, event.mouse.y);
                 
-                log("\nmouse is clicked");
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -232,7 +229,6 @@ void Game::run()
             draw();
             al_flip_display();
             redraw = false;
-            log("\ndrawing....");
         }
     }
 }
