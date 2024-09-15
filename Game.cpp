@@ -125,6 +125,10 @@ void Game::logic()
         pawn_container.add_moving_pawn_to_dying_pawn();
         pawn_container.stop();
     }
+    // else if (turn == Turn::magenta && pawn_container.get_moving_pawn() != nullptr && magenta_king.collide(pawn_container.get_moving_pawn()))
+    // {
+    //     ;
+    // }
     else if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
         pawn_container.stop();
 

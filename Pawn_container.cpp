@@ -1,5 +1,6 @@
 #include "Pawn_container.h"
 #include "Parameter.h"
+#include "Intersect.h"
 #include <algorithm>
 #include <iostream>
 #include <cmath>
@@ -139,12 +140,22 @@ void Pawn_container::add_dying_reachable_pawn_to_dying_pawn()
 
     for (std::vector<Pawn*>::iterator it = alive_reachable_pawn.begin(); it != alive_reachable_pawn.end();)
     {
-        rx = (*it)->get_cx() - moving_pawn->get_cx();
-        ry = (*it)->get_cy() - moving_pawn->get_cy();
-        r = std::sqrt(rx * rx + ry * ry);
+        // rx = (*it)->get_cx() - moving_pawn->get_cx();
+        // ry = (*it)->get_cy() - moving_pawn->get_cy();
+        // r = std::sqrt(rx * rx + ry * ry);
 
-        if (r <= Parameter::radius * 2)
-        {
+        // if (r <= Parameter::radius * 2)
+        if (
+            Intersect::line_circle(
+                moving_pawn->get_cx(),
+                moving_pawn->get_cy(),
+                moving_pawn->get_dx(),
+                moving_pawn->get_dy(),
+                (*it)->get_cx(),
+                (*it)->get_cy(),
+                Parameter::radius * 2
+            )
+        ){
             dying_pawn.push_back(*it);
             it = alive_reachable_pawn.erase(it);
         }
