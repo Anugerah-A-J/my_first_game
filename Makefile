@@ -1,8 +1,9 @@
 VPATH = D:/c++/allegro_32/include
 CPPFLAGS = -I D:/c++/allegro_32/include
-CXXFLAGS = -std=gnu++17 -Werror
-LDFLAGS = -L D:/c++/allegro_32/lib -std=gnu++17 -Werror
+CXXFLAGS = -std=gnu++17 -Werror -g
+LDFLAGS = -L D:/c++/allegro_32/lib
 LDLIBS = -lallegro -lallegro_primitives
+
 SOURCES = $(wildcard *.cpp)
 
 my_first_game: $(subst .cpp,.o,$(SOURCES))

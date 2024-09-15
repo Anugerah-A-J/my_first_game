@@ -105,6 +105,9 @@ void Pawn_container::move()
 
 void Pawn_container::stop()
 {
+    if (moving_pawn == nullptr)
+        return;
+
     moving_pawn->stop();
     moving_pawn = nullptr;
 }
@@ -129,7 +132,7 @@ void Pawn_container::add_moving_pawn_to_dying_pawn()
 
 void Pawn_container::add_dying_reachable_pawn_to_dying_pawn()
 {
-    if (alive_reachable_pawn.empty())
+    if (alive_reachable_pawn.empty() || moving_pawn == nullptr)
         return;
 
     float rx{0}, ry{0}, r{0};
@@ -138,7 +141,7 @@ void Pawn_container::add_dying_reachable_pawn_to_dying_pawn()
     {
         rx = (*it)->get_cx() - moving_pawn->get_cx();
         ry = (*it)->get_cy() - moving_pawn->get_cy();
-        r = rx * rx + ry * ry;
+        r = std::sqrt(rx * rx + ry * ry);
 
         if (r <= Parameter::radius * 2)
         {
