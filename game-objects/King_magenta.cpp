@@ -1,5 +1,6 @@
 #include "King_magenta.h"
 #include <allegro5/allegro_primitives.h>
+#include "Intersect.h"
 
 void King_magenta::draw() const
 {
@@ -23,4 +24,9 @@ float King_magenta::get_cx() const
 float King_magenta::get_cy() const
 {
     return cy;
+}
+
+bool King_magenta::collide(Pawn *pawn)
+{
+    if (Intersect::)
 }

@@ -1,7 +1,5 @@
 #include <allegro5/color.h>
 #include "Parameter.h"
-#ifndef KING_CYAN_H
-#define KING_CYAN_H
 #pragma once
 
 class King_cyan
@@ -22,5 +20,3 @@ private:
     float x2{Parameter::space * 2 + Parameter::radius * 2 + Parameter::space * 2};
     float y2{Parameter::window_height / 2 + Parameter::radius + Parameter::space};
 };
-
-#endif

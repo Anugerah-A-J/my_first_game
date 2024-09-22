@@ -1,36 +1,69 @@
 #include <allegro5/color.h>
-#ifndef PARAMETER_H
-#define PARAMETER_H
 #pragma once
 
 class Parameter
 {
 public:
-    static constexpr unsigned int window_width {1900};
-    static constexpr unsigned int window_height {950};
-    static constexpr float space {20.f};
-    static constexpr float line_width {2.f};
-    static constexpr float radius {7.f};
-    static constexpr float reach_radius {300.f};
-    static constexpr float triangle_height {10.f};
-    static constexpr unsigned int move_step {10};
+    static unsigned int window_width() { return 1900; }
 
-    static constexpr float window_red {0.1};
-    static constexpr float window_green {0.1};
-    static constexpr float window_blue {0.1};
-    static constexpr float color_transition_rate {0.1};
-
-    static ALLEGRO_COLOR window_color()
-    {
-        return al_map_rgb_f(window_red, window_green, window_blue);
-    };
+    static unsigned int window_height() { return 950; }
     
-    static constexpr float sqrt_2 {1.41421356237309504880};
-    static constexpr float sqrt_3 {1.73205080756887729352};
-    static constexpr float pi     {3.14159265358979323846};
-    static constexpr float sin_15 {(sqrt_3 - 1) * sqrt_2 / 4};
-    static constexpr float sin_45 {sqrt_2 / 2};
-    static constexpr float sin_75 {(sqrt_3 + 1) * sqrt_2 / 4};
-};
+    static float space() { return 20; }
+    
+    static float line_width() { return 2; }
+    
+    static float radius() { return 7; }
 
-#endif
+    static float reach_radius() { return 300; }
+    
+    static float triangle_height() { return 10; }
+    
+    static unsigned int move_step() { return 10; }
+
+    static ALLEGRO_COLOR black()
+    {
+        return al_map_rgb_f(0.1, 0.1, 0.1);
+    }
+    static ALLEGRO_COLOR red()
+    {
+        return al_map_rgb_f(0.9, 0.1, 0.1);
+    }
+    static ALLEGRO_COLOR yellow()
+    {
+        return al_map_rgb_f(0.9, 0.9, 0.1);
+    }
+    static ALLEGRO_COLOR green()
+    {
+        return al_map_rgb_f(0.1, 0.9, 0.1);
+    }
+    static ALLEGRO_COLOR cyan()
+    {
+        return al_map_rgb_f(0.1, 0.9, 0.9);
+    }
+    static ALLEGRO_COLOR blue()
+    {
+        return al_map_rgb_f(0.1, 0.1, 0.9);
+    }
+    static ALLEGRO_COLOR magenta()
+    {
+        return al_map_rgb_f(0.9, 0.1, 0.9);
+    }
+    static ALLEGRO_COLOR white()
+    {
+        return al_map_rgb_f(0.9, 0.9, 0.9);
+    }
+    
+    static float sqrt_2() { return 1.41421356237309504880; }
+
+    static float sqrt_3() { return 1.73205080756887729352; }
+    
+    static float pi() { return 3.14159265358979323846; }
+    
+    static float sin_15() { return (sqrt_3() - 1) * sqrt_2() / 4; }
+    
+    static float sin_45() { return sqrt_2() / 2; }
+    
+    static float sin_75() { return (sqrt_3() + 1) * sqrt_2() / 4; }
+
+    static float delta() { return 0.1; }
+};

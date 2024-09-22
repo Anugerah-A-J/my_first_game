@@ -1,6 +1,4 @@
 #include "Parameter.h"
-#ifndef PAWN_H
-#define PAWN_H
 #pragma once
 
 class Pawn
@@ -30,5 +28,3 @@ private:
     float cx, cy, r {Parameter::radius};
     float red, green, blue, alpha{1};
 };
-
-#endif

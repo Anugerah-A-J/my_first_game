@@ -1,43 +1,13 @@
 #include "Game.h"
 #include "Parameter.h"
-#include <allegro5/allegro_primitives.h>
 #include <iostream>
 
-Game::Game():
-    al_init_success{ al_init() },
-    
-    al_init_primitives_addon_success{ al_init_primitives_addon() },
-    
-    al_install_keyboard_success{ al_install_keyboard() },
-    
-    al_install_mouse_success{ al_install_mouse() },
-    
-    timer{ al_create_timer(1.0 / 30.0) },
-    
-    queue{ al_create_event_queue() },
-    
-    display{
-        al_create_display(
-            Parameter::window_width, 
-            Parameter::window_height
-        )
-    },
-
-    turn{Turn::magenta},
-    fence{},
-    magenta_king{},
-    cyan_king{},
-    aim{},
-    clipper{},
-    pawn_container{}
+Game::Game()
 {
-    check(al_init_success, "allegro");
-    check(al_install_keyboard_success, "keyboard");
-    check(al_install_mouse_success, "mouse");
-    check(timer, "timer");
-    check(queue, "queue");
-    check(display, "display");
-    check(al_init_primitives_addon_success,"primitives");
+    al_init();
+    al_init_primitives_addon();
+    al_install_keyboard();
+    al_install_mouse();
 }
 
 Game::~Game()
@@ -45,15 +15,6 @@ Game::~Game()
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_event_queue(queue);
-}
-
-void Game::check(bool test, const std::string& description)
-{
-    if(test) 
-        return;
-
-    std::cout << "couldn't initialize " << description << "\n";
-    exit(1);
 }
 
 void Game::draw() const
@@ -72,6 +33,9 @@ void Game::update_aim(int x, int y)
         return;
 
     if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+        return;
+
+    if (finish)
         return;
 
     if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
@@ -125,15 +89,17 @@ void Game::logic()
         pawn_container.add_moving_pawn_to_dying_pawn();
         pawn_container.stop();
     }
-    // else if (turn == Turn::magenta && pawn_container.get_moving_pawn() != nullptr && magenta_king.collide(pawn_container.get_moving_pawn()))
-    // {
-    //     ;
-    // }
+    else if (turn == Turn::magenta && pawn_container.get_moving_pawn() != nullptr && magenta_king.collide(pawn_container.get_moving_pawn()))
+        pawn_container.moving_pawn_is_dead_at_stop();
+    
     else if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
         pawn_container.stop();
 
     pawn_container.die();
     pawn_container.remove_dead_pawn();
+
+    if (magenta_king.dead() || cyan_king.dead())
+        finish = true;
 }
 
 void Game::produce_pawn(int x, int y)
@@ -145,6 +111,9 @@ void Game::produce_pawn(int x, int y)
         return;
 
     if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
+        return;
+
+    if (finish)
         return;
 
     aim.hide();

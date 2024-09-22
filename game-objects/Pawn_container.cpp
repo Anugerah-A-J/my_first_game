@@ -96,6 +96,11 @@ bool Pawn_container::dying_pawn_is_empty()
     return dying_pawn.empty();
 }
 
+void Pawn_container::moving_pawn_is_dead_at_stop()
+{
+    dead_at_stop = true;
+}
+
 void Pawn_container::move()
 {
     if (moving_pawn == nullptr)
@@ -110,6 +115,13 @@ void Pawn_container::stop()
         return;
 
     moving_pawn->stop();
+
+    if (dead_at_stop && moving_pawn >= &magenta.front() && moving_pawn <= &magenta.back())
+        magenta.erase(magenta.begin() + (moving_pawn - &magenta.front()));
+    
+    else if (dead_at_stop && moving_pawn >= &cyan.front() && moving_pawn <= &cyan.back())
+        cyan.erase(cyan.begin() + (moving_pawn - &cyan.front()));
+
     moving_pawn = nullptr;
 }
 
