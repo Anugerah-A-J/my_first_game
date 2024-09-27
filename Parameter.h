@@ -22,42 +22,42 @@ public:
 
     static ALLEGRO_COLOR black()
     {
-        return al_map_rgb_f(0.1, 0.1, 0.1);
+        return al_map_rgb_f(0.1f, 0.1f, 0.1f);
     }
     static ALLEGRO_COLOR red()
     {
-        return al_map_rgb_f(0.9, 0.1, 0.1);
+        return al_map_rgb_f(0.9f, 0.1f, 0.1f);
     }
     static ALLEGRO_COLOR yellow()
     {
-        return al_map_rgb_f(0.9, 0.9, 0.1);
+        return al_map_rgb_f(0.9f, 0.9f, 0.1f);
     }
     static ALLEGRO_COLOR green()
     {
-        return al_map_rgb_f(0.1, 0.9, 0.1);
+        return al_map_rgb_f(0.1f, 0.9f, 0.1f);
     }
     static ALLEGRO_COLOR cyan()
     {
-        return al_map_rgb_f(0.1, 0.9, 0.9);
+        return al_map_rgb_f(0.1f, 0.9f, 0.9f);
     }
     static ALLEGRO_COLOR blue()
     {
-        return al_map_rgb_f(0.1, 0.1, 0.9);
+        return al_map_rgb_f(0.1f, 0.1f, 0.9f);
     }
     static ALLEGRO_COLOR magenta()
     {
-        return al_map_rgb_f(0.9, 0.1, 0.9);
+        return al_map_rgb_f(0.9f, 0.1f, 0.9f);
     }
     static ALLEGRO_COLOR white()
     {
-        return al_map_rgb_f(0.9, 0.9, 0.9);
+        return al_map_rgb_f(0.9f, 0.9f, 0.9f);
     }
     
-    static float sqrt_2() { return 1.41421356237309504880; }
+    static float sqrt_2() { return 1.41421356237309504880f; }
 
-    static float sqrt_3() { return 1.73205080756887729352; }
+    static float sqrt_3() { return 1.73205080756887729352f; }
     
-    static float pi() { return 3.14159265358979323846; }
+    static float pi() { return 3.14159265358979323846f; }
     
     static float sin_15() { return (sqrt_3() - 1) * sqrt_2() / 4; }
     
@@ -65,5 +65,5 @@ public:
     
     static float sin_75() { return (sqrt_3() + 1) * sqrt_2() / 4; }
 
-    static float delta() { return 0.1; }
+    static float delta() { return 0.1f; }
 };
