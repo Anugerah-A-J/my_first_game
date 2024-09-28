@@ -1,5 +1,6 @@
 #include "Aim.h"
 #include <allegro5/allegro_primitives.h>
+#include "../Math/Matrix.h"
 
 void Aim::draw() const
 {
@@ -23,12 +24,10 @@ void Aim::draw() const
     );
 }
 
-void Aim::translate(float x, float y)
+void Aim::set_center(int x, int y)
 {
     Vector v = Vector(x, y);
-    circle_shape.translate(v);
-    triangle_shape.translate(v);
-    end_point += v;
+    circle_shape.set_center(v);
 }
 
 void Aim::rotate(float x, float y)

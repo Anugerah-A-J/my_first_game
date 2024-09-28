@@ -6,10 +6,10 @@
 class Collision
 {
 public:
-    static void circle_vs_circle(Circle& moving_circle, Circle& nonmoving_circle, Line& velocity);
-    static void circle_vs_rectangle(Circle& moving_circle, Rectangle& nonmoving_rectangle, const Line& velocity);
-    static void circle_inside_rectangle(Circle& moving_circle, Rectangle& nonmoving_rectangle, const Line& velocity);
+    static float circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
+    static float circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
+    static float circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
 private:
-    static bool intersect(const Line& line1, const Line& line2, float& t);
-    static bool intersect(const Line& line, const Circle& circle, float& t);
+    static float intersect(const Line& line1, const Line& line2);
+    static float intersect(const Line& line, const Circle& circle);
 };

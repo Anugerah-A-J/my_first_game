@@ -4,7 +4,10 @@ CXXFLAGS = -std=gnu++17 -Werror -g
 LDFLAGS = -L D:/c++/allegro_32/lib
 LDLIBS = -lallegro -lallegro_primitives
 
-SOURCES = $(wildcard *.cpp)
+SOURCES = $(wildcard *.cpp \
+Game_objects/*.cpp \
+Math/*.cpp \
+Shape/*.cpp)
 
 my_first_game: $(subst .cpp,.o,$(SOURCES))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)

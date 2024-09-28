@@ -3,7 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/",
                 "D:/c++/allegro_32/include"
             ],
             "defines": [

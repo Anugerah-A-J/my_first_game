@@ -7,10 +7,12 @@ public:
     Vector(float x, float y);
     float get_x() const;
     float get_y() const;
+    float magsq() const;
     Vector& operator*=(float f);
     Vector& operator/=(float f);
     Vector& operator+=(Vector v);
     Vector& operator-=(Vector v);
+    Vector& operator-();
     Vector& unit();
 private:
     float x;

@@ -21,6 +21,11 @@ float Vector::get_y() const
     return y;
 }
 
+float Vector::magsq() const
+{
+    return x * x + y * y;
+}
+
 Vector& Vector::operator*=(float f)
 {
     x *= f;
@@ -46,6 +51,13 @@ Vector& Vector::operator-=(Vector v)
 {
     x -= v.x;
     y -= v.y;
+    return *this;
+}
+
+Vector& Vector::operator-()
+{
+    x = -x;
+    y = -y;
     return *this;
 }
 

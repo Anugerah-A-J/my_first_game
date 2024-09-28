@@ -15,3 +15,9 @@ const Vector& Line::get_end() const
 {
     return end;
 }
+
+void Line::translate(const Vector& v)
+{
+    start += v;
+    end += v;
+}

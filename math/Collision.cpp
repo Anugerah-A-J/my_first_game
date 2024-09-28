@@ -1,12 +1,74 @@
 #include "Collision.h"
 #include "math.h"
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
-void Collision::circle_vs_circle(Circle& moving_circle, Circle& nonmoving_circle, Line& velocity){;}
-void Collision::circle_vs_rectangle(Circle& moving_circle, Rectangle& nonmoving_rectangle, const Line& velocity){;}
-void Collision::circle_inside_rectangle(Circle& moving_circle, Rectangle& nonmoving_rectangle, const Line& velocity){;}
+float Collision::circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
+{
+    Circle circle = nonmoving_circle;
+    circle.add_radius(moving_circle.get_radius());
 
-bool Collision::intersect(const Line& line1, const Line& line2, float& t)
+    return intersect(velocity, circle);
+    // moving_circle.translate(
+    //     t / 1 * (velocity.get_start() - velocity.get_end())
+    // );
+}
+
+float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+{
+    Circle top_left = moving_circle;
+    Circle top_right = moving_circle;
+    Circle bottom_right = moving_circle;
+    Circle bottom_left = moving_circle;
+
+    Line top = nonmoving_rectangle.top();
+    Line right = nonmoving_rectangle.right();
+    Line bottom = nonmoving_rectangle.bottom();
+    Line left = nonmoving_rectangle.left();
+
+    top_left.set_center(top.get_start());
+    top_right.set_center(top.get_end());
+    bottom_right.set_center(bottom.get_start());
+    bottom_left.set_center(bottom.get_end());
+
+    top.translate(Vector(0, -moving_circle.get_radius()));
+    right.translate(Vector(moving_circle.get_radius(), 0));
+    bottom.translate(Vector(0, moving_circle.get_radius()));
+    left.translate(Vector(-moving_circle.get_radius(), 0));
+
+    std::vector<float> ts;
+
+    ts.emplace_back(intersect(velocity, top));
+    ts.emplace_back(intersect(velocity, right));
+    ts.emplace_back(intersect(velocity, bottom));
+    ts.emplace_back(intersect(velocity, left));
+
+    ts.emplace_back(intersect(velocity, top_left));
+    ts.emplace_back(intersect(velocity, top_right));
+    ts.emplace_back(intersect(velocity, bottom_right));
+    ts.emplace_back(intersect(velocity, bottom_left));
+
+    return *std::min_element(ts.begin(), ts.end());
+}
+
+float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+{
+    Rectangle rectangle = nonmoving_rectangle;
+    rectangle.translate(Vector(moving_circle.get_radius()));
+    rectangle.add_size(-2 * Vector(moving_circle.get_radius()));
+
+    std::vector<float> ts;
+
+    ts.emplace_back(intersect(velocity, rectangle.top()));
+    ts.emplace_back(intersect(velocity, rectangle.right()));
+    ts.emplace_back(intersect(velocity, rectangle.bottom()));
+    ts.emplace_back(intersect(velocity, rectangle.left()));
+
+    return *std::min_element(ts.begin(), ts.end());
+}
+
+float Collision::intersect(const Line& line1, const Line& line2)
 {
     Vector A = line1.get_end() - line1.get_start();
     Vector B = line2.get_end() - line2.get_start();
@@ -16,26 +78,24 @@ bool Collision::intersect(const Line& line1, const Line& line2, float& t)
     float denominator = A.get_y() * B.get_x() - A.get_x() * B.get_y();
     
     if (denominator > 0 && numerator < 0)
-        return false;
+        return 2;
     
     if (denominator > 0 && numerator > denominator)
-        return false;
+        return 2;
 
     if (denominator < 0 && numerator > 0)
-        return false;
+        return 2;
 
     if (denominator < 0 && numerator < denominator)
-        return false;
+        return 2;
 
     if (equal(denominator, 0, 0.05f))
-        return false;
+        return 2;
 
-    t = numerator / denominator;
-
-    return true;
+    return numerator / denominator;
 }
 
-bool Collision::intersect(const Line& line, const Circle& circle, float& t)
+float Collision::intersect(const Line& line, const Circle& circle)
 {
     Vector X = line.get_start() - circle.get_center();
     Vector Y = line.get_end() - line.get_start();
@@ -48,7 +108,7 @@ bool Collision::intersect(const Line& line, const Circle& circle, float& t)
 
     if (discriminant < 0)
     {
-        return false;
+        return 2;
     }
     else
     {
@@ -61,17 +121,15 @@ bool Collision::intersect(const Line& line, const Circle& circle, float& t)
         // Check whether either t is within bounds of segment
         if (t_min >= 0 && t_min <= 1)
         {
-            t = t_min;
-            return true;
+            return t_min;
         }
         else if (t_max >= 0 && t_max <= 1)
         {
-            t = t_max;
-            return true;
+            return t_max;
         }
         else
         {
-            return false;
+            return 2;
         }
     }
 }

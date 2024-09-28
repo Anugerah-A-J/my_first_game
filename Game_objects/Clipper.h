@@ -1,5 +1,5 @@
 #include "Parameter.h"
-#include "Rectangle.h"
+#include "../Shape/Rectangle.h"
 #include <allegro5/color.h>
 #pragma once
 
@@ -36,6 +36,5 @@ private:
         Parameter::space()
     );
     
-    float thickness = Parameter::line_width();
     ALLEGRO_COLOR color = Parameter::black();
 };

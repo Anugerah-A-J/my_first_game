@@ -3,7 +3,7 @@
 Circle::Circle(float cx, float cy, float r)
 :
     center{cx, cy},
-    radius{validate_radius(r)}
+    radius{nonnegative(r)}
 {}
 
 const Vector& Circle::get_center() const
@@ -21,7 +21,17 @@ void Circle::translate(const Vector& v)
     center += v;
 }
 
-float Circle::validate_radius(float f)
+void Circle::add_radius(float r)
+{
+    radius += r;
+}
+
+void Circle::set_center(const Vector &v)
+{
+    center = v;
+}
+
+float Circle::nonnegative(float f)
 {
     return f > 0 ? f : 0;
 }

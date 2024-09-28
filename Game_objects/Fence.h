@@ -1,7 +1,7 @@
 #include <allegro5/color.h>
 #include "Pawn.h"
 #include "Parameter.h"
-#include "Rectangle.h"
+#include "../Shape/Rectangle.h"
 #pragma once
 
 class Fence

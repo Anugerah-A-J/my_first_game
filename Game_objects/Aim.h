@@ -1,14 +1,14 @@
 #include <allegro5/color.h>
 #include "Parameter.h"
-#include "Circle.h"
-#include "Triangle.h"
+#include "../Shape/Circle.h"
+#include "../Shape/Triangle.h"
 #pragma once
 
 class Aim
 {
 public:
     void draw() const;
-    void translate(float x, float y);
+    void set_center(int x, int y);
     void rotate(float x, float y);
 
     const Vector& get_center() const;

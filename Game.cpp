@@ -19,15 +19,18 @@ Game::~Game()
 
 void Game::draw() const
 {
-    aim.draw();
-    clipper.draw();
-    cyan_king.draw();
-    magenta_king.draw();
-    fence.draw();
-    pawn_container.draw();
+    if (state == State::cyan || state == State::magenta)
+    {
+        al_clear_to_color(Parameter::black());
+        aim.draw();
+        clipper.draw();
+        cyan_king.draw();
+        magenta_king.draw();
+        fence.draw();
+    }
 }
 
-void Game::update_aim(int x, int y)
+void Game::mouse_is_moved()
 {
     if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
         return;
@@ -35,46 +38,35 @@ void Game::update_aim(int x, int y)
     if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
         return;
 
-    if (finish)
-        return;
-
-    if (turn == Turn::cyan && cyan_king.pointed_by(x, y))
+    switch (state)
     {
-        aim.set_center(cyan_king.get_cx(), cyan_king.get_cy());
-        aim.show();
-        aim.update_xy(x, y);
-        return;
-    }
-    if (turn == Turn::magenta && magenta_king.pointed_by(x, y))
-    {
-        aim.set_center(magenta_king.get_cx(), magenta_king.get_cy());
-        aim.show();
-        aim.update_xy(x, y);
-        return;
-    }
+    case State::magenta:
+        if (magenta_king.pointed_by(mouse_x, mouse_y))
+        {
+            aim.set_center(
+                magenta_king.get_cx(),
+                magenta_king.get_cy()
+            );
+            aim.show();
+        }
+        aim.rotate(mouse_x, mouse_y);
+        break;
 
-    if (turn == Turn::magenta)
-    {
-    	Pawn* mp { pawn_container.get_magenta_pointed_by(x, y) };
-
-    	if (mp != nullptr)
-    	{
-    		aim.set_center(mp->get_cx(), mp->get_cy());
-    		aim.show();
-    	}
+    case State::cyan:
+        if (cyan_king.pointed_by(mouse_x, mouse_y))
+        {
+            aim.set_center(
+                cyan_king.get_cx(),
+                cyan_king.get_cy()
+            );
+            aim.show();
+        }
+        aim.rotate(mouse_x, mouse_y);
+        break;
+    
+    default:
+        break;
     }
-    else if (turn == Turn::cyan)
-    {
-    	Pawn* cp { pawn_container.get_cyan_pointed_by(x, y) };
-
-    	if (cp != nullptr)
-    	{
-    		aim.set_center(cp->get_cx(), cp->get_cy());
-    		aim.show();
-    	}
-    }
-
-    aim.update_xy(x, y);
 }
 
 void Game::logic()
@@ -102,7 +94,7 @@ void Game::logic()
         finish = true;
 }
 
-void Game::produce_pawn(int x, int y)
+void Game::mouse_is_left_clicked()
 {
     if (!aim.get_visible()) // wait for pawn to be selected
         return;
@@ -154,23 +146,21 @@ void Game::run()
         switch(event.type)
         {
             case ALLEGRO_EVENT_TIMER:
-                // game logic goes here.
                 logic();
-
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
-                
-                update_aim(event.mouse.x, event.mouse.y);
-                
+                mouse_x = event.mouse.x;
+                mouse_y = event.mouse.y;
+                mouse_is_moved();
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                
+                mouse_x = event.mouse.x;
+                mouse_y = event.mouse.y;
                 if (event.mouse.button == 1)
-                    produce_pawn(event.mouse.x, event.mouse.y);
-                
+                    mouse_is_left_clicked();
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
@@ -185,7 +175,6 @@ void Game::run()
 
         if(redraw && al_is_event_queue_empty(queue))
         {
-            al_clear_to_color(Parameter::window_color());
             draw();
             al_flip_display();
             redraw = false;
