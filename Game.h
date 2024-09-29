@@ -26,6 +26,11 @@ private:
 
     Vector mouse_coordinate = Vector(0, 0);
 
+    bool success = al_init() &&
+        al_init_primitives_addon() &&
+        al_install_keyboard() &&
+        al_install_mouse();
+
     ALLEGRO_TIMER* const timer = al_create_timer(1.0 / 30.0);
     ALLEGRO_EVENT_QUEUE* const queue = al_create_event_queue();
     ALLEGRO_DISPLAY* const display = al_create_display(Parameter::window_width(), Parameter::window_height());
@@ -37,7 +42,7 @@ private:
     King_magenta magenta_king;
     King_cyan cyan_king;
     Aim aim;
-    Clipper clipper;
+    Clipper clipper{};
     std::vector<Pawn> pawns_magenta;
     std::vector<Pawn> pawns_cyan;
     // Map Map_1:

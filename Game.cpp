@@ -4,10 +4,10 @@
 
 Game::Game()
 {
-    al_init();
-    al_init_primitives_addon();
-    al_install_keyboard();
-    al_install_mouse();
+    // al_init();
+    // al_init_primitives_addon();
+    // al_install_keyboard();
+    // al_install_mouse();
 }
 
 Game::~Game()
@@ -104,9 +104,9 @@ void Game::logic()
     switch (state)
     {
     case State::magenta:
-        if (Pawn::finish_moving())
+        if (Pawn::finish_moving() || pawns_magenta.empty())
             return;
-        
+
         pawns_magenta.back().move();
 
         collision_engine(pawns_magenta, fence);
@@ -120,7 +120,7 @@ void Game::logic()
         break;
 
     case State::cyan:
-        if (Pawn::finish_moving())
+        if (Pawn::finish_moving() || pawns_cyan.empty())
             return;
         
         pawns_cyan.back().move();
