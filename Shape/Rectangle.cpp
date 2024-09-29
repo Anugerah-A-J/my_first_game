@@ -2,10 +2,12 @@
 
 Rectangle::Rectangle(float ox, float oy, float w, float h)
 :
-    origin{ox, oy}, size{validate_size(w), validate_size(h)}
-{}
+    origin{ox, oy},
+    size{nonnegative(w), nonnegative(h)}
+{
+}
 
-const Vector& Rectangle::get_origin() const
+const Vector &Rectangle::get_origin() const
 {
     return origin;
 }
@@ -15,7 +17,7 @@ const Vector& Rectangle::get_size() const
     return size;
 }
 
-const Vector& Rectangle::get_max() const
+const Vector Rectangle::get_max() const
 {
     return origin + size;
 }
@@ -52,17 +54,17 @@ Line Rectangle::left() const
     );
 }
 
-void Rectangle::translate(const Vector& v)
+void Rectangle::translate(const Vector& how_much)
 {
-    origin += v;
+    origin += how_much;
 }
 
-void Rectangle::add_size(const Vector& v)
+void Rectangle::add_to_size(const Vector& how_much)
 {
-    size += v;
+    size += how_much;
 }
 
-float Rectangle::validate_size(float f)
+float Rectangle::nonnegative(float f)
 {
     return f > 0 ? f : 0;
 }

@@ -1,15 +1,13 @@
 #include <allegro5/color.h>
-#include "Pawn.h"
-#include "Parameter.h"
+#include "../Parameter.h"
 #include "../Shape/Rectangle.h"
 #pragma once
 
 class Fence
 {
 public:
-
     void draw() const;
-
+    const Rectangle& get_shape() const;
 private:
 
     Rectangle shape = Rectangle(

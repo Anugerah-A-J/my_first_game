@@ -1,18 +1,26 @@
 #include "Collision.h"
 #include "math.h"
 #include <cmath>
-#include <vector>
 #include <algorithm>
 
-float Collision::circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
+void Collision::operator()(std::vector<Pawn> &pawns, const Fence &f)
+{
+    float t = circle_inside_rectangle(pawns.back().get_shape(), f.get_shape(), pawns.back().get_velocity());
+
+    if (t == 2)
+        return;
+    
+    pawns.back().retreat(1 - t);
+    pawns.back().stop();
+    pawns.pop_back();
+}
+
+float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &nonmoving_circle, const Line &velocity)
 {
     Circle circle = nonmoving_circle;
-    circle.add_radius(moving_circle.get_radius());
+    circle.add_to_radius(moving_circle.get_radius());
 
     return intersect(velocity, circle);
-    // moving_circle.translate(
-    //     t / 1 * (velocity.get_start() - velocity.get_end())
-    // );
 }
 
 float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
@@ -27,10 +35,10 @@ float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     Line bottom = nonmoving_rectangle.bottom();
     Line left = nonmoving_rectangle.left();
 
-    top_left.set_center(top.get_start());
-    top_right.set_center(top.get_end());
-    bottom_right.set_center(bottom.get_start());
-    bottom_left.set_center(bottom.get_end());
+    top_left.translate_to(top.get_start());
+    top_right.translate_to(top.get_end());
+    bottom_right.translate_to(bottom.get_start());
+    bottom_left.translate_to(bottom.get_end());
 
     top.translate(Vector(0, -moving_circle.get_radius()));
     right.translate(Vector(moving_circle.get_radius(), 0));
@@ -56,7 +64,7 @@ float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rect
 {
     Rectangle rectangle = nonmoving_rectangle;
     rectangle.translate(Vector(moving_circle.get_radius()));
-    rectangle.add_size(-2 * Vector(moving_circle.get_radius()));
+    rectangle.add_to_size(-2 * Vector(moving_circle.get_radius()));
 
     std::vector<float> ts;
 

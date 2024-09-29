@@ -13,3 +13,8 @@ void Fence::draw() const
         thickness
     );
 }
+
+const Rectangle &Fence::get_shape() const
+{
+    return shape;
+}

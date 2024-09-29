@@ -1,4 +1,4 @@
-#include "Parameter.h"
+#include "../Parameter.h"
 #include "../Shape/Circle.h"
 #include "../Shape/Rectangle.h"
 #pragma once
@@ -7,9 +7,8 @@ class King_cyan
 {
 public:
     void draw() const;
-    bool pointed_by(int x, int y) const;
-    float get_cx() const;
-    float get_cy() const;
+    bool pointed_by(const Vector& v) const;
+    const Vector& get_center() const;
 private:
     Circle circle_shape = Circle(
         Parameter::space() * 3 + Parameter::radius(),

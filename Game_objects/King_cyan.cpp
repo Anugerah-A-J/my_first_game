@@ -20,19 +20,12 @@ void King_cyan::draw() const
     );
 }
 
-bool King_cyan::pointed_by(int x, int y) const
+bool King_cyan::pointed_by(const Vector& v) const
 {
-    Vector v = Vector(x, y) - circle_shape.get_center();
-
-    return v.magsq() <= circle_shape.get_radius() * circle_shape.get_radius();
+    return (v - circle_shape.get_center()).magsq() <= circle_shape.get_radius() * circle_shape.get_radius();
 }
 
-float King_cyan::get_cx() const
+const Vector& King_cyan::get_center() const
 {
-    return circle_shape.get_center().get_x();
-}
-
-float King_cyan::get_cy() const
-{
-    return circle_shape.get_center().get_y();
+    return circle_shape.get_center();
 }

@@ -9,7 +9,7 @@ public:
     const Vector& get_start() const;
     const Vector& get_end() const;
 
-    void translate(const Vector& v);
+    void translate(const Vector& how_much);
 private:
     Vector start;
     Vector end;

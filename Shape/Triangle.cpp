@@ -5,23 +5,23 @@ Triangle::Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector&
     vertices{vertex_1, vertex_2, vertex_3}
 {}
 
-const Vector& Triangle::get_vertex(unsigned int ui) const
+const Vector& Triangle::get_vertex(unsigned int index) const
 {
-    return vertices.at(ui - 1);
+    return vertices.at(index - 1);
 }
 
-void Triangle::add_to_vertex(unsigned ui, const Vector& vertex)
+void Triangle::add_to_vertex(unsigned index, const Vector& how_much)
 {
-    vertices.at(ui - 1) += vertex;
+    vertices.at(index - 1) += how_much;
 }
 
-void Triangle::multiply_to_vertex(unsigned ui, float f)
+void Triangle::multiply_to_vertex(unsigned index, float how_much)
 {
-    vertices.at(ui - 1) *= f;
+    vertices.at(index - 1) *= how_much;
 }
 
-void Triangle::translate(const Vector& v)
+void Triangle::translate(const Vector& how_much)
 {
     for(Vector& vertex : vertices)
-        vertex += v; 
+        vertex += how_much;
 }

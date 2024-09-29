@@ -27,41 +27,71 @@ void Game::draw() const
         cyan_king.draw();
         magenta_king.draw();
         fence.draw();
+        
+        for (const auto& pawn_magenta: pawns_magenta)
+        {
+            pawn_magenta.draw();
+        }
+
+        for (const auto& pawn_cyan: pawns_cyan)
+        {
+            pawn_cyan.draw();
+        }
     }
 }
 
 void Game::mouse_is_moved()
 {
-    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
-        return;
-
-    if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
-        return;
-
     switch (state)
     {
     case State::magenta:
-        if (magenta_king.pointed_by(mouse_x, mouse_y))
+        if (!Pawn::finish_moving()) // wait for moving pawn to stop
+            return;
+
+        if (magenta_king.pointed_by(mouse_coordinate))
         {
-            aim.set_center(
-                magenta_king.get_cx(),
-                magenta_king.get_cy()
-            );
+            aim.set_center(magenta_king.get_center());
             aim.show();
         }
-        aim.rotate(mouse_x, mouse_y);
+        else
+        {
+            for (const auto& pawn_magenta: pawns_magenta)
+            {
+                if (pawn_magenta.pointed_by(mouse_coordinate))
+                {
+                    aim.set_center(pawn_magenta.get_center());
+                    aim.show();
+                }
+            }
+        }
+
+        aim.rotate(mouse_coordinate);
+        
         break;
 
     case State::cyan:
-        if (cyan_king.pointed_by(mouse_x, mouse_y))
+        if (!Pawn::finish_moving()) // wait for moving pawn to stop
+            return;
+
+        if (cyan_king.pointed_by(mouse_coordinate))
         {
-            aim.set_center(
-                cyan_king.get_cx(),
-                cyan_king.get_cy()
-            );
+            aim.set_center(cyan_king.get_center());
             aim.show();
         }
-        aim.rotate(mouse_x, mouse_y);
+        else
+        {
+            for (const auto& pawn_cyan: pawns_cyan)
+            {
+                if (pawn_cyan.pointed_by(mouse_coordinate))
+                {
+                    aim.set_center(pawn_cyan.get_center());
+                    aim.show();
+                }
+            }
+        }
+        
+        aim.rotate(mouse_coordinate);
+        
         break;
     
     default:
@@ -71,59 +101,90 @@ void Game::mouse_is_moved()
 
 void Game::logic()
 {
-    pawn_container.move();
-
-    pawn_container.add_dying_reachable_pawn_to_dying_pawn();
-    
-    if (pawn_container.get_moving_pawn() != nullptr && !fence.contain(pawn_container.get_moving_pawn()))
+    switch (state)
     {
-        fence.resolve(pawn_container.get_moving_pawn());
-        pawn_container.add_moving_pawn_to_dying_pawn();
-        pawn_container.stop();
-    }
-    else if (turn == Turn::magenta && pawn_container.get_moving_pawn() != nullptr && magenta_king.collide(pawn_container.get_moving_pawn()))
-        pawn_container.moving_pawn_is_dead_at_stop();
+    case State::magenta:
+        if (Pawn::finish_moving())
+            return;
+        
+        pawns_magenta.back().move();
+
+        collision_engine(pawns_magenta, fence);
+
+        if (Pawn::finish_moving())
+        {
+            state = State::cyan;
+            aim.cyan();
+        }
+
+        break;
+
+    case State::cyan:
+        if (Pawn::finish_moving())
+            return;
+        
+        pawns_cyan.back().move();
+
+        collision_engine(pawns_cyan, fence);
+
+        if (Pawn::finish_moving())
+        {
+            state = State::magenta;
+            aim.magenta();
+        }
+
+        break;
     
-    else if (pawn_container.get_moving_pawn()->get_move_step_count() == Parameter::move_step)
-        pawn_container.stop();
-
-    pawn_container.die();
-    pawn_container.remove_dead_pawn();
-
-    if (magenta_king.dead() || cyan_king.dead())
-        finish = true;
+    default:
+        break;
+    }
 }
 
 void Game::mouse_is_left_clicked()
 {
-    if (!aim.get_visible()) // wait for pawn to be selected
-        return;
-
-    if (pawn_container.get_moving_pawn() != nullptr) // wait for moving pawn to stop
-        return;
-
-    if (!pawn_container.dying_pawn_is_empty()) // wait for dying pawn to be dead
-        return;
-
-    if (finish)
-        return;
-
-    aim.hide();
-
-    if (turn == Turn::magenta)
+    switch (state)
     {
-        turn = Turn::cyan;
-        aim.cyan();
-        pawn_container.add_magenta(aim.get_cx(), aim.get_cy());
-    }
-    else if (turn == Turn::cyan)
-    {
-        turn = Turn::magenta;
-        aim.magenta();
-        pawn_container.add_cyan(aim.get_cx(), aim.get_cy());
-    }
+    case State::magenta:
+        if (!Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
+            return;
     
-    pawn_container.update_dxdy(aim.get_x(), aim.get_y());
+        aim.hide();
+
+        pawns_magenta.emplace_back(
+            Pawn(
+                aim.get_center().get_x(),
+                aim.get_center().get_y(),
+                Parameter::magenta()
+            )
+        );
+    
+        Pawn::update_d(aim.get_center(), aim.get_endpoint());
+        Pawn::reset_move_step_count();
+        
+        break;
+
+    case State::cyan:
+        if (Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
+            return;
+    
+        aim.hide();
+
+        pawns_cyan.emplace_back(
+            Pawn(
+                aim.get_center().get_x(),
+                aim.get_center().get_y(),
+                Parameter::cyan()
+            )
+        );
+    
+        Pawn::update_d(aim.get_center(), aim.get_endpoint());
+        Pawn::reset_move_step_count();
+
+        break;
+    
+    default:
+        break;
+    }
 }
 
 void Game::run()
@@ -151,14 +212,12 @@ void Game::run()
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
-                mouse_x = event.mouse.x;
-                mouse_y = event.mouse.y;
+                mouse_coordinate = Vector(event.mouse.x, event.mouse.y);
                 mouse_is_moved();
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                mouse_x = event.mouse.x;
-                mouse_y = event.mouse.y;
+                mouse_coordinate = Vector(event.mouse.x, event.mouse.y);
                 if (event.mouse.button == 1)
                     mouse_is_left_clicked();
                 break;

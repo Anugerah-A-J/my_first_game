@@ -1,6 +1,5 @@
 #include "Aim.h"
 #include <allegro5/allegro_primitives.h>
-#include "../Math/Matrix.h"
 
 void Aim::draw() const
 {
@@ -24,15 +23,13 @@ void Aim::draw() const
     );
 }
 
-void Aim::set_center(int x, int y)
+void Aim::set_center(const Vector& v)
 {
-    Vector v = Vector(x, y);
-    circle_shape.set_center(v);
+    circle_shape.translate_to(v);
 }
 
-void Aim::rotate(float x, float y)
+void Aim::rotate(Vector v)
 {
-    Vector v = Vector(x, y);
     v -= circle_shape.get_center();
     v.unit();
 
@@ -56,7 +53,7 @@ const Vector& Aim::get_center() const
     return circle_shape.get_center();
 }
 
-const Vector &Aim::get_end_point() const
+const Vector &Aim::get_endpoint() const
 {
     return end_point;
 }
@@ -81,7 +78,7 @@ void Aim::hide()
     visible = false;
 }
 
-bool Aim::get_visible() const
+bool Aim::is_visible() const
 {
     return visible;
 }

@@ -16,19 +16,19 @@ float Circle::get_radius() const
     return radius;
 }
 
-void Circle::translate(const Vector& v)
+void Circle::translate(const Vector& how_much)
 {
-    center += v;
+    center += how_much;
 }
 
-void Circle::add_radius(float r)
+void Circle::translate_to(const Vector& destination)
 {
-    radius += r;
+    center = destination;
 }
 
-void Circle::set_center(const Vector &v)
+void Circle::add_to_radius(float how_much)
 {
-    center = v;
+    radius += how_much;
 }
 
 float Circle::nonnegative(float f)

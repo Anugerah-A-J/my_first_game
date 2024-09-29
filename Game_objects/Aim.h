@@ -1,5 +1,5 @@
 #include <allegro5/color.h>
-#include "Parameter.h"
+#include "../Parameter.h"
 #include "../Shape/Circle.h"
 #include "../Shape/Triangle.h"
 #pragma once
@@ -8,18 +8,18 @@ class Aim
 {
 public:
     void draw() const;
-    void set_center(int x, int y);
-    void rotate(float x, float y);
+    void set_center(const Vector& v);
+    void rotate(Vector v);
 
     const Vector& get_center() const;
-    const Vector& get_end_point() const;
+    const Vector& get_endpoint() const;
     
     void magenta();
     void cyan();
 
     void show();
     void hide();
-    bool get_visible() const;
+    bool is_visible() const;
 private:
     Circle circle_shape = Circle(0, 0, Parameter::reach_radius());
 

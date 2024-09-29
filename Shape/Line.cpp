@@ -16,8 +16,8 @@ const Vector& Line::get_end() const
     return end;
 }
 
-void Line::translate(const Vector& v)
+void Line::translate(const Vector& how_much)
 {
-    start += v;
-    end += v;
+    start += how_much;
+    end += how_much;
 }

@@ -1,30 +1,34 @@
-#include "Parameter.h"
+#include "../Math/Vector.h"
+#include "../Parameter.h"
+#include "../Shape/Line.h"
+#include "../Shape/Circle.h"
 #pragma once
 
 class Pawn
 {
 public:
-    Pawn(float cx, float cy, float red, float green, float blue);
+    Pawn(float cx, float cy, ALLEGRO_COLOR color);
+
     void draw() const;
-    bool pointed_by(int x, int y) const;
-    float get_cx() const;
-    float get_cy() const;
+    bool pointed_by(const Vector& v) const;
+    const Vector& get_center() const;
+    static bool finish_moving();
+    const Circle& get_shape() const;
+    const Line get_velocity() const;
+
+    static void update_d(const Vector& start, const Vector& end);
+    static void reset_move_step_count();
 
     void move();
-	void move(float dx, float dy);
-    void update_dxdy(float x_finish, float y_finish);
+    void retreat(float f);
+	// void move(float dx, float dy);
     void stop();
-    float get_dx() const;
-	float get_dy() const;
-    unsigned int get_move_step_count() const;
-    void reset_move_step_count();
+    // float get_dx() const;
+	// float get_dy() const;
 
-    bool is_dead();
-    void die();
 private:
-    inline static unsigned int move_step_count {0};
-	inline static float dx                     {0};
-	inline static float dy                     {0};
-    float cx, cy, r {Parameter::radius};
-    float red, green, blue, alpha{1};
+    inline static unsigned int move_step_count = 0;
+    inline static Vector d = Vector(0, 0);
+    Circle circle_shape;
+    ALLEGRO_COLOR color;
 };

@@ -1,4 +1,4 @@
-#include "Parameter.h"
+#include "../Parameter.h"
 #include "../Shape/Rectangle.h"
 #include <allegro5/color.h>
 #pragma once

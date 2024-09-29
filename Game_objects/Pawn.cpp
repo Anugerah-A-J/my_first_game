@@ -2,115 +2,76 @@
 #include <allegro5/allegro_primitives.h>
 #include <cstdlib>
 
-Pawn::Pawn(float cx, float cy, float red, float green, float blue):
-    cx{cx},
-    cy{cy},
-    red{red},
-    green{green},
-    blue{blue}
+Pawn::Pawn(float cx, float cy, ALLEGRO_COLOR color)
+:
+    circle_shape{cx, cy, Parameter::radius()},
+    color{color}
 {
 }
 
 void Pawn::draw() const
 {
-    al_draw_filled_circle(cx, cy, r, al_map_rgba_f(red, green, blue, alpha));
+    al_draw_filled_circle(
+        circle_shape.get_center().get_x(),
+        circle_shape.get_center().get_y(),
+        circle_shape.get_radius(),
+        color
+    );
 }
 
-bool Pawn::pointed_by(int x, int y) const
+bool Pawn::pointed_by(const Vector& v) const
 {
-    float rx{ x - cx };
-    float ry{ y - cy };
-
-    return rx * rx + ry * ry <= r * r;
+    return (v - circle_shape.get_center()).magsq() <= circle_shape.get_radius() * circle_shape.get_radius();
 }
 
-float Pawn::get_cx() const
+const Vector& Pawn::get_center() const
 {
-    return cx;
-}
-
-float Pawn::get_cy() const
-{
-    return cy;
+    return circle_shape.get_center();
 }
 
 void Pawn::move()
 {
-    if (move_step_count == Parameter::move_step)
-        return;
-    
     move_step_count ++;
-    cx += dx;
-    cy += dy;
+    circle_shape.translate(d);
+
+    if (finish_moving())
+        stop();
 }
 
-void Pawn::move(float dx, float dy)
+void Pawn::retreat(float f)
 {
-    cx += dx;
-    cy += dy;
+    circle_shape.translate(-d * f);
 }
 
-void Pawn::update_dxdy(float x_finish, float y_finish)
+void Pawn::update_d(const Vector &start, const Vector &end)
 {
-    dx = (x_finish - cx) / Parameter::move_step;
-    dy = (y_finish - cy) / Parameter::move_step;
+    d = end - start / Parameter::move_step();
 }
 
 void Pawn::stop()
 {
-    move_step_count = Parameter::move_step;
+    move_step_count = Parameter::move_step();
 }
 
-float Pawn::get_dx() const
+bool Pawn::finish_moving()
 {
-    return dx;
+    return move_step_count == Parameter::move_step();
 }
 
-float Pawn::get_dy() const
+const Circle &Pawn::get_shape() const
 {
-    return dy;
+    return circle_shape;
 }
 
-unsigned int Pawn::get_move_step_count() const
+const Line Pawn::get_velocity() const
 {
-    return move_step_count;
+    return Line(
+        circle_shape.get_center() - d,
+        circle_shape.get_center()
+    );
 }
 
 void Pawn::reset_move_step_count()
 {
     move_step_count = 0;
-}
-
-bool Pawn::is_dead()
-{
-    if (
-        std::abs(Parameter::window_red - red) > Parameter::color_transition_rate / 2 ||
-        std::abs(Parameter::window_green - green) > Parameter::color_transition_rate / 2 ||
-        std::abs(Parameter::window_blue - blue) > Parameter::color_transition_rate / 2
-    )
-        return false;
-
-    else if (
-        std::abs(Parameter::window_red - red) <= Parameter::color_transition_rate / 2 ||
-        std::abs(Parameter::window_green - green) <= Parameter::color_transition_rate / 2 ||
-        std::abs(Parameter::window_blue - blue) <= Parameter::color_transition_rate / 2
-    ){
-        red = Parameter::window_red;
-        green = Parameter::window_green;
-        blue = Parameter::window_blue;
-        alpha = 0;
-    }
-    
-    return true;
-}
-
-void Pawn::die()
-{
-    if (is_dead())
-        return;
-
-    red += Parameter::color_transition_rate * (Parameter::window_red - red);
-    green += Parameter::color_transition_rate * (Parameter::window_green - green);
-    blue += Parameter::color_transition_rate * (Parameter::window_blue - blue);
-    alpha -= Parameter::color_transition_rate;
 }
