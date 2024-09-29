@@ -11,34 +11,31 @@ public:
     float get_x() const;
     float get_y() const;
     float magsq() const;
-    Vector& operator*=(float f);
-    Vector& operator*=(const Matrix& m);
-    Vector& operator/=(float f);
-    Vector& operator+=(Vector v);
-    Vector& operator-=(Vector v);
-    Vector& operator-();
-    Vector& unit();
+    Vector operator-() const;
+    Vector operator+(const Vector& v) const;
+    Vector operator-(const Vector& v) const;
+    Vector operator*(float f) const;
+    Vector operator/(float f) const;
+
+    void operator*=(float f);
+    void operator*=(const Matrix& m);
+    void operator/=(float f);
+    void operator+=(Vector v);
+    void operator-=(Vector v);
+    void unit();
+
+    bool operator==(const Vector& v);
+    bool operator!=(const Vector& v);
+    bool operator>(const Vector& v);
+    bool operator<=(const Vector& v);
+    bool operator<(const Vector& v);
+    bool operator>=(const Vector& v);
 private:
     float x;
     float y;
 };
 
-bool operator==(const Vector& v1, const Vector& v2);
-bool operator!=(const Vector& v1, const Vector& v2);
-
-bool operator>(const Vector& v1, const Vector& v2);
-bool operator<=(const Vector& v1, const Vector& v2);
-
-bool operator<(const Vector& v1, const Vector& v2);
-bool operator>=(const Vector& v1, const Vector& v2);
-
-Vector operator*(Vector v, float f);
-Vector operator*(float f, Vector v);
-Vector operator/(Vector v, float f);
-
-Vector operator+(Vector v1, Vector v2);
-Vector operator-(Vector v1, Vector v2);
-
+Vector operator*(float f, const Vector& v);
 float dot(const Vector& v1, const Vector& v2);
 
 class Matrix
@@ -50,4 +47,4 @@ private:
     std::array<Vector, 2> rows;
 };
 
-Vector operator*(const Matrix& m, Vector& v);
+Vector operator*(const Matrix& m, const Vector& v);

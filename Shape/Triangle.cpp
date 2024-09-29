@@ -10,9 +10,9 @@ const Vector& Triangle::get_vertex(unsigned int index) const
     return vertices.at(index - 1);
 }
 
-void Triangle::add_to_vertex(unsigned index, const Vector& how_much)
+void Triangle::set_vertex(unsigned index, const Vector& vertex)
 {
-    vertices.at(index - 1) += how_much;
+    vertices.at(index - 1) = vertex;
 }
 
 void Triangle::multiply_to_vertex(unsigned index, float how_much)

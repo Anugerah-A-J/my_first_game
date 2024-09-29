@@ -26,110 +26,104 @@ float Vector::magsq() const
     return x * x + y * y;
 }
 
-Vector& Vector::operator*=(float f)
+Vector Vector::operator-() const
+{
+    return Vector(-x, -y);
+}
+
+Vector Vector::operator+(const Vector &v) const
+{
+    return Vector(x + v.x, y + v.y);
+}
+
+Vector Vector::operator-(const Vector &v) const
+{
+    return Vector(x - v.x, y - v.y);
+}
+
+Vector Vector::operator*(float f) const
+{
+    return Vector(x * f, y * f);
+}
+
+Vector Vector::operator/(float f) const
+{
+    return Vector(x / f, y / f);
+}
+
+void Vector::operator*=(float f)
 {
     x *= f;
     y *= f;
-    return *this;
 }
 
-Vector& Vector::operator*=(const Matrix &m)
+void Vector::operator*=(const Matrix &m)
 {
     x = dot(m.get_row(1), *this);
     y = dot(m.get_row(2), *this);
-    return *this;
 }
 
-Vector& Vector::operator/=(float f)
+void Vector::operator/=(float f)
 {
     x /= f;
     y /= f;
-    return *this;
 }
 
-Vector& Vector::operator+=(Vector v)
+void Vector::operator+=(Vector v)
 {
     x += v.x;
     y += v.y;
-    return *this;
 }
 
-Vector& Vector::operator-=(Vector v)
+void Vector::operator-=(Vector v)
 {
     x -= v.x;
     y -= v.y;
-    return *this;
 }
 
-Vector& Vector::operator-()
-{
-    x = -x;
-    y = -y;
-    return *this;
-}
-
-Vector& Vector::unit()
+void Vector::unit()
 {
     float mag = sqrtf(x * x + y * y);
     x /= mag;
     y /= mag;
-    return *this;
 }
 
-bool operator==(const Vector& v1, const Vector& v2)
+bool Vector::operator==(const Vector &v)
 {
-    return v1.get_x() == v2.get_x() && v1.get_y() == v2.get_y();
+    return x == v.x && y == v.y;
 }
 
-bool operator!=(const Vector& v1, const Vector& v2)
+bool Vector::operator!=(const Vector &v)
 {
-    return !(v1 == v2);
+    return x != v.x || y != v.y;
 }
 
-bool operator>(const Vector& v1, const Vector& v2)
+bool Vector::operator>(const Vector &v)
 {
-    return v1.get_x() > v2.get_x() && v1.get_y() > v2.get_y();
+    return x > v.x && y > v.y;
 }
 
-bool operator<=(const Vector& v1, const Vector& v2)
+bool Vector::operator<=(const Vector &v)
 {
-    return !(v1 > v2);
+    return x <= v.x && y <= v.y;
 }
 
-bool operator<(const Vector& v1, const Vector& v2)
+bool Vector::operator<(const Vector &v)
 {
-    return v1.get_x() < v2.get_x() && v1.get_y() < v2.get_y();
+    return x < v.x && y < v.y;
 }
 
-bool operator>=(const Vector& v1, const Vector& v2)
+bool Vector::operator>=(const Vector &v)
 {
-    return !(v1 < v2);
+    return x >= v.x && y >= v.y;
 }
 
-Vector operator*(Vector v, float f)
+Vector operator*(float f, const Vector &v)
 {
-    return v *= f;
-}
-Vector operator*(float f, Vector v)
-{
-    return v *= f;
-}
-Vector operator/(Vector v, float f)
-{
-    return v /= f;
+    return v * f;
 }
 
-Vector operator+(Vector v1, Vector v2)
-{
-    return v1 += v2;
-}
-
-Vector operator-(Vector v1, Vector v2)
-{
-    return v1 -= v2;
-}
-
-float dot(const Vector& v1, const Vector& v2)
+float dot(const Vector &v1, const Vector &v2)
 {
     return v1.get_x() * v2.get_x() + v1.get_y() * v2.get_y();
 }
@@ -144,7 +138,9 @@ const Vector& Matrix::get_row(unsigned int ui) const
     return rows.at(ui - 1);
 }
 
-Vector operator*(const Matrix& m, Vector& v)
+Vector operator*(const Matrix& m, const Vector& v)
 {
-    return v *= m;
+    Vector out = v;
+    out *= m;
+    return out;
 }

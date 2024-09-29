@@ -27,7 +27,7 @@ public:
 	// float get_dy() const;
 
 private:
-    inline static unsigned int move_step_count = 0;
+    inline static unsigned int move_step_count = Parameter::move_step();
     inline static Vector d = Vector(0, 0);
     Circle circle_shape;
     ALLEGRO_COLOR color;

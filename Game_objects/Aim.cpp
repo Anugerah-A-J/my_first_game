@@ -35,17 +35,22 @@ void Aim::rotate(Vector v)
 
     end_point = circle_shape.get_center() - v * circle_shape.get_radius();
     
-    triangle_shape.multiply_to_vertex(1, 0);
-    triangle_shape.multiply_to_vertex(2, 0);
-    triangle_shape.multiply_to_vertex(3, 0);
+    triangle_shape.set_vertex(
+        1,
+        circle_shape.get_center() + v * Parameter::radius() * 2
+    );
 
-    triangle_shape.add_to_vertex(1, circle_shape.get_center() + v * Parameter::radius() * 2);
+    Vector temp = triangle_shape.get_vertex(1) + v * Parameter::triangle_height();
 
-    triangle_shape.add_to_vertex(2, triangle_shape.get_vertex(1) + v * Parameter::triangle_height());
-    triangle_shape.add_to_vertex(2, Matrix(1, 0, -1, 0) * v * Parameter::triangle_height() / Parameter::sqrt_3());
+    triangle_shape.set_vertex(
+        2,
+        temp + Matrix(1, 0, 0, -1) * v * Parameter::triangle_height() / Parameter::sqrt_3()
+    );
 
-    triangle_shape.add_to_vertex(3, triangle_shape.get_vertex(1) + v * Parameter::triangle_height());
-    triangle_shape.add_to_vertex(3, Matrix(-1, 0, 1, 0) * v * Parameter::triangle_height() / Parameter::sqrt_3());
+    triangle_shape.set_vertex(
+        3,
+        temp + Matrix(-1, 0, 0, 1) * v * Parameter::triangle_height() / Parameter::sqrt_3()
+    );
 }
 
 const Vector& Aim::get_center() const
