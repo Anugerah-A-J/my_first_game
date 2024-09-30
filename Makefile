@@ -13,6 +13,7 @@ Shape/*.cpp)
 clean:
 	rm $(subst .cpp,.o,$(SOURCES))
 	rm $(subst .cpp,.d,$(SOURCES))
+	rm *.exe
 
 my_first_game: $(subst .cpp,.o,$(SOURCES))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
