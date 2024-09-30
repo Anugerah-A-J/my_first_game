@@ -1,8 +1,6 @@
 #include <array>
 #pragma once
 
-class Matrix;
-
 class Vector
 {
 public:
@@ -18,7 +16,6 @@ public:
     Vector operator/(float f) const;
 
     void operator*=(float f);
-    void operator*=(const Matrix& m);
     void operator/=(float f);
     void operator+=(Vector v);
     void operator-=(Vector v);

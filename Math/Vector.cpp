@@ -57,12 +57,6 @@ void Vector::operator*=(float f)
     y *= f;
 }
 
-void Vector::operator*=(const Matrix &m)
-{
-    x = dot(m.get_row(1), *this);
-    y = dot(m.get_row(2), *this);
-}
-
 void Vector::operator/=(float f)
 {
     x /= f;
@@ -140,7 +134,8 @@ const Vector& Matrix::get_row(unsigned int ui) const
 
 Vector operator*(const Matrix& m, const Vector& v)
 {
-    Vector out = v;
-    out *= m;
-    return out;
+    return Vector(
+        dot(m.get_row(1), v),
+        dot(m.get_row(2), v)
+    );
 }
