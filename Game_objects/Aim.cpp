@@ -44,12 +44,12 @@ void Aim::rotate(Vector v)
 
     triangle_shape.set_vertex(
         2,
-        temp + Matrix(1, 0, 0, -1) * v * Parameter::triangle_height() / Parameter::sqrt_3()
+        temp + Matrix(0, 1, -1, 0) * v * Parameter::triangle_height() / Parameter::sqrt_3()
     );
 
     triangle_shape.set_vertex(
         3,
-        temp + Matrix(-1, 0, 0, 1) * v * Parameter::triangle_height() / Parameter::sqrt_3()
+        temp + Matrix(0, -1, 1, 0) * v * Parameter::triangle_height() / Parameter::sqrt_3()
     );
 }
 
