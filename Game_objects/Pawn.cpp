@@ -33,9 +33,6 @@ void Pawn::move()
 {
     move_step_count ++;
     circle_shape.translate(d);
-
-    if (finish_moving())
-        stop();
 }
 
 void Pawn::retreat(float f)

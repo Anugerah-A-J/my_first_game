@@ -1,3 +1,4 @@
+.DEFAULT_GOAL := my_first_game
 VPATH = D:/c++/allegro_32/include
 CPPFLAGS = -I D:/c++/allegro_32/include
 CXXFLAGS = -std=gnu++17 -Werror

@@ -164,7 +164,7 @@ void Game::mouse_is_left_clicked()
         break;
 
     case State::cyan:
-        if (Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
+        if (!Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
             return;
     
         aim.hide();
