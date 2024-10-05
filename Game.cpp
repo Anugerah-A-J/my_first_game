@@ -2,13 +2,13 @@
 #include "Parameter.h"
 #include <iostream>
 
-Game::Game()
-{
-    // al_init();
-    // al_init_primitives_addon();
-    // al_install_keyboard();
-    // al_install_mouse();
-}
+// Game::Game()
+// {
+//     // al_init();
+//     // al_init_primitives_addon();
+//     // al_install_keyboard();
+//     // al_install_mouse();
+// }
 
 Game::~Game()
 {
@@ -19,7 +19,7 @@ Game::~Game()
 
 void Game::draw() const
 {
-    if (state == State::cyan || state == State::magenta)
+    if (state != State::end)
     {
         al_clear_to_color(Parameter::black());
         aim.draw();
@@ -37,122 +37,6 @@ void Game::draw() const
         {
             pawn_cyan.draw();
         }
-    }
-}
-
-void Game::mouse_is_moved()
-{
-    switch (state)
-    {
-    case State::magenta:
-        // wait for:
-        // moving pawn to stop
-        // all dying pawn to die
-        if (!Pawn::finish_moving() || !dying_pawns.empty())
-            return;
-
-        if (magenta_king.pointed_by(mouse_coordinate))
-        {
-            aim.set_center(magenta_king.get_center());
-            aim.show();
-        }
-        else
-        {
-            for (const auto& pawn_magenta: pawns_magenta)
-            {
-                if (pawn_magenta.pointed_by(mouse_coordinate))
-                {
-                    aim.set_center(pawn_magenta.get_center());
-                    aim.show();
-                }
-            }
-        }
-
-        aim.rotate(mouse_coordinate);
-        
-        break;
-
-    case State::cyan:
-        // wait for:
-        // moving pawn to stop
-        // all dying pawn to die
-        if (!Pawn::finish_moving() || !dying_pawns.empty())
-            return;
-
-        if (cyan_king.pointed_by(mouse_coordinate))
-        {
-            aim.set_center(cyan_king.get_center());
-            aim.show();
-        }
-        else
-        {
-            for (const auto& pawn_cyan: pawns_cyan)
-            {
-                if (pawn_cyan.pointed_by(mouse_coordinate))
-                {
-                    aim.set_center(pawn_cyan.get_center());
-                    aim.show();
-                }
-            }
-        }
-        
-        aim.rotate(mouse_coordinate);
-        
-        break;
-    
-    default:
-        break;
-    }
-}
-
-void Game::logic()
-{
-    switch (state)
-    {
-    case State::magenta:
-        // wait for:
-        // there is a moving pawn
-        // there is at least a pawn
-        if (Pawn::finish_moving() || pawns_magenta.empty())
-            return;
-
-        pawns_magenta.back().move();
-
-        collision_engine(dying_pawns, pawns_magenta.back(), fence);
-
-        if (Pawn::finish_moving())
-        {
-            state = State::cyan;
-            aim.cyan();
-        }
-
-        kill_and_delete_pawns();
-
-        break;
-
-    case State::cyan:
-        // wait for:
-        // there is a moving pawn
-        // there is at least a pawn
-        if (Pawn::finish_moving() || pawns_cyan.empty())
-            return;
-        
-        pawns_cyan.back().move();
-
-        collision_engine(dying_pawns, pawns_cyan.back(), fence);
-
-        if (Pawn::finish_moving())
-        {
-            state = State::magenta;
-            aim.magenta();
-        }
-
-        kill_and_delete_pawns();
-
-        break;
-    
-    default:
-        break;
     }
 }
 
@@ -179,19 +63,61 @@ void Game::kill_and_delete_pawns()
     }
 }
 
-void Game::mouse_is_left_clicked()
+void Game::update_aim(State& state)
 {
-    switch (state)
-    {
-    case State::magenta:
-        // wait for:
-        // moving pawn to stop
-        // pawn to be selected
-        if (!Pawn::finish_moving() || !aim.is_visible())
-            return;
-    
-        aim.hide();
+    if (state != State::choose_and_aim)
+        return;
 
+    if (turn == Turn::magenta)
+    {
+        if (magenta_king.pointed_by(mouse_coordinate))
+        {
+            aim.set_center(magenta_king.get_center());
+            aim.show();
+        }
+        else
+        {
+            for (const auto &pawn_magenta : pawns_magenta)
+            {
+                if (pawn_magenta.pointed_by(mouse_coordinate))
+                {
+                    aim.set_center(pawn_magenta.get_center());
+                    aim.show();
+                }
+            }
+        }
+    }
+    else if (turn == Turn::cyan)
+    {
+        if (cyan_king.pointed_by(mouse_coordinate))
+        {
+            aim.set_center(cyan_king.get_center());
+            aim.show();
+        }
+        else
+        {
+            for (const auto &pawn_cyan : pawns_cyan)
+            {
+                if (pawn_cyan.pointed_by(mouse_coordinate))
+                {
+                    aim.set_center(pawn_cyan.get_center());
+                    aim.show();
+                }
+            }
+        }
+    }
+    aim.rotate(mouse_coordinate);
+}
+
+void Game::add_pawn(State& state)
+{
+    if (state != State::choose_and_aim && !aim.is_visible())
+        return;
+
+    aim.hide();
+
+    if (turn == Turn::magenta)
+    {
         pawns_magenta.emplace_back(
             Pawn(
                 aim.get_center().get_x(),
@@ -199,21 +125,10 @@ void Game::mouse_is_left_clicked()
                 Parameter::magenta()
             )
         );
-    
-        Pawn::update_d(aim.get_center(), aim.get_endpoint());
-        Pawn::reset_move_step_count();
-        
-        break;
-
-    case State::cyan:
-        // wait for:
-        // moving pawn to stop
-        // pawn to be selected
-        if (!Pawn::finish_moving() || !aim.is_visible())
-            return;
-    
-        aim.hide();
-
+        std::cout << "magenta pawn added\n";
+    }
+    else if (turn == Turn::cyan)
+    {
         pawns_cyan.emplace_back(
             Pawn(
                 aim.get_center().get_x(),
@@ -221,14 +136,53 @@ void Game::mouse_is_left_clicked()
                 Parameter::cyan()
             )
         );
-    
-        Pawn::update_d(aim.get_center(), aim.get_endpoint());
-        Pawn::reset_move_step_count();
+    }
 
-        break;
-    
-    default:
-        break;
+    Pawn::update_d(aim.get_center(), aim.get_endpoint());
+    Pawn::reset_move_step_count();
+    state = State::move_pawn;
+    std::cout << "state is changed to move pawn\n";
+}
+
+void Game::move_pawn(State &state)
+{
+    if (state != State::move_pawn)
+        return;
+
+    if (turn == Turn::magenta)
+    {
+        if (pawns_magenta.empty())
+            return;
+
+        if (!Pawn::finish_moving())
+        {
+            pawns_magenta.back().move();
+            collision_engine(dying_pawns, pawns_magenta.back(), fence);
+            std::cout << "magenta moved\n";
+        }
+        else
+        {
+            turn = Turn::cyan;
+            state = State::choose_and_aim;
+            aim.cyan();
+        }
+    }
+    else if (turn == Turn::cyan)
+    {
+        if (pawns_cyan.empty())
+            return;
+
+        if (!Pawn::finish_moving())
+        {
+            pawns_cyan.back().move();
+            collision_engine(dying_pawns, pawns_cyan.back(), fence);
+        }
+        else
+        {
+            turn = Turn::magenta;
+            state = State::choose_and_aim;
+            aim.magenta();
+        }
     }
 }
 
@@ -245,26 +199,26 @@ void Game::run()
 
     al_start_timer(timer);
 
-    while(1)
+    while(true)
     {
         al_wait_for_event(queue, &event);
 
         switch(event.type)
         {
             case ALLEGRO_EVENT_TIMER:
-                logic();
+                move_pawn(state);
+                kill_and_delete_pawns();
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
                 mouse_coordinate = Vector(event.mouse.x, event.mouse.y);
-                mouse_is_moved();
+                update_aim(state);
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-                mouse_coordinate = Vector(event.mouse.x, event.mouse.y);
                 if (event.mouse.button == 1)
-                    mouse_is_left_clicked();
+                    add_pawn(state);
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:

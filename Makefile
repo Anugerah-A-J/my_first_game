@@ -17,6 +17,9 @@ clean:
 	rm *.exe
 
 run:
+	./my_first_game
+
+debug:
 	gdb ./my_first_game
 
 my_first_game: $(subst .cpp,.o,$(SOURCES))

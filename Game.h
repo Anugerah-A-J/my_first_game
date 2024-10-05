@@ -14,16 +14,17 @@
 class Game
 {
 public:
-    Game();
     ~Game();
     void run();
 private:
-    enum class State { magenta, cyan, end };
+    enum class State { choose_and_aim, move_pawn, end };
+    enum class Turn { magenta, cyan, end };
     void draw() const;
-    void mouse_is_moved();
-    void mouse_is_left_clicked();
-    void logic();
     void kill_and_delete_pawns();
+
+    void update_aim(State& state);
+    void add_pawn(State& state);
+    void move_pawn(State& state);
 
     Vector mouse_coordinate = Vector(0, 0);
 
@@ -36,7 +37,8 @@ private:
     ALLEGRO_EVENT_QUEUE* const queue = al_create_event_queue();
     ALLEGRO_DISPLAY* const display = al_create_display(Parameter::window_width(), Parameter::window_height());
 
-    State state = State::magenta;
+    Turn turn = Turn::magenta;
+    State state = State::choose_and_aim;
     Collision collision_engine;
 
     Fence fence;
