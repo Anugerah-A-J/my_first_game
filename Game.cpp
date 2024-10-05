@@ -158,13 +158,13 @@ void Game::logic()
 
 void Game::kill_and_delete_pawns()
 {
-    for(int i{0}; i < dying_pawns.size(); i++)
+    for(int i = 0; i < dying_pawns.size(); i++)
     {
-        // if (!dying_pawns.at(i)->is_dead())
-        // {
-        //     dying_pawns.at(i)->die();
-        //     continue;
-        // }
+        if (!dying_pawns.at(i)->is_dead())
+        {
+            dying_pawns.at(i)->die();
+            continue;
+        }
 
         if (dying_pawns.at(i) >= &pawns_magenta.front() && dying_pawns.at(i) <= &pawns_magenta.back())
         {

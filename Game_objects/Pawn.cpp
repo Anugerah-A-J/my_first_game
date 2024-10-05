@@ -53,10 +53,10 @@ void Pawn::stop()
 
 void Pawn::die()
 {
-    color.r += (Parameter::dead_color().r - color.r) * Parameter::color_transformation_ratio();
-    color.g += (Parameter::dead_color().g - color.g) * Parameter::color_transformation_ratio();
-    color.b += (Parameter::dead_color().b - color.b) * Parameter::color_transformation_ratio();
-    color.a += (Parameter::dead_color().a - color.a) * Parameter::color_transformation_ratio();
+    color.r = (Parameter::dead_color().r + color.r) * Parameter::color_transformation_ratio();
+    color.g = (Parameter::dead_color().g + color.g) * Parameter::color_transformation_ratio();
+    color.b = (Parameter::dead_color().b + color.b) * Parameter::color_transformation_ratio();
+    color.a = (Parameter::dead_color().a + color.a) * Parameter::color_transformation_ratio();
 }
 
 bool Pawn::is_dead()
