@@ -16,6 +16,9 @@ clean:
 	rm $(subst .cpp,.d,$(SOURCES))
 	rm *.exe
 
+run:
+	gdb ./my_first_game
+
 my_first_game: $(subst .cpp,.o,$(SOURCES))
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 

@@ -23,6 +23,7 @@ private:
     void mouse_is_moved();
     void mouse_is_left_clicked();
     void logic();
+    void kill_and_delete_pawns();
 
     Vector mouse_coordinate = Vector(0, 0);
 
@@ -45,6 +46,7 @@ private:
     Clipper clipper{};
     std::vector<Pawn> pawns_magenta;
     std::vector<Pawn> pawns_cyan;
+    std::vector<Pawn*> dying_pawns;
     // Map Map_1:
     // Box box; // yellow
     // Tree tree; // green

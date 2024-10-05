@@ -21,10 +21,9 @@ public:
 
     void move();
     void retreat(float f);
-	// void move(float dx, float dy);
     void stop();
-    // float get_dx() const;
-	// float get_dy() const;
+    void die();
+    bool is_dead();
 
 private:
     inline static unsigned int move_step_count = Parameter::move_step();

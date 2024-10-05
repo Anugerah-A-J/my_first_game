@@ -9,7 +9,7 @@
 class Collision
 {
 public:
-    void operator()(std::vector<Pawn>& pawns, const Fence& f);
+    void operator()(std::vector<Pawn*>& dying_pawns ,Pawn& pawn, const Fence& f);
 private:
     float circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
     float circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);

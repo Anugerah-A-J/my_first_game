@@ -3,16 +3,16 @@
 #include <cmath>
 #include <algorithm>
 
-void Collision::operator()(std::vector<Pawn> &pawns, const Fence &f)
+void Collision::operator()(std::vector<Pawn *> &dying_pawns, Pawn &pawn, const Fence &f)
 {
-    float t = circle_inside_rectangle(pawns.back().get_shape(), f.get_shape(), pawns.back().get_velocity());
+    float t = circle_inside_rectangle(pawn.get_shape(), f.get_shape(), pawn.get_velocity());
 
     if (t == 2)
         return;
     
-    pawns.back().retreat(1 - t);
-    pawns.back().stop();
-    pawns.pop_back();
+    pawn.retreat(1 - t);
+    pawn.stop();
+    dying_pawns.emplace_back(&pawn);
 }
 
 float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &nonmoving_circle, const Line &velocity)

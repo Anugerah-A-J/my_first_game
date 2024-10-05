@@ -22,35 +22,43 @@ public:
 
     static ALLEGRO_COLOR black()
     {
-        return al_map_rgb_f(0.1f, 0.1f, 0.1f);
+        return al_map_rgba_f(0.1f, 0.1f, 0.1f, 1);
     }
     static ALLEGRO_COLOR red()
     {
-        return al_map_rgb_f(0.9f, 0.1f, 0.1f);
+        return al_map_rgba_f(0.9f, 0.1f, 0.1f, 1);
     }
     static ALLEGRO_COLOR yellow()
     {
-        return al_map_rgb_f(0.9f, 0.9f, 0.1f);
+        return al_map_rgba_f(0.9f, 0.9f, 0.1f, 1);
     }
     static ALLEGRO_COLOR green()
     {
-        return al_map_rgb_f(0.1f, 0.9f, 0.1f);
+        return al_map_rgba_f(0.1f, 0.9f, 0.1f, 1);
     }
     static ALLEGRO_COLOR cyan()
     {
-        return al_map_rgb_f(0.1f, 0.9f, 0.9f);
+        return al_map_rgba_f(0.1f, 0.9f, 0.9f, 1);
     }
     static ALLEGRO_COLOR blue()
     {
-        return al_map_rgb_f(0.1f, 0.1f, 0.9f);
+        return al_map_rgba_f(0.1f, 0.1f, 0.9f, 1);
     }
     static ALLEGRO_COLOR magenta()
     {
-        return al_map_rgb_f(0.9f, 0.1f, 0.9f);
+        return al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
     }
     static ALLEGRO_COLOR white()
     {
-        return al_map_rgb_f(0.9f, 0.9f, 0.9f);
+        return al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
+    }
+    static ALLEGRO_COLOR dead_color()
+    {
+        return al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
+    }
+    static float color_transformation_ratio()
+    {
+        return 0.5f;
     }
     
     static float sqrt_2() { return 1.41421356237309504880f; }

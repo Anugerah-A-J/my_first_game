@@ -45,7 +45,10 @@ void Game::mouse_is_moved()
     switch (state)
     {
     case State::magenta:
-        if (!Pawn::finish_moving()) // wait for moving pawn to stop
+        // wait for:
+        // moving pawn to stop
+        // all dying pawn to die
+        if (!Pawn::finish_moving() || !dying_pawns.empty())
             return;
 
         if (magenta_king.pointed_by(mouse_coordinate))
@@ -70,7 +73,10 @@ void Game::mouse_is_moved()
         break;
 
     case State::cyan:
-        if (!Pawn::finish_moving()) // wait for moving pawn to stop
+        // wait for:
+        // moving pawn to stop
+        // all dying pawn to die
+        if (!Pawn::finish_moving() || !dying_pawns.empty())
             return;
 
         if (cyan_king.pointed_by(mouse_coordinate))
@@ -104,12 +110,15 @@ void Game::logic()
     switch (state)
     {
     case State::magenta:
+        // wait for:
+        // there is a moving pawn
+        // there is at least a pawn
         if (Pawn::finish_moving() || pawns_magenta.empty())
             return;
 
         pawns_magenta.back().move();
 
-        collision_engine(pawns_magenta, fence);
+        collision_engine(dying_pawns, pawns_magenta.back(), fence);
 
         if (Pawn::finish_moving())
         {
@@ -117,21 +126,28 @@ void Game::logic()
             aim.cyan();
         }
 
+        kill_and_delete_pawns();
+
         break;
 
     case State::cyan:
+        // wait for:
+        // there is a moving pawn
+        // there is at least a pawn
         if (Pawn::finish_moving() || pawns_cyan.empty())
             return;
         
         pawns_cyan.back().move();
 
-        collision_engine(pawns_cyan, fence);
+        collision_engine(dying_pawns, pawns_cyan.back(), fence);
 
         if (Pawn::finish_moving())
         {
             state = State::magenta;
             aim.magenta();
         }
+
+        kill_and_delete_pawns();
 
         break;
     
@@ -140,12 +156,38 @@ void Game::logic()
     }
 }
 
+void Game::kill_and_delete_pawns()
+{
+    for(int i{0}; i < dying_pawns.size(); i++)
+    {
+        // if (!dying_pawns.at(i)->is_dead())
+        // {
+        //     dying_pawns.at(i)->die();
+        //     continue;
+        // }
+
+        if (dying_pawns.at(i) >= &pawns_magenta.front() && dying_pawns.at(i) <= &pawns_magenta.back())
+        {
+            pawns_magenta.erase(pawns_magenta.begin() + (dying_pawns.at(i) - &pawns_magenta.front()));
+        }
+        else if (dying_pawns.at(i) >= &pawns_cyan.front() && dying_pawns.at(i) <= &pawns_cyan.back())
+        {
+            pawns_cyan.erase(pawns_cyan.begin() + (dying_pawns.at(i) - &pawns_cyan.front()));
+        }
+       
+        dying_pawns.erase(dying_pawns.begin() + i);
+    }
+}
+
 void Game::mouse_is_left_clicked()
 {
     switch (state)
     {
     case State::magenta:
-        if (!Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
+        // wait for:
+        // moving pawn to stop
+        // pawn to be selected
+        if (!Pawn::finish_moving() || !aim.is_visible())
             return;
     
         aim.hide();
@@ -164,7 +206,10 @@ void Game::mouse_is_left_clicked()
         break;
 
     case State::cyan:
-        if (!Pawn::finish_moving() || !aim.is_visible()) // wait for moving pawn to stop and pawn to be selected
+        // wait for:
+        // moving pawn to stop
+        // pawn to be selected
+        if (!Pawn::finish_moving() || !aim.is_visible())
             return;
     
         aim.hide();
