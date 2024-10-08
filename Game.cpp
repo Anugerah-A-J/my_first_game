@@ -42,24 +42,25 @@ void Game::draw() const
 
 void Game::kill_and_delete_pawns()
 {
-    for(int i = 0; i < dying_pawns.size(); i++)
+    for(auto it = dying_pawns.begin(); it != dying_pawns.end();)
     {
-        if (!dying_pawns.at(i)->is_dead())
+        if (!(*it)->is_dead())
         {
-            dying_pawns.at(i)->die();
+            (*it)->die();
+            ++it;
             continue;
         }
 
-        if (dying_pawns.at(i) >= &pawns_magenta.front() && dying_pawns.at(i) <= &pawns_magenta.back())
+        if (*it >= &pawns_magenta.front() && *it <= &pawns_magenta.back())
         {
-            pawns_magenta.erase(pawns_magenta.begin() + (dying_pawns.at(i) - &pawns_magenta.front()));
+            pawns_magenta.erase(pawns_magenta.begin() + (*it - &pawns_magenta.front()));
         }
-        else if (dying_pawns.at(i) >= &pawns_cyan.front() && dying_pawns.at(i) <= &pawns_cyan.back())
+        else if (*it >= &pawns_cyan.front() && *it <= &pawns_cyan.back())
         {
-            pawns_cyan.erase(pawns_cyan.begin() + (dying_pawns.at(i) - &pawns_cyan.front()));
+            pawns_cyan.erase(pawns_cyan.begin() + (*it - &pawns_cyan.front()));
         }
        
-        dying_pawns.erase(dying_pawns.begin() + i);
+        it = dying_pawns.erase(it);
     }
 }
 
@@ -157,8 +158,8 @@ void Game::move_pawn(State &state)
         if (!Pawn::finish_moving())
         {
             pawns_magenta.back().move();
+            collision_engine(dying_pawns, pawns_magenta.back(), pawns_cyan);
             collision_engine(dying_pawns, pawns_magenta.back(), fence);
-            std::cout << "magenta moved\n";
         }
         else
         {
@@ -175,6 +176,7 @@ void Game::move_pawn(State &state)
         if (!Pawn::finish_moving())
         {
             pawns_cyan.back().move();
+            collision_engine(dying_pawns, pawns_cyan.back(), pawns_magenta);
             collision_engine(dying_pawns, pawns_cyan.back(), fence);
         }
         else

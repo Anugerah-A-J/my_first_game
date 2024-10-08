@@ -9,6 +9,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <vector>
 #include "Math/Collision.h"
+#include <set>
 #pragma once
 
 class Game
@@ -48,7 +49,7 @@ private:
     Clipper clipper{};
     std::vector<Pawn> pawns_magenta;
     std::vector<Pawn> pawns_cyan;
-    std::vector<Pawn*> dying_pawns;
+    std::set<Pawn*> dying_pawns;
     // Map Map_1:
     // Box box; // yellow
     // Tree tree; // green
