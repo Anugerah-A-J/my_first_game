@@ -79,6 +79,16 @@ bool Pawn::is_dead()
     return false;
 }
 
+bool Pawn::is_dead_immediately_after_finish_moving()
+{
+    return dead_immediately_after_finish_moving;
+}
+
+void Pawn::set_dead_immediately_after_finish_moving(bool b)
+{
+    dead_immediately_after_finish_moving = b;
+}
+
 bool Pawn::finish_moving()
 {
     return move_step_count == Parameter::move_step();

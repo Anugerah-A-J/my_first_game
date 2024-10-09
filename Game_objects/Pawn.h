@@ -24,10 +24,13 @@ public:
     void stop();
     void die();
     bool is_dead();
+    bool is_dead_immediately_after_finish_moving();
+    void set_dead_immediately_after_finish_moving(bool b);
 
 private:
     inline static unsigned int move_step_count = Parameter::move_step();
     inline static Vector d = Vector(0, 0);
+    inline static bool dead_immediately_after_finish_moving = false;
     Circle circle_shape;
     ALLEGRO_COLOR color;
 };

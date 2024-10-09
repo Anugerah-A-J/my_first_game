@@ -159,10 +159,16 @@ void Game::move_pawn(State &state)
         {
             pawns_magenta.back().move();
             collision_engine(dying_pawns, pawns_magenta.back(), pawns_cyan);
+            collision_engine(pawns_magenta.back(), cyan_king);
             collision_engine(dying_pawns, pawns_magenta.back(), fence);
         }
         else
         {
+            if (Pawn::is_dead_immediately_after_finish_moving())
+            {
+                pawns_magenta.pop_back();
+                Pawn::set_dead_immediately_after_finish_moving(false);
+            }
             turn = Turn::cyan;
             state = State::choose_and_aim;
             aim.cyan();
@@ -177,10 +183,16 @@ void Game::move_pawn(State &state)
         {
             pawns_cyan.back().move();
             collision_engine(dying_pawns, pawns_cyan.back(), pawns_magenta);
+            collision_engine(pawns_cyan.back(), magenta_king);
             collision_engine(dying_pawns, pawns_cyan.back(), fence);
         }
         else
         {
+            if (Pawn::is_dead_immediately_after_finish_moving())
+            {
+                pawns_cyan.pop_back();
+                Pawn::set_dead_immediately_after_finish_moving(false);
+            }
             turn = Turn::magenta;
             state = State::choose_and_aim;
             aim.magenta();
