@@ -24,8 +24,8 @@ public:
     void stop();
     void die();
     bool is_dead();
-    bool is_dead_immediately_after_finish_moving();
-    void set_dead_immediately_after_finish_moving(bool b);
+    static bool is_dead_immediately_after_finish_moving();
+    static void set_dead_immediately_after_finish_moving(bool b);
 
 private:
     inline static unsigned int move_step_count = Parameter::move_step();

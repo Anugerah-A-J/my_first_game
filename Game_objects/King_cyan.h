@@ -1,14 +1,17 @@
 #include "../Parameter.h"
-#include "../Shape/Circle.h"
-#include "../Shape/Rectangle.h"
+#include "King.h"
 #pragma once
 
 class King_cyan
+:
+    public King
 {
 public:
-    void draw() const;
-    bool pointed_by(const Vector& v) const;
-    const Vector& get_center() const;
+    void draw() const override;
+    bool pointed_by(const Vector& v) const override;
+    const Vector& get_center() const override;
+    const Rectangle& get_rectangle_shape() const override;
+    const Circle& get_circle_shape() const override;
 private:
     Circle circle_shape = Circle(
         Parameter::space() * 3 + Parameter::radius(),

@@ -29,3 +29,13 @@ const Vector& King_magenta::get_center() const
 {
     return circle_shape.get_center();
 }
+
+const Rectangle &King_magenta::get_rectangle_shape() const
+{
+    return rectangle_shape;
+}
+
+const Circle &King_magenta::get_circle_shape() const
+{
+    return circle_shape;
+}

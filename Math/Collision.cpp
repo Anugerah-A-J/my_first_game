@@ -26,6 +26,17 @@ void Collision::operator()(std::set<Pawn *> &dying_pawns, const Pawn &moving_paw
     }
 }
 
+void Collision::operator()(const Pawn &moving_pawn, King &king)
+{
+    if (
+        circle_vs_rectangle(moving_pawn.get_shape(), king.get_rectangle_shape(), moving_pawn.get_velocity()) == 2 ||
+        Pawn::is_dead_immediately_after_finish_moving()
+    )
+        return;
+
+    Pawn::set_dead_immediately_after_finish_moving(true);
+}
+
 float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &nonmoving_circle, const Line &velocity)
 {
     Circle circle = nonmoving_circle;

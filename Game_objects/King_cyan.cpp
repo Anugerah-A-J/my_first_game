@@ -29,3 +29,13 @@ const Vector& King_cyan::get_center() const
 {
     return circle_shape.get_center();
 }
+
+const Rectangle &King_cyan::get_rectangle_shape() const
+{
+    return rectangle_shape;
+}
+
+const Circle &King_cyan::get_circle_shape() const
+{
+    return circle_shape;
+}
