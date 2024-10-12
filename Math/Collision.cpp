@@ -29,12 +29,15 @@ void Collision::operator()(std::set<Pawn *> &dying_pawns, const Pawn &moving_paw
 
 void Collision::operator()(Pawn &moving_pawn, King &king)
 {
+    float t = circle_vs_rectangle(moving_pawn.get_shape(), king.get_rectangle_shape(), moving_pawn.get_velocity());
+
     if (
-        circle_vs_rectangle(moving_pawn.get_shape(), king.get_rectangle_shape(), moving_pawn.get_velocity()) == 2 ||
+        t == 2 ||
         Pawn::is_dead_immediately_after_finish_moving()
     )
         return;
 
+    std::cout << t << "\n";
     moving_pawn.stop();
     // Pawn::set_dead_immediately_after_finish_moving(true);
 }
@@ -71,7 +74,11 @@ float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangl
 
     std::vector<float> ts;
 
-    // ts.emplace_back(intersect(velocity, top));
+    ts.emplace_back(intersect(velocity, top));
+    std::cout << "velocity start:" << velocity.get_start().get_x() << ", " << velocity.get_start().get_y() << "\n";
+    std::cout << "velocity end  :" << velocity.get_end().get_x() << ", " << velocity.get_end().get_y() << "\n";
+    std::cout << "top start:" << top.get_start().get_x() << ", " << top.get_start().get_y() << "\n";
+    std::cout << "top end  :" << top.get_end().get_x() << ", " << top.get_end().get_y() << "\n\n";
     // ts.emplace_back(intersect(velocity, right));
     // ts.emplace_back(intersect(velocity, bottom));
     // ts.emplace_back(intersect(velocity, left));
