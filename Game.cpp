@@ -24,8 +24,8 @@ void Game::draw() const
         al_clear_to_color(Parameter::black());
         aim.draw();
         clipper.draw();
-        cyan_king.draw();
-        magenta_king.draw();
+        king_cyan.draw();
+        king_magenta.draw();
         fence.draw();
         
         for (const auto& pawn_magenta: pawns_magenta)
@@ -71,9 +71,9 @@ void Game::update_aim(State& state)
 
     if (turn == Turn::magenta)
     {
-        if (magenta_king.pointed_by(mouse_coordinate))
+        if (king_magenta.pointed_by(mouse_coordinate))
         {
-            aim.set_center(magenta_king.get_center());
+            aim.set_center(king_magenta.get_center());
             aim.show();
         }
         else
@@ -90,9 +90,9 @@ void Game::update_aim(State& state)
     }
     else if (turn == Turn::cyan)
     {
-        if (cyan_king.pointed_by(mouse_coordinate))
+        if (king_cyan.pointed_by(mouse_coordinate))
         {
-            aim.set_center(cyan_king.get_center());
+            aim.set_center(king_cyan.get_center());
             aim.show();
         }
         else
@@ -126,7 +126,6 @@ void Game::add_pawn(State& state)
                 Parameter::magenta()
             )
         );
-        std::cout << "magenta pawn added\n";
     }
     else if (turn == Turn::cyan)
     {
@@ -142,7 +141,6 @@ void Game::add_pawn(State& state)
     Pawn::update_d(aim.get_center(), aim.get_endpoint());
     Pawn::reset_move_step_count();
     state = State::move_pawn;
-    std::cout << "state is changed to move pawn\n";
 }
 
 void Game::move_pawn(State &state)
@@ -159,7 +157,7 @@ void Game::move_pawn(State &state)
         {
             pawns_magenta.back().move();
             collision_engine(dying_pawns, pawns_magenta.back(), pawns_cyan);
-            collision_engine(pawns_magenta.back(), cyan_king);
+            collision_engine(pawns_magenta.back(), king_cyan);
             collision_engine(dying_pawns, pawns_magenta.back(), fence);
         }
         else
@@ -183,7 +181,7 @@ void Game::move_pawn(State &state)
         {
             pawns_cyan.back().move();
             collision_engine(dying_pawns, pawns_cyan.back(), pawns_magenta);
-            collision_engine(pawns_cyan.back(), magenta_king);
+            collision_engine(pawns_cyan.back(), king_magenta);
             collision_engine(dying_pawns, pawns_cyan.back(), fence);
         }
         else

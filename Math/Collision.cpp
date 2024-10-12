@@ -2,6 +2,7 @@
 #include "math.h"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 void Collision::operator()(std::set<Pawn *> &dying_pawns, Pawn &pawn, const Fence &f)
 {
@@ -26,7 +27,7 @@ void Collision::operator()(std::set<Pawn *> &dying_pawns, const Pawn &moving_paw
     }
 }
 
-void Collision::operator()(const Pawn &moving_pawn, King &king)
+void Collision::operator()(Pawn &moving_pawn, King &king)
 {
     if (
         circle_vs_rectangle(moving_pawn.get_shape(), king.get_rectangle_shape(), moving_pawn.get_velocity()) == 2 ||
@@ -34,7 +35,8 @@ void Collision::operator()(const Pawn &moving_pawn, King &king)
     )
         return;
 
-    Pawn::set_dead_immediately_after_finish_moving(true);
+    moving_pawn.stop();
+    // Pawn::set_dead_immediately_after_finish_moving(true);
 }
 
 float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &nonmoving_circle, const Line &velocity)
@@ -47,15 +49,15 @@ float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &non
 
 float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
-    Circle top_left = moving_circle;
-    Circle top_right = moving_circle;
-    Circle bottom_right = moving_circle;
-    Circle bottom_left = moving_circle;
-
     Line top = nonmoving_rectangle.top();
     Line right = nonmoving_rectangle.right();
     Line bottom = nonmoving_rectangle.bottom();
     Line left = nonmoving_rectangle.left();
+
+    Circle top_left = moving_circle;
+    Circle top_right = moving_circle;
+    Circle bottom_right = moving_circle;
+    Circle bottom_left = moving_circle;
 
     top_left.translate_to(top.get_start());
     top_right.translate_to(top.get_end());
@@ -69,10 +71,10 @@ float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangl
 
     std::vector<float> ts;
 
-    ts.emplace_back(intersect(velocity, top));
-    ts.emplace_back(intersect(velocity, right));
-    ts.emplace_back(intersect(velocity, bottom));
-    ts.emplace_back(intersect(velocity, left));
+    // ts.emplace_back(intersect(velocity, top));
+    // ts.emplace_back(intersect(velocity, right));
+    // ts.emplace_back(intersect(velocity, bottom));
+    // ts.emplace_back(intersect(velocity, left));
 
     ts.emplace_back(intersect(velocity, top_left));
     ts.emplace_back(intersect(velocity, top_right));
@@ -106,16 +108,16 @@ float Collision::intersect(const Line& line1, const Line& line2)
 
     float numerator = B.get_y() * C.get_x() - B.get_x() * C.get_y();
     float denominator = A.get_y() * B.get_x() - A.get_x() * B.get_y();
-    
+
+    // t < 0
     if (denominator > 0 && numerator < 0)
         return 2;
-    
-    if (denominator > 0 && numerator > denominator)
-        return 2;
-
     if (denominator < 0 && numerator > 0)
         return 2;
 
+    // t > 1
+    if (denominator > 0 && numerator > denominator)
+        return 2;
     if (denominator < 0 && numerator < denominator)
         return 2;
 

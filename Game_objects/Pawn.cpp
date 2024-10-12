@@ -45,7 +45,6 @@ void Pawn::retreat(float f)
 void Pawn::update_d(const Vector &start, const Vector &end)
 {
     d = (end - start) / Parameter::move_step();
-    std::cout << "d is updated\n";
 }
 
 void Pawn::stop()
@@ -110,5 +109,4 @@ const Line Pawn::get_velocity() const
 void Pawn::reset_move_step_count()
 {
     move_step_count = 0;
-    std::cout << "move step count is reset\n";
 }

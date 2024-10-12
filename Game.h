@@ -43,8 +43,8 @@ private:
     Collision collision_engine;
 
     Fence fence;
-    King_magenta magenta_king;
-    King_cyan cyan_king;
+    King_magenta king_magenta;
+    King_cyan king_cyan;
     Aim aim;
     Clipper clipper{};
     std::vector<Pawn> pawns_magenta;
