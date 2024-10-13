@@ -1,5 +1,30 @@
 #include "Game.hpp"
 
+void draw(Game& game)
+{
+    if (game.state != State::end)
+    {
+        al_clear_to_color(param::black);
+        
+        game.aim.draw();
+        // king_cyan.draw();
+        // king_magenta.draw();
+        
+        game.clipper.draw();
+        game.fence.draw();
+
+        // for (const auto& pawn_magenta: pawns_magenta)
+        // {
+        //     pawn_magenta.draw();
+        // }
+
+        // for (const auto& pawn_cyan: pawns_cyan)
+        // {
+        //     pawn_cyan.draw();
+        // }
+    }
+};
+
 void run(Game& game)
 {
     al_register_event_source(game.queue, al_get_keyboard_event_source());
@@ -51,30 +76,5 @@ void run(Game& game)
             al_flip_display();
             redraw = false;
         }
-    }
-};
-
-void draw(Game& game)
-{
-    if (game.state != State::end)
-    {
-        al_clear_to_color(param::black);
-        
-        game.aim.draw();
-        // king_cyan.draw();
-        // king_magenta.draw();
-        game.fence.draw();
-        
-        // for (const auto& pawn_magenta: pawns_magenta)
-        // {
-        //     pawn_magenta.draw();
-        // }
-
-        // for (const auto& pawn_cyan: pawns_cyan)
-        // {
-        //     pawn_cyan.draw();
-        // }
-
-        game.clipper.draw();
     }
 };

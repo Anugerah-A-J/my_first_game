@@ -8,10 +8,24 @@
 // #include <set>
 #pragma once
 
+enum struct State
+{
+    choose_and_aim,
+    move_pawn,
+    end
+};
+
+enum struct Turn
+{
+    magenta,
+    cyan,
+    neutral
+};
+
 struct Game
 {
-    enum struct State{choose_and_aim, move_pawn, end} state;
-    enum struct Turn{magenta, cyan, neutral} turn;
+    State state;
+    Turn turn;
 
     ALLEGRO_TIMER* timer;
     ALLEGRO_EVENT_QUEUE* queue;
