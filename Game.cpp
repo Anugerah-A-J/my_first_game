@@ -2,13 +2,14 @@
 #include "Parameter.h"
 #include <iostream>
 
-// Game::Game()
-// {
-//     // al_init();
-//     // al_init_primitives_addon();
-//     // al_install_keyboard();
-//     // al_install_mouse();
-// }
+Game::Game()
+{
+    al_init();
+    al_init_primitives_addon();
+    al_install_keyboard();
+    al_install_mouse();
+    al_set_window_position(display, 0, 0);
+}
 
 Game::~Game()
 {
@@ -23,7 +24,6 @@ void Game::draw() const
     {
         al_clear_to_color(Parameter::black());
         aim.draw();
-        clipper.draw();
         king_cyan.draw();
         king_magenta.draw();
         fence.draw();
@@ -37,6 +37,8 @@ void Game::draw() const
         {
             pawn_cyan.draw();
         }
+
+        // clipper.draw();
     }
 }
 

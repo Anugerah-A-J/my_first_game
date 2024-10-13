@@ -6,10 +6,12 @@ CXXFLAGS += -g
 LDFLAGS = -L D:/c++/allegro_32/lib
 LDLIBS = -lallegro -lallegro_primitives
 
-SOURCES = $(wildcard *.cpp \
-Game_objects/*.cpp \
-Math/*.cpp \
-Shape/*.cpp)
+# SOURCES = $(wildcard *.cpp \
+# Game_objects/*.cpp \
+# Math/*.cpp \
+# Shape/*.cpp)
+
+SOURCES = $(main.cpp)
 
 clean:
 	rm $(subst .cpp,.o,$(SOURCES))

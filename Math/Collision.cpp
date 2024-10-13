@@ -4,16 +4,19 @@
 #include <algorithm>
 #include <iostream>
 
-void Collision::operator()(std::set<Pawn *> &dying_pawns, Pawn &pawn, const Fence &f)
+void Collision::operator()(std::set<Pawn *> &dying_pawns, Pawn &moving_pawn, const Fence &fence)
 {
-    float t = circle_inside_rectangle(pawn.get_shape(), f.get_shape(), pawn.get_velocity());
+    float t = circle_inside_rectangle(moving_pawn.get_shape(), fence.get_shape(), moving_pawn.get_velocity());
 
-    if (t == 2)
+    std::cout << "t fence: " << t << "\n";
+    std::cout << "is dead immediately after finish moving: " << Pawn::is_dead_immediately_after_finish_moving() << "\n\n";
+
+    if (t == 2 || Pawn::is_dead_immediately_after_finish_moving())
         return;
     
-    pawn.retreat(1 - t);
-    pawn.stop();
-    dying_pawns.emplace(&pawn);
+    moving_pawn.retreat(1 - t);
+    moving_pawn.stop();
+    dying_pawns.emplace(&moving_pawn);
 }
 
 void Collision::operator()(std::set<Pawn *> &dying_pawns, const Pawn &moving_pawn, std::vector<Pawn> &pawns)
@@ -31,15 +34,13 @@ void Collision::operator()(Pawn &moving_pawn, King &king)
 {
     float t = circle_vs_rectangle(moving_pawn.get_shape(), king.get_rectangle_shape(), moving_pawn.get_velocity());
 
-    if (
-        t == 2 ||
-        Pawn::is_dead_immediately_after_finish_moving()
-    )
+    // std::cout << "t king: " << t << "\n\n";
+
+    if (t == 2 || Pawn::is_dead_immediately_after_finish_moving())
         return;
 
-    std::cout << t << "\n";
-    moving_pawn.stop();
-    // Pawn::set_dead_immediately_after_finish_moving(true);
+    // moving_pawn.stop();
+    Pawn::set_dead_immediately_after_finish_moving(true);
 }
 
 float Collision::circle_vs_circle(const Circle &moving_circle, const Circle &nonmoving_circle, const Line &velocity)
@@ -75,13 +76,9 @@ float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     std::vector<float> ts;
 
     ts.emplace_back(intersect(velocity, top));
-    std::cout << "velocity start:" << velocity.get_start().get_x() << ", " << velocity.get_start().get_y() << "\n";
-    std::cout << "velocity end  :" << velocity.get_end().get_x() << ", " << velocity.get_end().get_y() << "\n";
-    std::cout << "top start:" << top.get_start().get_x() << ", " << top.get_start().get_y() << "\n";
-    std::cout << "top end  :" << top.get_end().get_x() << ", " << top.get_end().get_y() << "\n\n";
-    // ts.emplace_back(intersect(velocity, right));
-    // ts.emplace_back(intersect(velocity, bottom));
-    // ts.emplace_back(intersect(velocity, left));
+    ts.emplace_back(intersect(velocity, right));
+    ts.emplace_back(intersect(velocity, bottom));
+    ts.emplace_back(intersect(velocity, left));
 
     ts.emplace_back(intersect(velocity, top_left));
     ts.emplace_back(intersect(velocity, top_right));
@@ -99,10 +96,23 @@ float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rect
 
     std::vector<float> ts;
 
+    // std::cout << "circle inside rectangle ts:\n\n";
+
+    // std::cout << "  top: " << "\n";
     ts.emplace_back(intersect(velocity, rectangle.top()));
+    // std::cout << "    return t: " << ts.back() << "\n\n";
+    
+    // std::cout << "  right: " << "\n";
     ts.emplace_back(intersect(velocity, rectangle.right()));
+    // std::cout << "    return t: " << ts.back() << "\n\n";
+    
+    // std::cout << "  bottom: " << "\n";
     ts.emplace_back(intersect(velocity, rectangle.bottom()));
+    // std::cout << "    return t: " << ts.back() << "\n\n";
+    
+    // std::cout << "  left: " << "\n\n";
     ts.emplace_back(intersect(velocity, rectangle.left()));
+    // std::cout << "    return t: " << ts.back() << "\n\n";
 
     return *std::min_element(ts.begin(), ts.end());
 }
@@ -113,25 +123,40 @@ float Collision::intersect(const Line& line1, const Line& line2)
     Vector B = line2.get_end() - line2.get_start();
     Vector C = line1.get_start() - line2.get_start();
 
-    float numerator = B.get_y() * C.get_x() - B.get_x() * C.get_y();
+    float t_numerator = B.get_y() * C.get_x() - B.get_x() * C.get_y();
+    float u_numerator = C.get_y() * A.get_x() - C.get_x() * A.get_y();
     float denominator = A.get_y() * B.get_x() - A.get_x() * B.get_y();
 
-    // t < 0
-    if (denominator > 0 && numerator < 0)
-        return 2;
-    if (denominator < 0 && numerator > 0)
+    // std::cout << "    t num: " << t_numerator << "\n";
+    // std::cout << "    u num: " << u_numerator << "\n";
+    // std::cout << "    denom: " << denominator << "\n";
+    // std::cout << "    t: " << t_numerator / denominator << "\n";
+    // std::cout << "    u: " << u_numerator / denominator << "\n";
+
+    // // t < 0 and u < 0
+    // if (denominator > 0 && (t_numerator < 0 || u_numerator < 0))
+    //     return 2;
+    // if (denominator < 0 && (t_numerator > 0 || u_numerator > 0))
+    //     return 2;
+
+    // // t > 1 and u > 1
+    // if (denominator > 0 && (t_numerator > denominator || u_numerator > denominator))
+    //     return 2;
+    // if (denominator < 0 && (t_numerator < denominator || u_numerator < denominator))
+    //     return 2;
+
+    // if (equal(denominator, 0, 0.05f))
+    if (denominator == 0)
         return 2;
 
-    // t > 1
-    if (denominator > 0 && numerator > denominator)
-        return 2;
-    if (denominator < 0 && numerator < denominator)
+    float t = t_numerator / denominator;
+    float u = u_numerator / denominator;
+
+    // if (t < 0 || t > 1 || u < 0 || u > 0)
+    if (t < 0 || t > 1)
         return 2;
 
-    if (equal(denominator, 0, 0.05f))
-        return 2;
-
-    return numerator / denominator;
+    return t;
 }
 
 float Collision::intersect(const Line& line, const Circle& circle)

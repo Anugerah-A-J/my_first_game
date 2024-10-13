@@ -11,7 +11,7 @@
 class Collision
 {
 public:
-    void operator()(std::set<Pawn*>& dying_pawns ,Pawn& pawn, const Fence& f);
+    void operator()(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const Fence& fence);
     void operator()(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, std::vector<Pawn>& pawns);
     void operator()(Pawn& moving_pawn, King& king);
 private:

@@ -1,10 +1,11 @@
-#include "Game.h"
+#include "Game.hpp"
+#include "game_run.h"
 
 int main()
 {
-    Game game;
-    
-    game.run();
+    Game game = Game();
+
+    run(game);
     
     return 0;
 }
