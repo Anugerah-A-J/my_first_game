@@ -4,6 +4,7 @@
 #include "Fence.hpp"
 #include "Aim.hpp"
 #include "Clipper.hpp"
+#include "King.hpp"
 // #include <vector>
 // #include <set>
 #pragma once
@@ -30,12 +31,13 @@ struct Game
     ALLEGRO_TIMER* timer;
     ALLEGRO_EVENT_QUEUE* queue;
     ALLEGRO_DISPLAY* display;
+    ALLEGRO_EVENT event;
 
     Fence fence;
     Clipper clipper;
     Aim aim;
-    // King_magenta king_magenta;
-    // King_cyan king_cyan;
+    King_magenta king_magenta;
+    King_cyan king_cyan;
     
     // std::vector<Pawn> pawns_magenta;
     // std::vector<Pawn> pawns_cyan;

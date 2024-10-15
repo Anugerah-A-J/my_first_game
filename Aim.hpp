@@ -38,9 +38,9 @@ struct Aim
         );
     };
 
-    void rotate(const Vector& mouse_position)
+    void update(const Game& game)
     {
-        Vector v = mouse_position - shape_circle.center;
+        Vector v = Vector(game.event.mouse.x, game.event.mouse.y) - shape_circle.center;
         Vector v_unit = v.unit();
 
         end_point = shape_circle.center - v_unit * shape_circle.radius;

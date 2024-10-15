@@ -34,15 +34,17 @@ void run(Game& game)
 
     bool done = false;
     bool redraw = true;
-    ALLEGRO_EVENT event;
+    // ALLEGRO_EVENT event;
 
     al_start_timer(game.timer);
 
     while(true)
     {
-        al_wait_for_event(game.queue, &event);
+        al_wait_for_event(game.queue, &game.event);
 
-        switch(event.type)
+        game.aim.update(game);
+
+        switch(game.event.type)
         {
             case ALLEGRO_EVENT_TIMER:
                 // move_pawn(state);
