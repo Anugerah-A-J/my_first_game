@@ -38,22 +38,6 @@ struct Aim
         );
     };
 
-    void update(const Game& game)
-    {
-        Vector v = Vector(game.event.mouse.x, game.event.mouse.y) - shape_circle.center;
-        Vector v_unit = v.unit();
-
-        end_point = shape_circle.center - v_unit * shape_circle.radius;
-        
-        shape_triangle.vertex_1 = shape_circle.center + v_unit * param::radius * 2;
-
-        Vector temp = shape_triangle.vertex_1 + v_unit * param::triangle_height;
-
-        shape_triangle.vertex_2 = temp + Matrix(0, 1, -1, 0) * v_unit * param::triangle_height / param::sqrt_3;
-
-        shape_triangle.vertex_3 = temp + Matrix(0, -1, 1, 0) * v_unit * param::triangle_height / param::sqrt_3;
-    };
-
     Circle shape_circle = Circle(0, 0, param::reach_radius);
 
     Vector end_point = Vector(0, 0);

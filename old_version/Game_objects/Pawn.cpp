@@ -8,8 +8,7 @@ Pawn::Pawn(float cx, float cy, ALLEGRO_COLOR color)
 :
     circle_shape{cx, cy, Parameter::radius()},
     color{color}
-{
-}
+{}
 
 void Pawn::draw() const
 {

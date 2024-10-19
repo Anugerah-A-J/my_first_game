@@ -5,8 +5,9 @@
 #include "Aim.hpp"
 #include "Clipper.hpp"
 #include "King.hpp"
-// #include <vector>
-// #include <set>
+#include <vector>
+#include "Pawn.hpp"
+#include <set>
 #pragma once
 
 enum struct State
@@ -16,17 +17,17 @@ enum struct State
     end
 };
 
-enum struct Turn
-{
-    magenta,
-    cyan,
-    neutral
-};
+// enum struct Turn
+// {
+//     magenta,
+//     cyan,
+//     neutral
+// };
 
 struct Game
 {
-    State state;
-    Turn turn;
+    State state = State::choose_and_aim;
+    // Turn turn;
 
     ALLEGRO_TIMER* timer;
     ALLEGRO_EVENT_QUEUE* queue;
@@ -38,10 +39,12 @@ struct Game
     Aim aim;
     King_magenta king_magenta;
     King_cyan king_cyan;
+    King* king = &king_magenta;
     
-    // std::vector<Pawn> pawns_magenta;
-    // std::vector<Pawn> pawns_cyan;
-    // std::set<Pawn*> dying_pawns;
+    std::vector<Pawn> pawns_magenta;
+    std::vector<Pawn> pawns_cyan;
+    std::vector<Pawn>* pawns;
+    std::set<Pawn*> dying_pawns;
 
     // Map Map_1:
     // Box box; // yellow
@@ -49,11 +52,6 @@ struct Game
     // X x; // red
     // Glass glass; // white
     Game()
-    :
-        state{State::choose_and_aim},
-        turn{Turn::magenta},
-        timer{}, queue{}, display{},
-        fence{}, clipper{}, aim{}
     {
         al_init();
         al_init_primitives_addon();
@@ -74,4 +72,8 @@ struct Game
     };
 
     void run();
+private:
+    void draw() const;
+    void update_aim();
+    void update_pawn();
 };
