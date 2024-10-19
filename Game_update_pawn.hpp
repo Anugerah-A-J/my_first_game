@@ -34,9 +34,9 @@ void Game::update_pawn()
         {
             active_pawns->back().move();
 
-            Collision::response(dying_pawns, active_pawns->back(), *passive_pawns);
-            Collision::response(active_pawns->back(), *passive_king);
-            Collision::response(dying_pawns, active_pawns->back(), fence);
+            // Collision::response(dying_pawns, active_pawns->back(), *passive_pawns);
+            // Collision::response(active_pawns->back(), *passive_king);
+            // Collision::response(dying_pawns, active_pawns->back(), fence);
         }
         else
         {

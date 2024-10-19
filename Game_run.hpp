@@ -14,15 +14,15 @@ void Game::draw() const
         clipper.draw();
         fence.draw();
 
-        // for (const auto& pawn_magenta: pawns_magenta)
-        // {
-        //     pawn_magenta.draw();
-        // }
+        for (const auto& pawn_magenta: pawns_magenta)
+        {
+            pawn_magenta.draw();
+        }
 
-        // for (const auto& pawn_cyan: pawns_cyan)
-        // {
-        //     pawn_cyan.draw();
-        // }
+        for (const auto& pawn_cyan: pawns_cyan)
+        {
+            pawn_cyan.draw();
+        }
     }
 };
 
