@@ -3,8 +3,8 @@
 
 namespace param
 {
-    const int window_width      = 1000;
-    const int window_height     = window_width / 2;
+    const int window_width      = 500;
+    const int window_height     = window_width;
     const float space           = window_width / 100;
     const float line_width      = window_width / 1000;
     const float radius          = window_width / 200;
