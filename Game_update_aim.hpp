@@ -8,14 +8,14 @@ void Game::update_aim()
 
     Vector mouse_coordinate = Vector(event.mouse.x, event.mouse.y);
     
-    if (king->contain(mouse_coordinate))
+    if (active_king->contain(mouse_coordinate))
     {
-        aim.shape_circle.center = king->shape_circle.center;
+        aim.shape_circle.center = active_king->shape_circle.center;
         aim.visible = true;
     }
     else
     {
-        for (const auto &pawn : *pawns)
+        for (const auto &pawn : *active_pawns)
         {
             if (pawn.contain(mouse_coordinate))
             {

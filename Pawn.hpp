@@ -39,6 +39,16 @@ struct Pawn
         move_step_vector = (end - start) / param::move_step;
     };
 
+    static void reset_move_step_count()
+    {
+        move_step_count = 0;
+    };
+
+    static void stop()
+    {
+        move_step_count = param::move_step;
+    }
+
     void move()
     {
         move_step_count ++;

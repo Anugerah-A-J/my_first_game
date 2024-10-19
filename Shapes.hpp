@@ -28,6 +28,36 @@ struct Rectangle
         start{x, y},
         end{start + Vector(w, h)}
     {};
+
+    void translate(const Vector& displacement)
+    {
+        start += displacement;
+        end += displacement;
+    };
+
+    Line top() const
+    {
+        Vector size = end - start;
+        return Line(start, start + Vector(size.x, 0));
+    };
+
+    Line right() const
+    {
+        Vector size = end - start;
+        return Line(end, end - Vector(0, size.y));
+    };
+
+    Line bottom() const
+    {
+        Vector size = end - start;
+        return Line(end, end - Vector(size.x, 0));
+    };
+
+    Line left() const
+    {
+        Vector size = end - start;
+        return Line(start, start + Vector(0, size.y));
+    }
 };
 
 struct Circle

@@ -39,11 +39,13 @@ struct Game
     Aim aim;
     King_magenta king_magenta;
     King_cyan king_cyan;
-    King* king = &king_magenta;
+    King* active_king = &king_magenta;
+    King* passive_king = &king_cyan;
     
     std::vector<Pawn> pawns_magenta;
     std::vector<Pawn> pawns_cyan;
-    std::vector<Pawn>* pawns;
+    std::vector<Pawn>* active_pawns = &pawns_magenta;
+    std::vector<Pawn>* passive_pawns = &pawns_cyan;
     std::set<Pawn*> dying_pawns;
 
     // Map Map_1:
