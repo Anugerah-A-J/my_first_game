@@ -6,6 +6,11 @@ class Vector
         this.y = y;
     };
 
+    copy()
+    {
+        return new Vector(this.x, this.y);
+    };
+
     magsq()
     {
         return this.x * this.x + this.y * this.y;
@@ -22,7 +27,31 @@ class Vector
         this.x -= vector.x;
         this.y -= vector.y;
     };
+
+    multiply(factor = 1)
+    {
+        this.x *= factor;
+        this.y *= factor;
+    };
 };
+
+function addition(vector_1 = new Vector(), vector_2 = new Vector())
+{
+    return new Vector(
+        vector_1.x + vector_2.x,
+        vector_1.y + vector_2.y
+    );
+}
+
+function subtraction(vector_1 = new Vector(), vector_2 = new Vector())
+{
+    return new Vector(
+        vector_1.x - vector_2.x,
+        vector_1.y - vector_2.y
+    );
+}
+
+
 
 class Line
 {
@@ -74,7 +103,7 @@ class Rectangle
     top()
     {
         return new Line(
-            this.start,
+            this.start.copy(),
             addition(this.start, new Vector(this.size.x, 0))
         );
     };
@@ -83,7 +112,7 @@ class Rectangle
     {
         const end = addition(this.start, this.size);
         return new Line(
-            end,
+            end.copy(),
             subtraction(end, new Vector(0, this.size.y))
         );
     };
@@ -92,7 +121,7 @@ class Rectangle
     {
         const end = addition(this.start, this.size);
         return new Line(
-            end,
+            end.copy(),
             subtraction(end, new Vector(this.size.x, 0))
         );
     };
@@ -100,7 +129,7 @@ class Rectangle
     left()
     {
         return new Line(
-            this.start,
+            this.start.copy(),
             addition(this.start, new Vector(0, this.size.y))
         );
     };
@@ -120,6 +149,11 @@ class Circle_vs_Rectangle
         const right = this.rectangle.right();
         const bottom = this.rectangle.bottom();
         const left = this.rectangle.left();
+
+        ctx.arc(top.start.x, top.start.y, this.circle.radius, 0, Math.PI * 2);
+        ctx.arc(top.end.x, top.end.y, this.circle.radius, 0, Math.PI * 2);
+        ctx.arc(bottom.start.x, bottom.start.y, this.circle.radius, 0, Math.PI * 2);
+        ctx.arc(bottom.end.x, bottom.end.y, this.circle.radius, 0, Math.PI * 2);
 
         top.translate(new Vector(0, -this.circle.radius));
         right.translate(new Vector(this.circle.radius, 0));

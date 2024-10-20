@@ -16,12 +16,31 @@ const rectangle = new Rectangle(
 
 const circle_vs_rectangle = new Circle_vs_Rectangle(circle, rectangle);
 
+const line = new Line();
+
 const ctx = canvas.getContext("2d");
 
 canvas.addEventListener("mousemove", function(info){
     circle.center = {x: info.offsetX, y: info.offsetY};
+
+    const half_length = new Vector(circle_radius, circle_radius);
+    half_length.multiply(Math.SQRT1_2);
+
+    line.start = subtraction(
+        circle.center,
+        half_length
+    );
+    line.end = addition(
+        circle.center,
+        half_length
+    );
     draw();
+    // console.log("start : ", line.start);
+    // console.log("center: ", circle.center);
+    // console.log("end   : ", line.end);
 });
+
+// canvas.addEventListener("wheel")
 
 function draw()
 {
@@ -32,22 +51,7 @@ function draw()
     circle.draw(ctx);
     rectangle.draw(ctx);
     circle_vs_rectangle.draw(ctx);
+    line.draw(ctx);
     
     ctx.stroke();
 };
-
-function addition(vector_1, vector_2)
-{
-    return new Vector(
-        vector_1.x + vector_2.x,
-        vector_1.y + vector_2.y
-    );
-}
-
-function subtraction(vector_1, vector_2)
-{
-    return new Vector(
-        vector_1.x - vector_2.x,
-        vector_1.y - vector_2.y
-    );
-}
