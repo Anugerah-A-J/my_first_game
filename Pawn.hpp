@@ -1,8 +1,8 @@
-#pragma once
 #include <allegro5/color.h>
 #include "Shapes.hpp"
 #include "param.hpp"
 #include <allegro5/allegro_primitives.h>
+#pragma once
 
 struct Pawn
 {
