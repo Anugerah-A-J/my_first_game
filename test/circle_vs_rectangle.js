@@ -16,42 +16,41 @@ const rectangle = new Rectangle(
 
 const circle_vs_rectangle = new Circle_vs_Rectangle(circle, rectangle);
 
-const line = new Line();
+const line = new Line(
+    circle.center, addition(circle.center.copy(), new Vector(2 * circle.radius, 0))
+);
 
 const ctx = canvas.getContext("2d");
 
-canvas.addEventListener("mousemove", function(info){
-    circle.center = {x: info.offsetX, y: info.offsetY};
-
-    const half_length = new Vector(circle_radius, circle_radius);
-    half_length.multiply(Math.SQRT1_2);
-
-    line.start = subtraction(
-        circle.center,
-        half_length
-    );
-    line.end = addition(
-        circle.center,
-        half_length
-    );
+canvas.addEventListener("mousemove", (event) => {
+    circle.center = {x: event.offsetX, y: event.offsetY};
+    line.translate_to(circle.center);
     draw();
-    // console.log("start : ", line.start);
-    // console.log("center: ", circle.center);
-    // console.log("end   : ", line.end);
 });
 
-// canvas.addEventListener("wheel")
+canvas.addEventListener("wheel", (event) => {
+    line.rotate(event.deltaY * 0.1);
+    draw();
+});
 
 function draw()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "white";
+    // ctx.strokeStyle = "white";
     ctx.beginPath();
 
-    circle.draw(ctx);
-    rectangle.draw(ctx);
+    // circle.draw(ctx);
+    // rectangle.draw(ctx);
     circle_vs_rectangle.draw(ctx);
     line.draw(ctx);
-    
+    check();
     ctx.stroke();
+};
+
+function check()
+{
+    if (circle_vs_rectangle.intersect(line) === 2)
+        ctx.strokeStyle = "white";
+    else
+        ctx.strokeStyle = "red";
 };
