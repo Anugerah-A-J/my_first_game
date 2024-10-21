@@ -65,7 +65,7 @@ float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rect
 float Collision::intersect(const Line& line1, const Line& line2)
 {
     Vector A = line1.end - line1.start;
-    Vector B = line2.end - line2.start;
+    Vector B = line2.end - line2.start; terbalik
     Vector C = line1.start - line2.start;
 
     float t_numerator = B.y * C.x - B.x * C.y;
@@ -97,7 +97,7 @@ float Collision::intersect(const Line& line1, const Line& line2)
     float t = t_numerator / denominator;
     float u = u_numerator / denominator;
 
-    // if (t < 0 || t > 1 || u < 0 || u > 0)
+    // if (t < 0 || t > 1 || u < 0 || u > 1)
     if (t < 0 || t > 1)
         return 2;
 
