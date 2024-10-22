@@ -3,14 +3,14 @@
 
 namespace param
 {
-    const int window_width      = 500;
-    const int window_height     = window_width;
-    const float space           = window_width / 100;
-    const float line_width      = window_width / 1000;
-    const float radius          = window_width / 200;
-    const float reach_radius    = window_width / 8;
-    const float triangle_height = window_width / 200;
-    const int move_step         = window_width / 200;
+    const int window_width      = 800;
+    const int window_height     = 600;
+    const float space           = 10;
+    const float line_width      = 1;
+    const float radius          = space / 2;
+    const float reach_radius    = window_height / 6;
+    const float triangle_height = space;
+    const int move_step         = 10;
 
     // static float delta() { return 0.1f;
 

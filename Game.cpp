@@ -146,7 +146,8 @@ void Game::update_pawn()
             active_pawns->back().move();
 
             Collision::response(dying_pawns, active_pawns->back(), *passive_pawns);
-            Collision::response(active_pawns->back(), *passive_king);
+            Collision::response(active_pawns->back(), *active_king, true, aim);
+            Collision::response(active_pawns->back(), *passive_king, false, aim);
             Collision::response(dying_pawns, active_pawns->back(), fence);
         }
         else if (Pawn::dead_without_dying && !active_pawns->empty())

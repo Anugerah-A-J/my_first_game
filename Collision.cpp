@@ -65,30 +65,24 @@ float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rect
 float Collision::intersect(const Line& line1, const Line& line2)
 {
     Vector A = line1.end - line1.start;
-    Vector B = line2.end - line2.start; terbalik
+    Vector B = line2.start - line2.end;
     Vector C = line1.start - line2.start;
 
     float t_numerator = B.y * C.x - B.x * C.y;
     float u_numerator = C.y * A.x - C.x * A.y;
     float denominator = A.y * B.x - A.x * B.y;
 
-    // std::cout << "    t num: " << t_numerator << "\n";
-    // std::cout << "    u num: " << u_numerator << "\n";
-    // std::cout << "    denom: " << denominator << "\n";
-    // std::cout << "    t: " << t_numerator / denominator << "\n";
-    // std::cout << "    u: " << u_numerator / denominator << "\n";
-
     // // t < 0 and u < 0
-    // if (denominator > 0 && (t_numerator < 0 || u_numerator < 0))
-    //     return 2;
-    // if (denominator < 0 && (t_numerator > 0 || u_numerator > 0))
-    //     return 2;
+    if (denominator > 0 && (t_numerator < 0 || u_numerator < 0))
+        return 2;
+    if (denominator < 0 && (t_numerator > 0 || u_numerator > 0))
+        return 2;
 
     // // t > 1 and u > 1
-    // if (denominator > 0 && (t_numerator > denominator || u_numerator > denominator))
-    //     return 2;
-    // if (denominator < 0 && (t_numerator < denominator || u_numerator < denominator))
-    //     return 2;
+    if (denominator > 0 && (t_numerator > denominator || u_numerator > denominator))
+        return 2;
+    if (denominator < 0 && (t_numerator < denominator || u_numerator < denominator))
+        return 2;
 
     // if (equal(denominator, 0, 0.05f))
     if (denominator == 0)
@@ -96,10 +90,6 @@ float Collision::intersect(const Line& line1, const Line& line2)
 
     float t = t_numerator / denominator;
     float u = u_numerator / denominator;
-
-    // if (t < 0 || t > 1 || u < 0 || u > 1)
-    if (t < 0 || t > 1)
-        return 2;
 
     return t;
 };

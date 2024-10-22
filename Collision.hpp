@@ -3,6 +3,7 @@
 #include "Fence.hpp"
 #include <vector>
 #include "King.hpp"
+#include "Aim.hpp"
 #pragma once
 
 class Collision
@@ -11,9 +12,6 @@ public:
     static void response(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const Fence& fence)
     {
         float t = circle_inside_rectangle(moving_pawn.shape, fence.shape, moving_pawn.move_step_line_segment());
-
-        // std::cout << "t fence: " << t << "\n";
-        // std::cout << "is dead immediately after finish moving: " << Pawn::is_dead_immediately_after_finish_moving() << "\n\n";
 
         if (t == 2 || Pawn::dead_without_dying)
             return;
@@ -34,17 +32,20 @@ public:
         }
     };
 
-    static void response(Pawn& moving_pawn, King& king)
+    static void response(Pawn& moving_pawn, King& king, bool friendly_fire, const Aim& aim)
     {
         float t = circle_vs_rectangle(moving_pawn.shape, king.shape_rectangle, moving_pawn.move_step_line_segment());
-
-        // std::cout << "t king: " << t << "\n\n";
 
         if (t == 2 || Pawn::dead_without_dying)
             return;
 
-        // moving_pawn.stop();
-        Pawn::dead_without_dying = true;
+        if (friendly_fire && !king.contain(aim.shape_circle.center))
+        {
+            moving_pawn.retreat(1 - t);
+            moving_pawn.stop();
+        }
+        else if (!friendly_fire)
+            Pawn::dead_without_dying = true;
     };
 private:
     static float circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
