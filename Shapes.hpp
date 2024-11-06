@@ -21,12 +21,14 @@ struct Line
 struct Rectangle
 {
     Vector start;
+    Vector size;
     Vector end;
     
     Rectangle(float x, float y, float w, float h)
     :
         start{x, y},
-        end{start + Vector(w, h)}
+        size{fabsf(w), fabsf(h)},
+        end{start + size}
     {};
 
     void translate(const Vector& displacement)
@@ -68,6 +70,10 @@ struct Circle
     Circle(float cx, float cy, float r)
     :
         center{cx, cy}, radius{r}
+    {};
+    Circle(const Circle& circle, const Vector& vector):
+        center{circle.center + vector},
+        radius{circle.radius}
     {};
 };
 

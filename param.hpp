@@ -11,6 +11,7 @@ namespace param
     const float reach_radius    = window_height / 6;
     const float triangle_height = space;
     const int move_step         = 10;
+    const int lives             = 3;
 
     // static float delta() { return 0.1f;
 
