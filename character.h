@@ -44,33 +44,29 @@ struct King
 
     void draw_lives() const
     {
-        switch (lives)
-        {
-        case 1:
+        if (lives >= 1)
             al_draw_filled_circle(
                 live.x,
                 live.y + shape_rectangle.size.y,
                 shape_circle.radius / 2,
                 color
             );
-            break;
-        case 2:
+
+        if (lives >= 2)
             al_draw_filled_circle(
                 live.x,
                 live.y + shape_rectangle.size.y / 2,
                 shape_circle.radius / 2,
                 color
             );
-            break;
-        case 3:
+
+        if (lives >= 3)
             al_draw_filled_circle(
                 live.x,
                 live.y,
                 shape_circle.radius / 2,
                 color
             );
-            break;
-        }
     };
 
     bool contain(const Vector& v) const

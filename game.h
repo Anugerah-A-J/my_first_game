@@ -58,11 +58,12 @@ struct Game
         al_init_primitives_addon();
         al_install_keyboard();
         al_install_mouse();
-        al_set_window_position(display, 0, 0);
 
         timer = al_create_timer(1.0 / 30.0);
         queue = al_create_event_queue();
         display = al_create_display(param::window_width, param::window_height);
+
+        // al_set_window_position(display, 0, 0);
     };
 
     ~Game()
