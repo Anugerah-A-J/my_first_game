@@ -3,23 +3,22 @@
 #include <set>
 #include <vector>
 #include <algorithm>
+#include <functional>
 #pragma once
 
-class Collision
+namespace collision
 {
-public:
-    static void response(std::set<Pawn*>& dying_pawns, Pawn& moving_pawn, const Fence& fence);
-    static void response(std::set<Pawn*>& dying_pawns, const Pawn& moving_pawn, std::vector<Pawn>& pawns);
-    static void response(Pawn& moving_pawn, King& king, bool friendly_fire, const Aim& aim);
-private:
-    static float circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
-    static float circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    static float circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    static float intersect(const Line& line1, const Line& line2);
-    static float intersect(const Line& line, const Circle& circle);
+    void response(std::set<Pawn*>& dying_pawns, Pawn& moving_pawn, const Fence& fence);
+    void response(std::set<Pawn*>& dying_pawns, const Pawn& moving_pawn, std::vector<Pawn>& pawns);
+    void response(Pawn& moving_pawn, King& king, const std::function<void(float f)>& what_to_do);
+    float circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
+    float circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
+    float circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
+    float intersect(const Line& line1, const Line& line2);
+    float intersect(const Line& line, const Circle& circle);
 };
 
-void Collision::response(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const Fence& fence)
+void collision::response(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const Fence& fence)
 {
     float t = circle_inside_rectangle(moving_pawn.shape, fence.shape, moving_pawn.move_step_line_segment());
 
@@ -31,7 +30,7 @@ void Collision::response(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const 
     dying_pawns.emplace(&moving_pawn);
 };
 
-void Collision::response(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, std::vector<Pawn>& pawns)
+void collision::response(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, std::vector<Pawn>& pawns)
 {
     for (auto& pawn: pawns)
     {
@@ -42,23 +41,17 @@ void Collision::response(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, 
     }
 };
 
-void Collision::response(Pawn& moving_pawn, King& king, bool friendly_fire, const Aim& aim)
+void collision::response(Pawn& moving_pawn, King& king, const std::function<void(float f)>& what_to_do_when_collide)
 {
     float t = circle_vs_rectangle(moving_pawn.shape, king.shape_rectangle, moving_pawn.move_step_line_segment());
 
-    if (t == 2 || Pawn::dead_without_dying)
+    if (t == 2)
         return;
 
-    if (friendly_fire && !king.contain(aim.shape_circle.center))
-    {
-        moving_pawn.retreat(1 - t);
-        moving_pawn.stop();
-    }
-    else if (!friendly_fire)
-        Pawn::dead_without_dying = true;
+    what_to_do_when_collide(t);
 };
 
-float Collision::circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
+float collision::circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
 {
     Circle circle = nonmoving_circle;
     circle.radius += moving_circle.radius;
@@ -66,7 +59,7 @@ float Collision::circle_vs_circle(const Circle& moving_circle, const Circle& non
     return intersect(velocity, circle);
 };
 
-float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+float collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
     Line top = nonmoving_rectangle.top();
     Line right = nonmoving_rectangle.right();
@@ -103,7 +96,7 @@ float Collision::circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     return *std::min_element(ts.begin(), ts.end());
 };
 
-float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+float collision::circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
     Rectangle rectangle = nonmoving_rectangle;
     rectangle.translate(Vector(moving_circle.radius, moving_circle.radius));
@@ -119,7 +112,7 @@ float Collision::circle_inside_rectangle(const Circle& moving_circle, const Rect
     return *std::min_element(ts.begin(), ts.end());
 };
 
-float Collision::intersect(const Line& line1, const Line& line2)
+float collision::intersect(const Line& line1, const Line& line2)
 {
     Vector A = line1.end - line1.start;
     Vector B = line2.start - line2.end;
@@ -151,7 +144,7 @@ float Collision::intersect(const Line& line1, const Line& line2)
     return t;
 };
 
-float Collision::intersect(const Line& line, const Circle& circle)
+float collision::intersect(const Line& line, const Circle& circle)
 {
     Vector X = line.start - circle.center;
     Vector Y = line.end - line.start;

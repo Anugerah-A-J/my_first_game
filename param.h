@@ -3,14 +3,11 @@
 
 namespace param
 {
-    const int window_width      = 800;
-    const int window_height     = 600;
-    const float space           = 10;
+    const int window_width      = 500;
+    const int window_height     = 500;
+    const float unit_length     = 10;
     const float line_width      = 1;
-    const float radius          = space / 2;
-    const float reach_radius    = window_height / 6;
-    const float triangle_height = space;
-    const int move_step         = 10;
+    const float reach_radius    = window_height / 4;
     const int lives             = 3;
 
     // static float delta() { return 0.1f;
@@ -29,7 +26,7 @@ namespace param
 
     const float sqrt_2 = 1.41421356237309504880f;
     const float sqrt_3 = 1.73205080756887729352f;
-    const float pi = 3.14159265358979323846f;
+    const float pi     = 3.14159265358979323846f;
     const float sin_15 = (sqrt_3 - 1) * sqrt_2 / 4;
     const float sin_45 = sqrt_2 / 2;
     const float sin_75 = (sqrt_3 + 1) * sqrt_2 / 4;

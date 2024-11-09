@@ -217,7 +217,7 @@ void Game::update_pawn()
         Pawn::update_move_step_vector(aim.shape_circle.center, aim.end_point);
         Pawn::reset_move_step_count();
         state = State::move_pawn;
-        std::cout << "choose and aim > move pawn\n";
+        // std::cout << "choose and aim > move pawn\n";
     }
     else if (state == State::move_pawn && event.type == ALLEGRO_EVENT_TIMER)
     {
@@ -225,10 +225,36 @@ void Game::update_pawn()
         {
             active_pawns->back().move();
 
-            Collision::response(dying_pawns, active_pawns->back(), *passive_pawns);
-            Collision::response(active_pawns->back(), *active_king, true, aim);
-            Collision::response(active_pawns->back(), *passive_king, false, aim);
-            Collision::response(dying_pawns, active_pawns->back(), fence);
+            collision::response(dying_pawns, active_pawns->back(), *passive_pawns);
+
+            collision::response(active_pawns->back(), *active_king, [&](float t)
+            {
+                if (!active_king->contain(aim.shape_circle.center)) // when pawn doesn't come out of king
+                {
+                    active_pawns->back().retreat(1 - t);
+                    active_pawns->back().stop();
+                }
+            });
+
+            collision::response(active_pawns->back(), *passive_king, [&](float f)
+            {
+                Pawn::dead_without_dying = true;
+
+                f = collision::circle_vs_circle(
+                    active_pawns->back().shape, 
+                    passive_king->shape_circle, 
+                    active_pawns->back().move_step_line_segment()
+                );
+                std::cout << "t = " << f << "\n";
+
+                if (f <= 1)
+                {
+                    passive_king->lives -= 1;
+                    std::cout << "king lives" << passive_king->lives << "\n";
+                }
+            });
+
+            collision::response(dying_pawns, active_pawns->back(), fence);
         }
         else if (Pawn::dead_without_dying && !active_pawns->empty())
         {
@@ -242,7 +268,7 @@ void Game::update_pawn()
 
             state = State::choose_and_aim;
             aim.color = active_king->color;
-            std::cout << "move pawn > choose and aim\n";
+            // std::cout << "move pawn > choose and aim\n";
         }
 
         for(auto it = dying_pawns.begin(); it != dying_pawns.end();)
