@@ -8,19 +8,20 @@ namespace param
     const float unit_length     = 10;
     const float line_width      = 1;
     const float reach_radius    = window_height / 4;
-    const int lives             = 3;
+    const int life              = 3;
+    const int translation_step  = 10;
 
     // static float delta() { return 0.1f;
 
-    const ALLEGRO_COLOR black      = al_map_rgba_f(0.1f, 0.1f, 0.1f, 1);
-    const ALLEGRO_COLOR red        = al_map_rgba_f(0.9f, 0.1f, 0.1f, 1);
-    const ALLEGRO_COLOR yellow     = al_map_rgba_f(0.9f, 0.9f, 0.1f, 1);
-    const ALLEGRO_COLOR green      = al_map_rgba_f(0.1f, 0.9f, 0.1f, 1);
-    const ALLEGRO_COLOR cyan       = al_map_rgba_f(0.1f, 0.9f, 0.9f, 1);
-    const ALLEGRO_COLOR blue       = al_map_rgba_f(0.1f, 0.1f, 0.9f, 1);
-    const ALLEGRO_COLOR magenta    = al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
-    const ALLEGRO_COLOR white      = al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
-    const ALLEGRO_COLOR dead_color = al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
+    const ALLEGRO_COLOR black   = al_map_rgba_f(0.1f, 0.1f, 0.1f, 1);
+    const ALLEGRO_COLOR red     = al_map_rgba_f(0.9f, 0.1f, 0.1f, 1);
+    const ALLEGRO_COLOR yellow  = al_map_rgba_f(0.9f, 0.9f, 0.1f, 1);
+    const ALLEGRO_COLOR green   = al_map_rgba_f(0.1f, 0.9f, 0.1f, 1);
+    const ALLEGRO_COLOR cyan    = al_map_rgba_f(0.1f, 0.9f, 0.9f, 1);
+    const ALLEGRO_COLOR blue    = al_map_rgba_f(0.1f, 0.1f, 0.9f, 1);
+    const ALLEGRO_COLOR magenta = al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
+    const ALLEGRO_COLOR white   = al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
+    const ALLEGRO_COLOR vanish  = al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
 
     const float color_transformation_ratio = 0.5f;
 

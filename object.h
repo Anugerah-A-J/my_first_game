@@ -7,12 +7,20 @@
 class Aim
 {
 public:
-    Aim():
+    Aim()
+    :
         Reach_circle{0, 0, param::reach_radius, param::magenta, param::line_width},
         Pawn_destination{0, 0},
-        Direction_sign{Vector(0, 0), Vector(0, 0), Vector(0, 0), param::magenta, param::line_width},
+        Direction_sign{
+            Vector(0, 0),
+            Vector(0, 0),
+            Vector(0, 0),
+            param::magenta,
+            param::line_width
+        },
         Visible{false}
-    {};
+    {}
+
     void draw() const
     {
         if (!Visible)
@@ -20,7 +28,35 @@ public:
         
         Reach_circle.draw();
         Direction_sign.draw();
-    };
+    }
+
+    void center(const Vector& point) { Reach_circle.center(point); }
+    const Vector& center() { return Reach_circle.center(); }
+
+    const Vector& pawn_destination() const { return Pawn_destination; }
+
+    void update_direction(const Vector& mouse_coordinate)
+    {
+        Vector unit = (mouse_coordinate - Reach_circle.center()).unit();
+
+        Pawn_destination = Reach_circle.center() - unit * Reach_circle.radius();
+        
+        Direction_sign.vertex_1(Reach_circle.center() + unit * param::unit_length);
+
+        Vector temp = Direction_sign.vertex_1() + unit * param::unit_length;
+
+        Direction_sign.vertex_2(temp + Matrix(0, 1, -1, 0) * unit * param::unit_length / param::sqrt_3);
+
+        Direction_sign.vertex_3(temp + Matrix(0, -1, 1, 0) * unit * param::unit_length / param::sqrt_3);
+    }
+
+    void show() { Visible = true; }
+    void hide() { Visible = false; }
+    void color(const ALLEGRO_COLOR& color)
+    {
+        Reach_circle.color(color);
+        Direction_sign.color(color);
+    }
 private:
     Circle Reach_circle;
     Vector Pawn_destination;
@@ -31,7 +67,8 @@ private:
 class Clipper
 {
 public:
-    Clipper():
+    Clipper()
+    :
         Left{
             0,
             0,
@@ -68,10 +105,10 @@ public:
 
     void draw() const
     {
-        Left.draw_filled();
-        Top.draw_filled();
-        Right.draw_filled();
-        Bottom.draw_filled();
+        Left.draw();
+        Top.draw();
+        Right.draw();
+        Bottom.draw();
     };
 private:
     Rectangle Left;
@@ -83,7 +120,8 @@ private:
 class Fence
 {
 public:
-    Fence():
+    Fence()
+    :
         Shape{
             2 * param::unit_length,
             param::unit_length,
@@ -93,10 +131,13 @@ public:
             param::line_width
         }
     {};
+
     void draw() const
     {
         Shape.draw();
     };
+
+    const Rectangle& shape() const { return Shape; }
 private:
     Rectangle Shape;
 };

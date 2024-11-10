@@ -2,220 +2,223 @@
 #include <allegro5/color.h>
 #include <allegro5/allegro_primitives.h>
 #include "param.h"
+#include <vector>
 #pragma once
 
-struct King
+class King
 {
-    Circle shape_circle;
-    Rectangle shape_rectangle;
-    Vector live;
-    ALLEGRO_COLOR color;
-    float thickness;
-    int lives;
-
-    King(const Circle& c, const Rectangle& r, const Vector& live, const ALLEGRO_COLOR& color, float thickness)
+public:
+    King(const Circle& king_shape, const Rectangle& throne_shape, const Vector& last_life_position)
     :
-        shape_circle{c},
-        shape_rectangle{r},
-        live{live},
-        color{color},
-        thickness{thickness},
-        lives{param::lives}
-    {};
+        King_shape{king_shape},
+        Throne_shape{throne_shape},
+        Life{param::life},
+        Life_shapes{king_shape, king_shape, king_shape}
+    {
+        for (auto& life_shape: Life_shapes)
+        {
+            life_shape.scale(1/2);
+            life_shape.center(last_life_position);
+        }
+
+        for (auto it = Life_shapes.begin() + 1; it != Life_shapes.end(); ++it)
+            (*it).translate(0, -Throne_shape.size().y() * (it - Life_shapes.begin()));
+    };
 
     void draw() const
     {
-        al_draw_rectangle(
-            shape_rectangle.start.x,
-            shape_rectangle.start.y,
-            shape_rectangle.end.x,
-            shape_rectangle.end.y,
-            color,
-            thickness
-        );
-
-        al_draw_filled_circle(
-            shape_circle.center.x,
-            shape_circle.center.y,
-            shape_circle.radius,
-            color
-        );
+        King_shape.draw();
+        Throne_shape.draw();
     };
 
-    void draw_lives() const
+    void draw_life() const
     {
-        if (lives >= 1)
-            al_draw_filled_circle(
-                live.x,
-                live.y + shape_rectangle.size.y,
-                shape_circle.radius / 2,
-                color
-            );
+        for (auto it = Life_shapes.begin(); it != Life_shapes.begin() + Life; ++it)
+            (*it).draw();
+    }
 
-        if (lives >= 2)
-            al_draw_filled_circle(
-                live.x,
-                live.y + shape_rectangle.size.y / 2,
-                shape_circle.radius / 2,
-                color
-            );
-
-        if (lives >= 3)
-            al_draw_filled_circle(
-                live.x,
-                live.y,
-                shape_circle.radius / 2,
-                color
-            );
-    };
-
-    bool contain(const Vector& v) const
+    bool contain(const Vector& point) const
     {
-        return (v - shape_circle.center).magsq <= shape_circle.radius * shape_circle.radius;
-    };
+        return (point - King_shape.center()).magsq() <= King_shape.radius() * King_shape.radius();
+    }
+
+    Vector center() const
+    {
+        return King_shape.center();
+    }
+
+    const ALLEGRO_COLOR& color() const { return King_shape.color(); }
+
+    const Circle& king_shape() const { return King_shape; }
+    const Rectangle& throne_shape() const { return Throne_shape; }
+
+    int life() const { return Life; }
+    void life_decrease_by(int value) { Life -= value; }
+private:
+    Circle King_shape;
+    Rectangle Throne_shape;
+    int Life;
+    std::vector<Circle> Life_shapes;
 };
 
-struct King_magenta:
+class King_magenta
+:
     public King
 {
+public:
     King_magenta()
     :
         King{
             Circle(
-                param::window_width - param::space * 3 - param::radius,
+                param::window_width - param::unit_length * 3.5,
                 param::window_height / 2,
-                param::radius
+                param::unit_length / 2,
+                param::magenta,
+                0
             ),
             Rectangle(
-                param::window_width - (param::space * 2 + param::radius) * 2,
-                param::window_height / 2 - param::radius - param::space,
-                param::radius * 2 + param::space * 2,
-                param::radius * 2 + param::space * 2
+                param::window_width - param::unit_length * 5,
+                param::window_height / 2 - param::unit_length * 1.5,
+                param::unit_length * 3,
+                param::unit_length * 3,
+                param::magenta,
+                param::line_width
             ),
             Vector(
-                param::window_width - param::space,
-                param::window_height / 2 - param::radius - param::space
-            ),
-            param::magenta,
-            param::line_width
+                param::window_width - param::unit_length,
+                param::window_height / 2 + param::unit_length * 1.5
+            )
         }
     {};
 };
 
-struct King_cyan:
+class King_cyan
+:
     public King
 {
+public:
     King_cyan()
     :
         King{
             Circle(
-                param::space * 3 + param::radius,
+                param::unit_length * 3.5,
                 param::window_height / 2,
-                param::radius
+                param::unit_length / 2,
+                param::cyan,
+                0
             ),
             Rectangle(
-                param::space * 2,
-                param::window_height / 2 - param::radius - param::space,
-                param::radius * 2 + param::space * 2,
-                param::radius * 2 + param::space * 2
+                param::unit_length * 2,
+                param::window_height / 2 - param::unit_length * 1.5,
+                param::unit_length * 3,
+                param::unit_length * 3,
+                param::cyan,
+                param::line_width
             ),
             Vector(
-                param::space,
-                param::window_height / 2 - param::radius - param::space
-            ),
-            param::cyan,
-            param::line_width
+                param::unit_length,
+                param::window_height / 2 + param::unit_length * 1.5
+            )
         }
     {};
 };
 
-struct Pawn
+class Pawn
 {
-    inline static unsigned int move_step_count = param::move_step;
-    inline static Vector move_step_vector = Vector(0, 0);
-    inline static bool dead_without_dying = false;
-
-    Circle shape;
-    ALLEGRO_COLOR color;
-    
+public:
     Pawn(float cx, float cy, const ALLEGRO_COLOR& color)
     :
-        shape{cx, cy, param::radius},
-        color{color}
-    {};
+        Shape{cx, cy, param::unit_length, color, 0}
+        // ,Visible{true}
+    {}
+
+    Pawn(const Vector& center, const ALLEGRO_COLOR& color)
+    :
+        Shape{center, param::unit_length, color, 0}
+        // ,Visible{true}
+    {}
 
     void draw() const
     {
-        al_draw_filled_circle(
-            shape.center.x,
-            shape.center.y,
-            shape.radius,
-            color
-        );
-    };
+        // if (!Visible)
+        //     return;
 
-    bool contain(const Vector& v) const
-    {
-        return (v - shape.center).magsq <= shape.radius * shape.radius;
-    };
+        Shape.draw();
+    }
 
-    static void update_move_step_vector(const Vector& start, const Vector& end)
+    bool contain(const Vector& point) const
     {
-        move_step_vector = (end - start) / param::move_step;
-    };
+        return (point - Shape.center()).magsq() <= Shape.radius() * Shape.radius();
+    }
 
-    static void reset_move_step_count()
+    static void update_translation(const Vector& start, const Vector& end)
     {
-        move_step_count = 0;
-    };
+        Translation = (end - start) / param::unit_length;
+    }
+
+    static void reset_translation_step_count()
+    {
+        Translation_step_count = 0;
+    }
 
     static void stop()
     {
-        move_step_count = param::move_step;
+        Translation_step_count = param::translation_step;
     }
 
     void move()
     {
-        move_step_count ++;
-        shape.center += move_step_vector;
+        if (Translation_step_count == param::translation_step)
+            return;
+
+        Translation_step_count ++;
+
+        Shape.translate(Translation);
+    }
+
+    static bool finish_moving() { return Translation_step_count == param::translation_step; }
+
+    void retreat(float compared_to_latest_translation)
+    {
+        Shape.translate(-compared_to_latest_translation * Translation);
+    }
+
+    void transform_color_to_vanish()
+    {
+        Shape.transform_color_to(param::vanish, param::color_transformation_ratio);
     };
 
-    void retreat(float f)
+    bool color_equal_vanish()
     {
-        shape.center -= f * move_step_vector;
-    };
-
-    void die()
-    {
-        color.r = (param::dead_color.r + color.r) * param::color_transformation_ratio;
-        color.g = (param::dead_color.g + color.g) * param::color_transformation_ratio;
-        color.b = (param::dead_color.b + color.b) * param::color_transformation_ratio;
-        color.a = (param::dead_color.a + color.a) * param::color_transformation_ratio;
-    };
-
-    bool is_dead()
-    {
-        if(
-            equal(color.r, param::dead_color.r, 0.05f) &&
-            equal(color.g, param::dead_color.g, 0.05f) &&
-            equal(color.b, param::dead_color.b, 0.05f) &&
-            equal(color.a, param::dead_color.a, 0.05f)
-        ){
-            color.r = param::dead_color.r;
-            color.g = param::dead_color.g;
-            color.b = param::dead_color.b;
-            color.a = param::dead_color.a;
+        if(equal(Shape.color(), param::vanish, 0.05f))
             return true;
-        }
 
         return false;
     };
 
-    Line move_step_line_segment() const
+    // void hide()
+    // {
+    //     Visible = false;
+    // }
+
+    Line last_translation() const
     {
         return Line(
-            shape.center - move_step_vector,
-            shape.center
+            Shape.center() - Translation,
+            Shape.center()
         );
     }
+
+    Vector center() const { return Shape.center(); }
+
+    static void vanish_immediately(bool value) { Vanish_immediately = value; }
+    static bool vanish_immediately() { return Vanish_immediately; }
+
+    const Circle& shape() const { return Shape; }
+private:
+    inline static unsigned int Translation_step_count = 0;
+    inline static Vector Translation = Vector(0, 0);
+    inline static bool Vanish_immediately = false;
+    Circle Shape;
+    // bool Visible;
 };
