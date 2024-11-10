@@ -17,12 +17,12 @@ public:
     {
         for (auto& life_shape: Life_shapes)
         {
-            life_shape.scale(1/2);
+            life_shape.scale(0.5);
             life_shape.center(last_life_position);
         }
 
         for (auto it = Life_shapes.begin() + 1; it != Life_shapes.end(); ++it)
-            (*it).translate(0, -Throne_shape.size().y() * (it - Life_shapes.begin()));
+            (*it).translate(0, -Throne_shape.size().y() / 2 * (it - Life_shapes.begin()));
     };
 
     void draw() const
@@ -128,13 +128,13 @@ class Pawn
 public:
     Pawn(float cx, float cy, const ALLEGRO_COLOR& color)
     :
-        Shape{cx, cy, param::unit_length, color, 0}
+        Shape{cx, cy, param::unit_length / 2, color, 0}
         // ,Visible{true}
     {}
 
     Pawn(const Vector& center, const ALLEGRO_COLOR& color)
     :
-        Shape{center, param::unit_length, color, 0}
+        Shape{center, param::unit_length / 2, color, 0}
         // ,Visible{true}
     {}
 

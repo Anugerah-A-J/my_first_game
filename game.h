@@ -5,7 +5,6 @@
 #include "character.h"
 #include <vector>
 #include <set>
-#include <iostream>
 #include "collision.h"
 #pragma once
 
@@ -202,7 +201,7 @@ void Game::update_aim_center(float x, float y)
     if (active_king->contain(mouse_coordinate))
     {
         aim.center(active_king->center());
-        aim.show();
+        aim.show_reach_circle();
         state = State::aim;
     }
     else
@@ -212,7 +211,7 @@ void Game::update_aim_center(float x, float y)
             if (pawn.contain(mouse_coordinate))
             {
                 aim.center(pawn.center());
-                aim.show();
+                aim.show_reach_circle();
                 state = State::aim;
             }
         }
@@ -232,6 +231,7 @@ void Game::update_aim_direction(float x, float y)
                 aim.center(pawn.center());
 
     aim.update_direction(mouse_coordinate);
+    aim.show_direction_sign();
 }
 
 void Game::add_pawn()
@@ -272,13 +272,9 @@ void Game::move_pawn()
             passive_king->king_shape(),
             active_pawns->back().last_translation()
         );
-        std::cout << "t = " << f << "\n";
 
         if (f <= 1)
-        {
             passive_king->life_decrease_by(1);
-            std::cout << "king lives" << passive_king->life() << "\n";
-        }
     });
 
     collision::response(vanishing_pawns, active_pawns->back(), fence);

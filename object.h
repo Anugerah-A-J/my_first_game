@@ -18,16 +18,17 @@ public:
             param::magenta,
             param::line_width
         },
-        Visible{false}
+        reach_circle_is_visible{false},
+        direction_sign_is_visible{false}
     {}
 
     void draw() const
     {
-        if (!Visible)
-            return;
-        
-        Reach_circle.draw();
-        Direction_sign.draw();
+        if (reach_circle_is_visible)
+            Reach_circle.draw();
+
+        if (direction_sign_is_visible)
+            Direction_sign.draw();
     }
 
     void center(const Vector& point) { Reach_circle.center(point); }
@@ -50,8 +51,13 @@ public:
         Direction_sign.vertex_3(temp + Matrix(0, -1, 1, 0) * unit * param::unit_length / param::sqrt_3);
     }
 
-    void show() { Visible = true; }
-    void hide() { Visible = false; }
+    void show_reach_circle() { reach_circle_is_visible = true; }
+    void show_direction_sign() { direction_sign_is_visible = true; }
+    void hide()
+    {
+        reach_circle_is_visible = false;
+        direction_sign_is_visible = false;
+    }
     void color(const ALLEGRO_COLOR& color)
     {
         Reach_circle.color(color);
@@ -61,7 +67,8 @@ private:
     Circle Reach_circle;
     Vector Pawn_destination;
     Triangle Direction_sign;
-    bool Visible;
+    bool reach_circle_is_visible;
+    bool direction_sign_is_visible;
 };
 
 class Clipper
