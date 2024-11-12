@@ -282,7 +282,7 @@ void Game::move_pawn()
 
 void Game::clean_pawn()
 {
-    if (Pawn::vanish_immediately())
+    if (Pawn::vanish_immediately() && Pawn::finish_moving())
     {
         active_pawns->pop_back();
         Pawn::vanish_immediately(false);
