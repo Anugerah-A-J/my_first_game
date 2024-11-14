@@ -18,39 +18,39 @@ bool equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float mar
 class Vector
 {
 public:
-    Vector(float x, float y): X{x}, Y{y} {};
+    Vector(float x, float y): x_{x}, y_{y} {};
     
-    float x() const { return X; };
-    float y() const { return Y; };
+    float x() const { return x_; };
+    float y() const { return y_; };
 
-    Vector operator-() const { return Vector(-X, -Y); };
+    Vector operator-() const { return Vector(-x_, -y_); };
 
-    Vector operator+(const Vector& v) const { return Vector(X + v.X, Y + v.Y); };
+    Vector operator+(const Vector& v) const { return Vector(x_ + v.x_, y_ + v.y_); };
 
-    Vector operator-(const Vector& v) const { return Vector(X - v.X, Y - v.Y); };
+    Vector operator-(const Vector& v) const { return Vector(x_ - v.x_, y_ - v.y_); };
 
-    Vector operator*(float f) const { return Vector(X * f, Y * f); };
+    Vector operator*(float f) const { return Vector(x_ * f, y_ * f); };
 
-    Vector operator/(float f) const { return Vector(X / f, Y / f); };
+    Vector operator/(float f) const { return Vector(x_ / f, y_ / f); };
 
-    void operator*=(float f) { X *= f, Y *= f; };
+    void operator*=(float f) { x_ *= f, y_ *= f; };
 
-    void operator/=(float f) { X /= f, Y /= f; };
+    void operator/=(float f) { x_ /= f, y_ /= f; };
 
-    void operator+=(const Vector& v) { X += v.X, Y += v.Y; };
+    void operator+=(const Vector& v) { x_ += v.x_, y_ += v.y_; };
 
-    void operator-=(const Vector& v) { X -= v.X, Y -= v.Y; };
+    void operator-=(const Vector& v) { x_ -= v.x_, y_ -= v.y_; };
 
-    Vector unit() const { return *this / sqrtf(X * X + Y * Y); };
+    Vector unit() const { return *this / sqrtf(x_ * x_ + y_ * y_); };
 
-    Vector abs() const { return Vector(fabsf(X), fabsf(Y)); };
+    Vector abs() const { return Vector(fabsf(x_), fabsf(y_)); };
 
     static float dot(const Vector& v1, const Vector& v2);
 
-    float magsq() const { return X * X + Y * Y; };
+    float magsq() const { return x_ * x_ + y_ * y_; };
 private:
-    float X;
-    float Y;
+    float x_;
+    float y_;
 };
 
 Vector operator*(float f, const Vector& v)
@@ -60,18 +60,18 @@ Vector operator*(float f, const Vector& v)
 
 float Vector::dot(const Vector& v1, const Vector& v2)
 {
-    return v1.X * v2.X + v1.Y * v2.Y;
+    return v1.x_ * v2.x_ + v1.y_ * v2.y_;
 };
 
 class Matrix
 {
 public:
-    Matrix(float f1, float f2, float f3, float f4): Row_1{f1, f2}, Row_2{f3, f4} {};
-    const Vector& row_1() const { return Row_1; };
-    const Vector& row_2() const { return Row_2; };
+    Matrix(float f1, float f2, float f3, float f4): row_1_{f1, f2}, row_2_{f3, f4} {};
+    const Vector& row_1() const { return row_1_; };
+    const Vector& row_2() const { return row_2_; };
 private:
-    Vector Row_1;
-    Vector Row_2;
+    Vector row_1_;
+    Vector row_2_;
 };
 
 Vector operator*(const Matrix& m, const Vector& v)
@@ -85,215 +85,215 @@ Vector operator*(const Matrix& m, const Vector& v)
 class Line
 {
 public:
-    Line(float x1, float y1, float x2, float y2): Start{x1, y1}, End{x2, y2} {};
-    Line(float x, float y, const Vector& end): Start{x, y}, End{end} {};
-    Line(const Vector& start, float x, float y): Start{start}, End{x, y} {};
-    Line(const Vector& start, const Vector& end): Start{start}, End{end} {};
-    void translate(const Vector& displacement) { Start += displacement, End += displacement; };
-    const Vector& start() const { return Start; }
-    const Vector& end() const { return End; }
+    Line(float x1, float y1, float x2, float y2): start_{x1, y1}, end_{x2, y2} {};
+    Line(float x, float y, const Vector& end): start_{x, y}, end_{end} {};
+    Line(const Vector& start, float x, float y): start_{start}, end_{x, y} {};
+    Line(const Vector& start, const Vector& end): start_{start}, end_{end} {};
+    void translate(const Vector& displacement) { start_ += displacement, end_ += displacement; };
+    const Vector& start() const { return start_; }
+    const Vector& end() const { return end_; }
 private:
-    Vector Start;
-    Vector End;
+    Vector start_;
+    Vector end_;
 };
 
 class Rectangle
 {
 public:
     Rectangle(float x, float y, float w, float h, const ALLEGRO_COLOR& color, float line_width):
-        Origin{x, y},
-        Size{fabsf(w), fabsf(h)},
-        Color{color},
-        Line_width{line_width}
+        origin_{x, y},
+        size_{fabsf(w), fabsf(h)},
+        color_{color},
+        line_width_{line_width}
     {};
 
     Rectangle(const Vector& origin, const Vector& size, const ALLEGRO_COLOR& color, float line_width):
-        Origin{origin},
-        Size{size.abs()},
-        Color{color},
-        Line_width{line_width}
+        origin_{origin},
+        size_{size.abs()},
+        color_{color},
+        line_width_{line_width}
     {};
 
     void draw() const
     {
-        if (Line_width == 0)
+        if (line_width_ == 0)
             al_draw_filled_rectangle(
-                Origin.x(),
-                Origin.y(),
-                Origin.x() + Size.x(),
-                Origin.y() + Size.y(),
-                Color
+                origin_.x(),
+                origin_.y(),
+                origin_.x() + size_.x(),
+                origin_.y() + size_.y(),
+                color_
             );
         else
             al_draw_rectangle(
-                Origin.x(),
-                Origin.y(),
-                Origin.x() + Size.x(),
-                Origin.y() + Size.y(),
-                Color,
-                Line_width
+                origin_.x(),
+                origin_.y(),
+                origin_.x() + size_.x(),
+                origin_.y() + size_.y(),
+                color_,
+                line_width_
             );
     }
 
-    void translate(const Vector& displacement) { Origin += displacement; };
+    void translate(const Vector& displacement) { origin_ += displacement; };
 
     Line top() const { return Line(
-        Origin,
-        Origin.x() + Size.x(),
-        Origin.y()
+        origin_,
+        origin_.x() + size_.x(),
+        origin_.y()
     ); };
 
     Line right() const { return Line(
-        Origin + Size,
-        Origin.x() + Size.x(),
-        Origin.y()
+        origin_ + size_,
+        origin_.x() + size_.x(),
+        origin_.y()
     ); };
 
     Line bottom() const { return Line(
-        Origin + Size,
-        Origin.x(),
-        Origin.y() + Size.y()
+        origin_ + size_,
+        origin_.x(),
+        origin_.y() + size_.y()
     ); }
 
     Line left() const { return Line(
-        Origin,
-        Origin.x(),
-        Origin.y() + Size.y()
+        origin_,
+        origin_.x(),
+        origin_.y() + size_.y()
     ); }
 
-    const Vector& size() const { return Size; }
-    void add_size_by(const Vector& value) { Size += value; }
+    const Vector& size() const { return size_; }
+    void add_size_by(const Vector& value) { size_ += value; }
 private:
-    Vector Origin;
-    Vector Size;
-    ALLEGRO_COLOR Color;
-    float Line_width;
+    Vector origin_;
+    Vector size_;
+    ALLEGRO_COLOR color_;
+    float line_width_;
 };
 
 class Circle
 {
 public:
     Circle(float cx, float cy, float r, const ALLEGRO_COLOR& color, float line_width):
-        Center{cx, cy},
-        Radius{r},
-        Color{color},
-        Line_width{line_width}
+        center_{cx, cy},
+        radius_{r},
+        color_{color},
+        line_width_{line_width}
     {};
 
     Circle(const Vector& center, float r, const ALLEGRO_COLOR& color, float line_width):
-        Center{center},
-        Radius{r},
-        Color{color},
-        Line_width{line_width}
+        center_{center},
+        radius_{r},
+        color_{color},
+        line_width_{line_width}
     {};
 
     void draw() const
     {
-        if (Line_width == 0)
+        if (line_width_ == 0)
             al_draw_filled_circle(
-                Center.x(),
-                Center.y(),
-                Radius,
-                Color
+                center_.x(),
+                center_.y(),
+                radius_,
+                color_
             );
         else
             al_draw_circle(
-                Center.x(),
-                Center.y(),
-                Radius,
-                Color,
-                Line_width
+                center_.x(),
+                center_.y(),
+                radius_,
+                color_,
+                line_width_
             );
     }
 
-    void translate(const Vector& displacement) { Center += displacement; }
-    void translate(float x, float y) { Center += Vector(x, y); }
-    void scale(float multiplier) { Radius *= multiplier; }
-    void add_radius_by(float value) { Radius += value; }
+    void translate(const Vector& displacement) { center_ += displacement; }
+    void translate(float x, float y) { center_ += Vector(x, y); }
+    void scale(float multiplier) { radius_ *= multiplier; }
+    void add_radius_by(float value) { radius_ += value; }
 
     void transform_color_to(const ALLEGRO_COLOR& color, float color_transformation_ratio)
     {
-        Color.r += (color.r - Color.r) * color_transformation_ratio;
-        Color.g += (color.g - Color.g) * color_transformation_ratio;
-        Color.b += (color.b - Color.b) * color_transformation_ratio;
-        Color.a += (color.a - Color.a) * color_transformation_ratio;
+        color_.r += (color.r - color_.r) * color_transformation_ratio;
+        color_.g += (color.g - color_.g) * color_transformation_ratio;
+        color_.b += (color.b - color_.b) * color_transformation_ratio;
+        color_.a += (color.a - color_.a) * color_transformation_ratio;
     }
 
-    // void red(float red) { Color.r = red; }
-    // void green(float green) { Color.g = green; }
-    // void blue(float blue) { Color.b = blue; }
-    // void alpha(float alpha) { Color.a = alpha; }
+    // void red(float red) { color_.r = red; }
+    // void green(float green) { color_.g = green; }
+    // void blue(float blue) { color_.b = blue; }
+    // void alpha(float alpha) { color_.a = alpha; }
 
-    const Vector& center() const { return Center; }
-    void center(const Vector& position) { Center = position; }
+    const Vector& center() const { return center_; }
+    void center(const Vector& position) { center_ = position; }
 
-    const ALLEGRO_COLOR& color() const { return Color; }
-    void color(const ALLEGRO_COLOR& color) { Color = color; }
+    const ALLEGRO_COLOR& color() const { return color_; }
+    void color(const ALLEGRO_COLOR& color) { color_ = color; }
 
-    float radius() const { return Radius; }
+    float radius() const { return radius_; }
 private:
-    Vector Center;
-    float Radius;
-    ALLEGRO_COLOR Color;
-    float Line_width;
+    Vector center_;
+    float radius_;
+    ALLEGRO_COLOR color_;
+    float line_width_;
 };
 
 class Triangle
 {
 public:
     Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector& vertex_3, const ALLEGRO_COLOR& color, float line_width):
-        Vertex_1{vertex_1},
-        Vertex_2{vertex_2},
-        Vertex_3{vertex_3},
-        Color{color},
-        Line_width{line_width}
+        vertex_1_{vertex_1},
+        vertex_2_{vertex_2},
+        vertex_3_{vertex_3},
+        color_{color},
+        line_width_{line_width}
     {};
 
     void draw() const
     {
-        if (Line_width == 0)
+        if (line_width_ == 0)
             al_draw_filled_triangle(
-                Vertex_1.x(),
-                Vertex_1.y(),
-                Vertex_2.x(),
-                Vertex_2.y(),
-                Vertex_3.x(),
-                Vertex_3.y(),
-                Color
+                vertex_1_.x(),
+                vertex_1_.y(),
+                vertex_2_.x(),
+                vertex_2_.y(),
+                vertex_3_.x(),
+                vertex_3_.y(),
+                color_
             );
         else
             al_draw_triangle(
-                Vertex_1.x(),
-                Vertex_1.y(),
-                Vertex_2.x(),
-                Vertex_2.y(),
-                Vertex_3.x(),
-                Vertex_3.y(),
-                Color,
-                Line_width
+                vertex_1_.x(),
+                vertex_1_.y(),
+                vertex_2_.x(),
+                vertex_2_.y(),
+                vertex_3_.x(),
+                vertex_3_.y(),
+                color_,
+                line_width_
             );
     }
 
     // void translate(const Vector& displacement)
     // {
-    //     Vertex_1 += displacement;
-    //     Vertex_2 += displacement;
-    //     Vertex_3 += displacement;
+    //     vertex_1_ += displacement;
+    //     vertex_2_ += displacement;
+    //     vertex_3_ += displacement;
     // }
 
-    void vertex_1(const Vector& point) { Vertex_1 = point; }
-    void vertex_2(const Vector& point) { Vertex_2 = point; }
-    void vertex_3(const Vector& point) { Vertex_3 = point; }
+    void vertex_1(const Vector& point) { vertex_1_ = point; }
+    void vertex_2(const Vector& point) { vertex_2_ = point; }
+    void vertex_3(const Vector& point) { vertex_3_ = point; }
 
-    const Vector& vertex_1() const { return Vertex_1; }
-    const Vector& vertex_2() const { return Vertex_2; }
-    const Vector& vertex_3() const { return Vertex_3; }
+    const Vector& vertex_1() const { return vertex_1_; }
+    const Vector& vertex_2() const { return vertex_2_; }
+    const Vector& vertex_3() const { return vertex_3_; }
 
-    void color(const ALLEGRO_COLOR& color) { Color = color; }
+    void color(const ALLEGRO_COLOR& color) { color_ = color; }
 private:
-    Vector Vertex_1;
-    Vector Vertex_2;
-    Vector Vertex_3;
-    ALLEGRO_COLOR Color;
-    float Line_width;
+    Vector vertex_1_;
+    Vector vertex_2_;
+    Vector vertex_3_;
+    ALLEGRO_COLOR color_;
+    float line_width_;
 };
