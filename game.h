@@ -102,6 +102,7 @@ Game::Game()
 
 Game::~Game()
 {
+    al_destroy_font(font_);
     al_destroy_display(display_);
     al_destroy_timer(timer_);
     al_destroy_event_queue(queue_);

@@ -9,13 +9,13 @@ class Aim
 public:
     Aim()
     :
-        reach_circle_{0, 0, param::reach_radius, param::magenta, param::line_width},
+        reach_circle_{0, 0, param::reach_radius, param::magenta(), param::line_width},
         pawn_destination_{0, 0},
         direction_sign_{
             Vector(0, 0),
             Vector(0, 0),
             Vector(0, 0),
-            param::magenta,
+            param::magenta(),
             param::line_width
         },
         reach_circle_is_visible_{false},
@@ -134,7 +134,7 @@ public:
             param::unit_length,
             param::window_width - 4 * param::unit_length,
             param::window_height - 2 * param::unit_length,
-            param::red,
+            param::red(),
             param::line_width
         }
     {};

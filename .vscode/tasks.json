@@ -15,7 +15,8 @@
                 "-L",
                 "D:/msys64/ucrt64/lib/",
                 "-lallegro",
-                "-lallegro_primitives"
+                "-lallegro_primitives",
+                "-lallegro_font"
             ],
             "options": {
                 "cwd": "D:/msys64/ucrt64/bin"

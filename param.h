@@ -1,34 +1,63 @@
 #include <allegro5/color.h>
+#include <allegro5/allegro_font.h>
 #pragma once
 
 namespace param
 {
-    const int window_width      = 500;
-    const int window_height     = 500;
-    const float unit_length     = 10;
-    const float line_width      = 1;
-    const float reach_radius    = window_height / 4;
-    const int life              = 3;
-    const int translation_step  = 10;
+    class Theme
+    {
+    public:
+        Theme(
+            const ALLEGRO_COLOR& text_color,
+            const ALLEGRO_COLOR& background_color_1,
+            const ALLEGRO_COLOR& background_color_2,
+            const ALLEGRO_COLOR& background_color_3
+        ):
+            text_color_{text_color},
+            background_color_1_{background_color_1},
+            background_color_2_{background_color_2},
+            background_color_3_{background_color_3}
+        {}
+
+        const ALLEGRO_COLOR text_color_;
+        const ALLEGRO_COLOR background_color_1_;
+        const ALLEGRO_COLOR background_color_2_;
+        const ALLEGRO_COLOR background_color_3_;
+    };
+
+    static const int window_width      = 500;
+    static const int window_height     = 500;
+    static const float unit_length     = 10;
+    static const float line_width      = 1;
+    static const float reach_radius    = window_height / 4;
+    static const int life              = 3;
+    static const int translation_step  = 10;
 
     // static float delta() { return 0.1f;
 
-    const ALLEGRO_COLOR black   = al_map_rgba_f(0.1f, 0.1f, 0.1f, 1);
-    const ALLEGRO_COLOR red     = al_map_rgba_f(0.9f, 0.1f, 0.1f, 1);
-    const ALLEGRO_COLOR yellow  = al_map_rgba_f(0.9f, 0.9f, 0.1f, 1);
-    const ALLEGRO_COLOR green   = al_map_rgba_f(0.1f, 0.9f, 0.1f, 1);
-    const ALLEGRO_COLOR cyan    = al_map_rgba_f(0.1f, 0.9f, 0.9f, 1);
-    const ALLEGRO_COLOR blue    = al_map_rgba_f(0.1f, 0.1f, 0.9f, 1);
-    const ALLEGRO_COLOR magenta = al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
-    const ALLEGRO_COLOR white   = al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
-    const ALLEGRO_COLOR vanish  = al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
+    static const ALLEGRO_COLOR black   = al_map_rgba_f(0.1f, 0.1f, 0.1f, 1);
+    static const ALLEGRO_COLOR red     = al_map_rgba_f(0.9f, 0.1f, 0.1f, 1);
+    static const ALLEGRO_COLOR yellow  = al_map_rgba_f(0.9f, 0.9f, 0.1f, 1);
+    static const ALLEGRO_COLOR green   = al_map_rgba_f(0.1f, 0.9f, 0.1f, 1);
+    static const ALLEGRO_COLOR cyan    = al_map_rgba_f(0.1f, 0.9f, 0.9f, 1);
+    static const ALLEGRO_COLOR blue    = al_map_rgba_f(0.1f, 0.1f, 0.9f, 1);
+    static const ALLEGRO_COLOR magenta = al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
+    static const ALLEGRO_COLOR white   = al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
+    static const ALLEGRO_COLOR vanish  = al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
 
-    const float color_transformation_ratio = 0.5f;
+    static const float color_transformation_ratio = 0.5f;
 
-    const float sqrt_2 = 1.41421356237309504880f;
-    const float sqrt_3 = 1.73205080756887729352f;
-    const float pi     = 3.14159265358979323846f;
-    const float sin_15 = (sqrt_3 - 1) * sqrt_2 / 4;
-    const float sin_45 = sqrt_2 / 2;
-    const float sin_75 = (sqrt_3 + 1) * sqrt_2 / 4;
-}
+    static const float sqrt_2 = 1.41421356237309504880f;
+    static const float sqrt_3 = 1.73205080756887729352f;
+    static const float pi     = 3.14159265358979323846f;
+    static const float sin_15 = (sqrt_3 - 1) * sqrt_2 / 4;
+    static const float sin_45 = sqrt_2 / 2;
+    static const float sin_75 = (sqrt_3 + 1) * sqrt_2 / 4;
+
+    static const Theme default_theme = Theme(
+        param::white,
+        param::black,
+        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
+        al_map_rgba_f(0.3f, 0.3f, 0.3f, 1)
+    );
+};

@@ -114,6 +114,13 @@ public:
         line_width_{line_width}
     {};
 
+    Rectangle(const ALLEGRO_COLOR& color):
+        origin_{0, 0},
+        size_{0, 0},
+        color_{color},
+        line_width_{0}
+    {};
+
     void draw() const
     {
         if (line_width_ == 0)
@@ -160,6 +167,18 @@ public:
         origin_.x(),
         origin_.y() + size_.y()
     ); }
+
+    bool contain(const Vector& point) const
+    {
+        Vector distance_to_origin = point - origin_;
+
+        return 
+            distance_to_origin.x() >= 0 &&
+            distance_to_origin.y() >= 0 &&
+            distance_to_origin.x() <= size_.x() &&
+            distance_to_origin.y() <= size_.y()
+        ;
+    }
 
     const Vector& size() const { return size_; }
     void add_size_by(const Vector& value) { size_ += value; }
@@ -217,6 +236,11 @@ public:
         color_.g += (color.g - color_.g) * color_transformation_ratio;
         color_.b += (color.b - color_.b) * color_transformation_ratio;
         color_.a += (color.a - color_.a) * color_transformation_ratio;
+    }
+
+    bool contain(const Vector& point) const
+    {
+        return (point - center_).magsq() <= radius_ * radius_;
     }
 
     // void red(float red) { color_.r = red; }

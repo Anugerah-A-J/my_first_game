@@ -39,7 +39,7 @@ public:
 
     bool contain(const Vector& point) const
     {
-        return (point - king_shape_.center()).magsq() <= king_shape_.radius() * king_shape_.radius();
+        return king_shape_.contain(point);
     }
 
     Vector center() const
@@ -73,7 +73,7 @@ public:
                 param::window_width - param::unit_length * 3.5,
                 param::window_height / 2,
                 param::unit_length / 2,
-                param::magenta,
+                param::magenta(),
                 0
             ),
             Rectangle(
@@ -81,7 +81,7 @@ public:
                 param::window_height / 2 - param::unit_length * 1.5,
                 param::unit_length * 3,
                 param::unit_length * 3,
-                param::magenta,
+                param::magenta(),
                 param::line_width
             ),
             Vector(
@@ -104,7 +104,7 @@ public:
                 param::unit_length * 3.5,
                 param::window_height / 2,
                 param::unit_length / 2,
-                param::cyan,
+                param::cyan(),
                 0
             ),
             Rectangle(
@@ -112,7 +112,7 @@ public:
                 param::window_height / 2 - param::unit_length * 1.5,
                 param::unit_length * 3,
                 param::unit_length * 3,
-                param::cyan,
+                param::cyan(),
                 param::line_width
             ),
             Vector(
@@ -148,7 +148,7 @@ public:
 
     bool contain(const Vector& point) const
     {
-        return (point - shape_.center()).magsq() <= shape_.radius() * shape_.radius();
+        return shape_.contain(point);
     }
 
     static void update_translation(const Vector& start, const Vector& end)
@@ -185,12 +185,12 @@ public:
 
     void transform_color_to_vanish()
     {
-        shape_.transform_color_to(param::vanish, param::color_transformation_ratio);
+        shape_.transform_color_to(param::vanish(), param::color_transformation_ratio);
     };
 
     bool color_equal_vanish()
     {
-        if(equal(shape_.color(), param::vanish, 0.05f))
+        if(equal(shape_.color(), param::vanish(), 0.05f))
             return true;
 
         return false;
