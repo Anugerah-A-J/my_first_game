@@ -23,6 +23,9 @@ public:
     float x() const { return x_; };
     float y() const { return y_; };
 
+    void x(float val) { x_ = val; };
+    void y(float val) { y_ = val; };
+
     Vector operator-() const { return Vector(-x_, -y_); };
 
     Vector operator+(const Vector& v) const { return Vector(x_ + v.x_, y_ + v.y_); };
@@ -114,8 +117,8 @@ public:
         line_width_{line_width}
     {};
 
-    Rectangle(const ALLEGRO_COLOR& color):
-        origin_{0, 0},
+    Rectangle(const Vector& origin, const ALLEGRO_COLOR& color):
+        origin_{origin},
         size_{0, 0},
         color_{color},
         line_width_{0}
@@ -182,6 +185,8 @@ public:
 
     const Vector& size() const { return size_; }
     void add_size_by(const Vector& value) { size_ += value; }
+    float width() const { size_.x(); }
+    void width(float val) { size_.x(val); }
 private:
     Vector origin_;
     Vector size_;

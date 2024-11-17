@@ -9,20 +9,17 @@ namespace param
     public:
         Theme(
             const ALLEGRO_COLOR& text_color,
-            const ALLEGRO_COLOR& background_color_1,
-            const ALLEGRO_COLOR& background_color_2,
-            const ALLEGRO_COLOR& background_color_3
+            const ALLEGRO_COLOR& background_color,
+            const ALLEGRO_COLOR& button_color
         ):
             text_color_{text_color},
-            background_color_1_{background_color_1},
-            background_color_2_{background_color_2},
-            background_color_3_{background_color_3}
+            background_color_{background_color},
+            button_color_{button_color}
         {}
 
         const ALLEGRO_COLOR text_color_;
-        const ALLEGRO_COLOR background_color_1_;
-        const ALLEGRO_COLOR background_color_2_;
-        const ALLEGRO_COLOR background_color_3_;
+        const ALLEGRO_COLOR background_color_;
+        const ALLEGRO_COLOR button_color_;
     };
 
     static const int window_width      = 500;
@@ -44,6 +41,7 @@ namespace param
     static const ALLEGRO_COLOR magenta = al_map_rgba_f(0.9f, 0.1f, 0.9f, 1);
     static const ALLEGRO_COLOR white   = al_map_rgba_f(0.9f, 0.9f, 0.9f, 1);
     static const ALLEGRO_COLOR vanish  = al_map_rgba_f(0.1f, 0.1f, 0.1f, 0);
+    static const ALLEGRO_COLOR gray    = al_map_rgba_f(0.5f, 0.5f, 0.5f, 0);
 
     static const float color_transformation_ratio = 0.5f;
 
@@ -56,7 +54,6 @@ namespace param
 
     static const Theme default_theme = Theme(
         param::white,
-        param::black,
         al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
         al_map_rgba_f(0.3f, 0.3f, 0.3f, 1)
     );
