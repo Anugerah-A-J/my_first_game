@@ -185,8 +185,14 @@ public:
 
     const Vector& size() const { return size_; }
     void add_size_by(const Vector& value) { size_ += value; }
+    
     float width() const { size_.x(); }
     void width(float val) { size_.x(val); }
+
+    float height() const { size_.y(); }
+    void height(float val) { size_.y(val); }
+    
+    const Vector& origin() const { return origin_; }
 private:
     Vector origin_;
     Vector size_;
