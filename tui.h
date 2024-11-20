@@ -53,7 +53,7 @@ public:
     // void translate(const Vector& how_far) { origin_ += how_far; }
 private:
     std::string text_;
-    static const ALLEGRO_FONT* font_;
+    inline static const ALLEGRO_FONT* font_;
     ALLEGRO_COLOR text_color_;
     Rectangle shape_;
 };
@@ -153,10 +153,10 @@ private:
     void update_width() { shape_.width(std::max(sum_message_width(), max_choice_width())); }
     void update_height() { shape_.height((1 + choices_.size()) * One_line_text::font_height()); }
 
-    const Vector& message_origin() const { return shape_.origin() + Vector(
+    Vector message_origin() const { return shape_.origin() + Vector(
         sum_message_width(),
         0); }
-    const Vector& choice_origin() const { return shape_.origin() + Vector(
+    Vector choice_origin() const { return shape_.origin() + Vector(
         0,
         (1 + choices_.size()) * One_line_text::font_height()); }
 
