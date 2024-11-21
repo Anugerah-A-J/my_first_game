@@ -6,6 +6,7 @@
 #include <vector>
 #include <set>
 #include "collision.h"
+#include "tui.h"
 #pragma once
 
 enum class State
@@ -15,13 +16,6 @@ enum class State
     shoot,
     end
 };
-
-// enum struct Turn
-// {
-//     magenta,
-//     cyan,
-//     neutral
-// };
 
 class Game
 {
@@ -43,6 +37,7 @@ private:
     ALLEGRO_TIMER* timer_;
     ALLEGRO_EVENT_QUEUE* queue_;
     ALLEGRO_DISPLAY* display_;
+    ALLEGRO_FONT* font_;
 
     Fence fence_;
     Clipper clipper_;
@@ -58,7 +53,7 @@ private:
     std::vector<Pawn>* passive_pawns_;
     std::set<Pawn*> vanishing_pawns_;
 
-    // Widget end;
+    End end_;
 
     // Map Map_1:
     // Box box; // yellow
@@ -70,23 +65,10 @@ private:
 Game::Game()
 :
     state_{State::choose},
-
-    timer_{},
-    queue_{},
-    display_{},
-
-    fence_{},
-    clipper_{},
-    aim_{},
-    king_magenta_{},
-    king_cyan_{},
-    pawns_magenta_{},
-    pawns_cyan_{},
-
     active_king_{&king_magenta_},
     passive_king_{&king_cyan_},
     active_pawns_{&pawns_magenta_},
-    passive_pawns_{&pawns_cyan_}
+    passive_pawns_{&pawns_cyan_},
 {
     al_init();
     al_init_primitives_addon();
@@ -96,6 +78,9 @@ Game::Game()
     timer_ = al_create_timer(1.0 / 30.0);
     queue_ = al_create_event_queue();
     display_ = al_create_display(param::window_width, param::window_height);
+    font_ = al_create_builtin_font();
+
+    One_line_text::font(font_);
 
     // al_set_window_position(display_, 0, 0);
 }
@@ -130,6 +115,9 @@ void Game::draw() const
     fence_.draw();
     king_cyan_.draw_life();
     king_magenta_.draw_life();
+
+    if (state_ == State::end)
+        end_.draw();
 }
 
 void Game::run()
@@ -164,6 +152,9 @@ void Game::run()
 
                 if (event.mouse.button == 1 && state_ == State::aim_)
                     add_pawn();
+
+                else if (event.mouse.button == 1 && state_ == State::end)
+                    play_again_or_quit(event.mouse.x, event.mouse.y);
             
                 break;
 
@@ -174,10 +165,18 @@ void Game::run()
             
                 else if (state_ == State::aim_)
                     update_aim_direction(event.mouse.x, event.mouse.y);
+
+                else if (state_ == State::end)
+                    highlight_end_choices(event.mouse.x, event.mouse.y);
             
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
+                highlight_end_choices(event.keyboard.keycode);
+
+                if (event.keyboard.keycode != ALLEGRO_KEY_ESCAPE)
+                    break;
+                
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
                 done = true;
                 break;

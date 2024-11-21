@@ -118,9 +118,9 @@ public:
         line_width_{line_width}
     {};
 
-    Rectangle(const Vector& origin, float height, const ALLEGRO_COLOR& color):
+    Rectangle(const Vector& origin, const ALLEGRO_COLOR& color):
         origin_{origin},
-        size_{0, height},
+        size_{0, 0},
         color_{color},
         line_width_{0}
     {};

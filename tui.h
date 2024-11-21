@@ -65,7 +65,7 @@ public:
         const Vector& origin,
         const ALLEGRO_COLOR& color = param::default_theme.background_color_
     ):
-        shape_{origin, One_line_text::font_height(), color}
+        shape_{origin, color}
     {}
 
     void add_message(
@@ -151,7 +151,7 @@ private:
     }
 
     void update_width() { shape_.width(std::max(sum_message_width(), max_choice_width())); }
-    void update_height() { shape_.height((1 + choices_.size()) * One_line_text::font_height()); }
+    void update_height() { shape_.height((2 + choices_.size()) * One_line_text::font_height()); }
 
     Vector message_origin() const { return shape_.origin() + Vector(
         sum_message_width(),
