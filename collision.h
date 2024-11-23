@@ -120,9 +120,9 @@ float collision::intersect(const Line& line1, const Line& line2)
     Vector B = line2.start() - line2.end();
     Vector C = line1.start() - line2.start();
 
-    float t_numerator = B.y() * C.x() - B.x() * C.y();
-    float u_numerator = C.y() * A.x() - C.x() * A.y();
-    float denominator = A.y() * B.x() - A.x() * B.y();
+    float t_numerator = B.Y() * C.X() - B.X() * C.Y();
+    float u_numerator = C.Y() * A.X() - C.X() * A.Y();
+    float denominator = A.Y() * B.X() - A.X() * B.Y();
 
     // // t < 0 and u < 0
     if (denominator > 0 && (t_numerator < 0 || u_numerator < 0))

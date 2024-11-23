@@ -10,12 +10,13 @@ class One_line_text
 public:
     static void font(const ALLEGRO_FONT* font) { font_ = font; }
     static float font_height() { return al_get_font_line_height(font_); }
+    // static float font_width() { return al_get_font_line_height(font_); }
 
     One_line_text(
         const Vector& origin,
         const std::string& text,
-        const ALLEGRO_COLOR& text_color = param::default_theme.text_color_,
-        const ALLEGRO_COLOR& background_color = param::default_theme.background_color_
+        const ALLEGRO_COLOR& text_color,
+        const ALLEGRO_COLOR& background_color
     ):
         text_{text}, // no validation for \n
         text_color_{text_color},
@@ -35,8 +36,8 @@ public:
         al_draw_text(
             font_,
             text_color_,
-            shape_.origin().x(),
-            shape_.origin().y(),
+            shape_.origin().X(),
+            shape_.origin().Y(),
             ALLEGRO_ALIGN_LEFT,
             &text_.front()
         );
@@ -46,11 +47,11 @@ public:
     bool contain(const Vector& point) const { return shape_.contain(point); }
 
     float width() const { return shape_.width(); }
-    float height() const { return shape_.height(); }
 
     const std::string& text() const { return text_; }
 
-    // void translate(const Vector& how_far) { origin_ += how_far; }
+    void make_active() { text_color_ = param::default_theme.active_text_color_; }
+    void make_pasive() { text_color_ = param::default_theme.passive_text_color_; }
 private:
     std::string text_;
     inline static const ALLEGRO_FONT* font_;
@@ -61,16 +62,38 @@ private:
 class Dialog_box
 {
 public:
+    void update_selected_choice(int allegro_keyboard_event_keycode)
+    {
+        ;
+    }
+
+    void update_selected_choice(const Vector& mouse_coordinate)
+    {
+        auto selected_choice_iterator = find_if(choices_.begin(), choices_.end(), [](){});
+
+        if (selected_choice_iterator != choices_.end() && &*selected_choice_iterator != selected_choice_)
+        {
+            selected_choice_->make_pasive();
+            selected_choice_ = &*selected_choice_iterator;
+            selected_choice_->make_active();
+        }
+    }
+protected:
     Dialog_box(
-        const Vector& origin,
+        const Vector& center,
         const ALLEGRO_COLOR& color = param::default_theme.background_color_
     ):
-        shape_{origin, color}
+        center_{center},
+        shape_{
+            center - Vector(0, One_line_text::font_height()),
+            One_line_text::font_height(),
+            color
+        }
     {}
 
     void add_message(
         const std::string& text,
-        const ALLEGRO_COLOR& text_color = param::default_theme.text_color_,
+        const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color_,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color_)
     {
         messages_.emplace_back(One_line_text(
@@ -79,13 +102,15 @@ public:
             text_color,
             background_color));
 
-        update_width();
-        update_height();
+        if (messages_width() > shape_.width())
+            shape_.width(messages_width());
+
+        shape_.origin(center_ - shape_.size());
     }
 
     void add_choice(
         const std::string& text,
-        const ALLEGRO_COLOR& text_color = param::default_theme.text_color_,
+        const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color_,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color_)
     {
         choices_.emplace_back(One_line_text(
@@ -94,8 +119,15 @@ public:
             text_color,
             background_color));
 
-        update_width();
-        update_height();
+        if (choices_.size() == 1)
+            selected_choice_ = &choices_.front();
+
+        if (choices_.back().width() > shape_.width())
+            shape_.width(choices_.back().width());
+
+        shape_.height(shape_.height() + One_line_text::font_height());
+
+        shape_.origin(center_ - shape_.size());
     }
 
     void draw() const
@@ -109,18 +141,7 @@ public:
             choice.draw();
     }
 private:
-    float max_choice_width() const
-    {
-        const One_line_text& choice_with_max_width = *std::max_element(
-            choices_.begin(), choices_.end(), [](const One_line_text& choice_1, const One_line_text& choice_2)
-        {
-            return choice_1.width() < choice_2.width();
-        });
-
-        return choice_with_max_width.width() + choice_with_max_width.height();
-    }
-    
-    float sum_message_width() const
+    float messages_width() const
     {
         float sum = 0;
 
@@ -128,39 +149,21 @@ private:
             sum += message.width();
 
         return sum;
-
-        // std::string one_line_message;
-        // float max_message_width = 0;
-
-        // for (const One_line_text& message : messages_)
-        // {
-        //     if (message.text().back() != '\n')
-        //     {
-        //         one_line_message += message.text();
-        //     }
-        //     else
-        //     {
-        //         if (one_line_message.length() > max_message_width)
-        //             max_message_width = one_line_message.length();
-                
-        //         one_line_message = "";
-        //     }
-        // }
-
-        // return max_message_width;
     }
 
-    void update_width() { shape_.width(std::max(sum_message_width(), max_choice_width())); }
-    void update_height() { shape_.height((2 + choices_.size()) * One_line_text::font_height()); }
+    Vector message_origin() const
+    {
+        return shape_.origin() + Vector(messages_width(), 0);
+    }
 
-    Vector message_origin() const { return shape_.origin() + Vector(
-        sum_message_width(),
-        0); }
-    Vector choice_origin() const { return shape_.origin() + Vector(
-        0,
-        (1 + choices_.size()) * One_line_text::font_height()); }
+    Vector choice_origin() const
+    {
+        return shape_.origin() + Vector(0, (1 + choices_.size()) * One_line_text::font_height());
+    }
 
+    const Vector center_;
     Rectangle shape_;
     std::vector<One_line_text> messages_;
     std::vector<One_line_text> choices_;
+    One_line_text* selected_choice_;
 };

@@ -23,8 +23,8 @@ public:
     void draw() const { al_draw_text(
         font_,
         color_,
-        origin_.x(),
-        origin_.y(),
+        origin_.X(),
+        origin_.Y(),
         ALLEGRO_ALIGN_LEFT,
         &text_.front()
     ); }

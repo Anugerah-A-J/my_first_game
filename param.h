@@ -8,18 +8,18 @@ namespace param
     {
     public:
         Theme(
-            const ALLEGRO_COLOR& text_color,
-            const ALLEGRO_COLOR& background_color,
-            const ALLEGRO_COLOR& button_color
+            const ALLEGRO_COLOR& passive_text_color,
+            const ALLEGRO_COLOR& active_text_color,
+            const ALLEGRO_COLOR& background_color
         ):
-            text_color_{text_color},
-            background_color_{background_color},
-            button_color_{button_color}
+            passive_text_color_{passive_text_color},
+            active_text_color_{active_text_color},
+            background_color_{background_color}
         {}
 
-        const ALLEGRO_COLOR text_color_;
+        const ALLEGRO_COLOR passive_text_color_;
+        const ALLEGRO_COLOR active_text_color_;
         const ALLEGRO_COLOR background_color_;
-        const ALLEGRO_COLOR button_color_;
     };
 
     static const int window_width      = 500;
@@ -53,8 +53,8 @@ namespace param
     static const float sin_75 = (sqrt_3 + 1) * sqrt_2 / 4;
 
     static const Theme default_theme = Theme(
-        param::white,
-        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
-        al_map_rgba_f(0.3f, 0.3f, 0.3f, 1)
+        al_map_rgba_f(0.6f, 0.6f, 0.6f, 1),
+        al_map_rgba_f(0.8f, 0.8f, 0.8f, 1),
+        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1)
     );
 };
