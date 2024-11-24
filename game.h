@@ -12,7 +12,7 @@
 enum class State
 {
     choose,
-    aim_,
+    aim,
     shoot,
     end
 };
@@ -30,6 +30,7 @@ private:
     void Add_pawn();
     void Move_pawn();
     void Clean_pawn();
+    void Play_again_or_quit(bool& done);
 
     State state;
     // Turn turn;
@@ -53,7 +54,7 @@ private:
     std::vector<Pawn>* passive_pawns;
     std::set<Pawn*> vanishing_pawns;
 
-    End end;
+    End* pointer_to_end;
 
     // Map Map_1:
     // Box box; // yellow
@@ -79,8 +80,6 @@ Game::Game()
     queue = al_create_event_queue();
     display = al_create_display(param::window_width, param::window_height);
     font = al_create_builtin_font();
-
-    One_line_text::Font(font);
 
     // al_set_window_position(display_, 0, 0);
 }
@@ -117,7 +116,7 @@ void Game::Draw() const
     king_magenta.Draw_life();
 
     if (state == State::end)
-        end.Draw();
+        pointer_to_end->Draw();
 }
 
 void Game::Run()
@@ -130,6 +129,9 @@ void Game::Run()
     bool done = false;
     bool redraw = true;
     ALLEGRO_EVENT event;
+    
+    End end = End(font);
+    pointer_to_end = &end;
 
     al_start_timer(timer);
 
@@ -150,11 +152,11 @@ void Game::Run()
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 
-                if (event.mouse.button == 1 && state == State::aim_)
+                if (event.mouse.button == 1 && state == State::aim)
                     Add_pawn();
 
                 else if (event.mouse.button == 1 && state == State::end)
-                    Play_again_or_quit(event.mouse.x, event.mouse.y);
+                    Play_again_or_quit(done);
             
                 break;
 
@@ -163,16 +165,20 @@ void Game::Run()
                 if (state == State::choose)
                     Update_aim_center(event.mouse.x, event.mouse.y);
             
-                else if (state == State::aim_)
+                else if (state == State::aim)
                     Update_aim_direction(event.mouse.x, event.mouse.y);
 
                 else if (state == State::end)
-                    Highlight_end_choices(event.mouse.x, event.mouse.y);
+                    pointer_to_end->Update_selected_choice(Vector(event.mouse.x, event.mouse.y));
             
                 break;
 
-            case ALLEGRO_EVENT_KEY_DOWN:
-                Highlight_end_choices(event.keyboard.keycode);
+            case ALLEGRO_EVENT_KEY_CHAR:
+                if (state == State::end)
+                    pointer_to_end->Update_selected_choice(event.keyboard.keycode);
+
+                if (state == State::end && event.keyboard.keycode == ALLEGRO_KEY_ENTER)
+                    Play_again_or_quit(done);
 
                 if (event.keyboard.keycode != ALLEGRO_KEY_ESCAPE)
                     break;
@@ -202,7 +208,7 @@ void Game::Update_aim_center(float x, float y)
     {
         aim.Center(active_king->Center());
         aim.Show_reach_circle();
-        state = State::aim_;
+        state = State::aim;
     }
     else
     {
@@ -212,7 +218,7 @@ void Game::Update_aim_center(float x, float y)
             {
                 aim.Center(pawn.Center());
                 aim.Show_reach_circle();
-                state = State::aim_;
+                state = State::aim;
             }
         }
     }
@@ -275,6 +281,13 @@ void Game::Move_pawn()
 
         if (f <= 1)
             passive_king->Life_decrease_by(1);
+
+        if (passive_king->Life() == 0)
+        {
+            std::string message = passive_king == &king_magenta ? "Cyan Win" : "Magenta Win";
+            pointer_to_end->Add_message(message, active_king->Color());
+            state = State::end;
+        }
     });
 
     collision::Response(vanishing_pawns, active_pawns->back(), fence);
@@ -316,5 +329,31 @@ void Game::Clean_pawn()
         }
     
         it = vanishing_pawns.erase(it);
+    }
+}
+
+void Game::Play_again_or_quit(bool& done)
+{
+    switch (pointer_to_end->Selected_choice_index())
+    {
+    case 0:
+        king_cyan.Reset_life();
+        king_magenta.Reset_life();
+        pawns_cyan.clear();
+        pawns_magenta.clear();
+        active_king = &king_magenta;
+        passive_king = &king_cyan;
+        active_pawns = &pawns_magenta;
+        passive_pawns = &pawns_cyan;
+        vanishing_pawns.clear();
+        state = State::choose;
+        break;
+
+    case 1:
+        done = true;
+        break;
+    
+    default:
+        break;
     }
 }

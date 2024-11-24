@@ -4,7 +4,7 @@ int main()
 {
     Game game = Game();
 
-    game.run();
+    game.Run();
     
     return 0;
 }

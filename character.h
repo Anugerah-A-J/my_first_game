@@ -53,6 +53,7 @@ public:
     const Rectangle& Throne_shape() const { return throne_shape; }
     int Life() const { return life; }
     void Life_decrease_by(int value) { life -= value; }
+    void Reset_life() { life = param::life; }
 private:
     Circle king_shape;
     Rectangle throne_shape;

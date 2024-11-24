@@ -8,21 +8,24 @@
 class One_line_text
 {
 public:
-    static void Font(const ALLEGRO_FONT* font) { font = font; }
-    static float Font_height() { return al_get_font_line_height(font); }
+    // static void Font(const ALLEGRO_FONT* font) { font = font; }
+    // float Font_height() { return al_get_font_line_height(font); }
     // static float font_width() { return al_get_font_line_height(font_); }
 
     One_line_text(
         const Vector& origin,
         const std::string& text,
+        const ALLEGRO_FONT* const font,
         const ALLEGRO_COLOR& text_color,
         const ALLEGRO_COLOR& background_color
     ):
         text{text}, // no validation for \n
+        font{font},
         text_color{text_color},
         shape{
             origin,
             Vector(
+                // 8 * text.length(),
                 al_get_text_width(font, &text.front()),
                 al_get_font_line_height(font)
             ),
@@ -51,10 +54,10 @@ public:
     const std::string& Text() const { return text; }
 
     void Make_active() { text_color = param::default_theme.active_text_color; }
-    void Make_pasive() { text_color = param::default_theme.passive_text_color; }
+    void Make_passive() { text_color = param::default_theme.passive_text_color; }
 private:
     std::string text;
-    inline static const ALLEGRO_FONT* font;
+    const ALLEGRO_FONT* const font;
     ALLEGRO_COLOR text_color;
     Rectangle shape;
 };
@@ -64,16 +67,49 @@ class Dialog_box
 public:
     void Update_selected_choice(int allegro_keyboard_event_keycode)
     {
-        ;
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice != &choices.back())
+        {
+            selected_choice->Make_passive();
+            selected_choice++;
+            selected_choice->Make_active();
+        }
+
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice == &choices.back())
+        {
+            selected_choice->Make_passive();
+            selected_choice = &choices.front();
+            selected_choice->Make_active();
+        }
+
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice != &choices.front())
+        {
+            selected_choice->Make_passive();
+            selected_choice--;
+            selected_choice->Make_active();
+        }
+
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice == &choices.front())
+        {
+            selected_choice->Make_passive();
+            selected_choice = &choices.back();
+            selected_choice->Make_active();
+        }
     }
 
     void Update_selected_choice(const Vector& mouse_coordinate)
     {
-        auto selected_choice_iterator = find_if(choices.begin(), choices.end(), [](){});
+        std::vector<One_line_text>::iterator selected_choice_iterator = find_if(
+            choices.begin(),
+            choices.end(),
+            [&](const One_line_text& choice)
+            {
+                return choice.Contain(mouse_coordinate);
+            }
+        );
 
         if (selected_choice_iterator != choices.end() && &*selected_choice_iterator != selected_choice)
         {
-            selected_choice->Make_pasive();
+            selected_choice->Make_passive();
             selected_choice = &*selected_choice_iterator;
             selected_choice->Make_active();
         }
@@ -89,18 +125,11 @@ public:
         for (const One_line_text& choice : choices)
             choice.Draw();
     }
-protected:
-    Dialog_box(
-        const Vector& center,
-        const ALLEGRO_COLOR& color = param::default_theme.background_color
-    ):
-        center{center},
-        shape{
-            center - Vector(0, One_line_text::Font_height()),
-            One_line_text::Font_height(),
-            color
-        }
-    {}
+
+    int Selected_choice_index() const
+    {
+        return selected_choice - &choices.front();
+    }
 
     void Add_message(
         const std::string& text,
@@ -110,6 +139,7 @@ protected:
         messages.emplace_back(One_line_text(
             Message_origin(),
             text,
+            font,
             text_color,
             background_color));
 
@@ -118,6 +148,20 @@ protected:
 
         shape.Origin(center - shape.Size());
     }
+protected:
+    Dialog_box(
+        const Vector& center,
+        const ALLEGRO_FONT* const font,
+        const ALLEGRO_COLOR& color = param::default_theme.background_color
+    ):
+        center{center},
+        font{font},
+        shape{
+            center - Vector(0, al_get_font_line_height(font)),
+            al_get_font_line_height(font),
+            color
+        }
+    {}
 
     void Add_choice(
         const std::string& text,
@@ -127,6 +171,7 @@ protected:
         choices.emplace_back(One_line_text(
             Choice_origin(),
             text,
+            font,
             text_color,
             background_color));
 
@@ -136,7 +181,7 @@ protected:
         if (choices.back().Width() > shape.Width())
             shape.Width(choices.back().Width());
 
-        shape.Height(shape.Height() + One_line_text::Font_height());
+        shape.Height(shape.Height() + al_get_font_line_height(font));
 
         shape.Origin(center - shape.Size());
     }
@@ -158,10 +203,11 @@ private:
 
     Vector Choice_origin() const
     {
-        return shape.Origin() + Vector(0, (1 + choices.size()) * One_line_text::Font_height());
+        return shape.Origin() + Vector(0, (1 + choices.size()) * al_get_font_line_height(font));
     }
 
     const Vector center;
+    const ALLEGRO_FONT* const font;
     Rectangle shape;
     std::vector<One_line_text> messages;
     std::vector<One_line_text> choices;
