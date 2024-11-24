@@ -10,55 +10,54 @@ class King
 public:
     King(const Circle& king_shape, const Rectangle& throne_shape, const Vector& last_life_position)
     :
-        king_shape_{king_shape},
-        throne_shape_{throne_shape},
-        life_{param::life},
-        life_shapes_{king_shape, king_shape, king_shape}
+        king_shape{king_shape},
+        throne_shape{throne_shape},
+        life{param::life},
+        life_shapes{king_shape, king_shape, king_shape}
     {
-        for (auto& life_shape: life_shapes_)
+        for (auto& life_shape: life_shapes)
         {
-            life_shape.scale(0.5);
-            life_shape.center(last_life_position);
+            life_shape.Scale(0.5);
+            life_shape.Center(last_life_position);
         }
 
-        for (auto it = life_shapes_.begin() + 1; it != life_shapes_.end(); ++it)
-            (*it).translate(0, -throne_shape_.size().Y() / 2 * (it - life_shapes_.begin()));
+        for (auto it = life_shapes.begin() + 1; it != life_shapes.end(); ++it)
+            (*it).Translate(0, -throne_shape.Size().Y() / 2 * (it - life_shapes.begin()));
     };
 
-    void draw() const
+    void Draw() const
     {
-        king_shape_.draw();
-        throne_shape_.draw();
+        king_shape.Draw();
+        throne_shape.Draw();
     };
 
-    void draw_life() const
+    void Draw_life() const
     {
-        for (auto it = life_shapes_.begin(); it != life_shapes_.begin() + life_; ++it)
-            (*it).draw();
+        for (auto it = life_shapes.begin(); it != life_shapes.begin() + life; ++it)
+            (*it).Draw();
     }
 
-    bool contain(const Vector& point) const
+    bool Contain(const Vector& point) const
     {
-        return king_shape_.contain(point);
+        return king_shape.Contain(point);
     }
 
-    Vector center() const
+    Vector Center() const
     {
-        return king_shape_.center();
+        return king_shape.Center();
     }
 
-    const ALLEGRO_COLOR& color() const { return king_shape_.color(); }
+    const ALLEGRO_COLOR& Color() const { return king_shape.Color(); }
 
-    const Circle& king_shape() const { return king_shape_; }
-    const Rectangle& throne_shape() const { return throne_shape_; }
-
-    int life() const { return life_; }
-    void life_decrease_by(int value) { life_ -= value; }
+    const Circle& King_shape() const { return king_shape; }
+    const Rectangle& Throne_shape() const { return throne_shape; }
+    int Life() const { return life; }
+    void Life_decrease_by(int value) { life -= value; }
 private:
-    Circle king_shape_;
-    Rectangle throne_shape_;
-    int life_;
-    std::vector<Circle> life_shapes_;
+    Circle king_shape;
+    Rectangle throne_shape;
+    int life;
+    std::vector<Circle> life_shapes;
 };
 
 class King_magenta
@@ -128,69 +127,69 @@ class Pawn
 public:
     Pawn(float cx, float cy, const ALLEGRO_COLOR& color)
     :
-        shape_{cx, cy, param::unit_length / 2, color, 0}
+        shape{cx, cy, param::unit_length / 2, color, 0}
         // ,Visible{true}
     {}
 
     Pawn(const Vector& center, const ALLEGRO_COLOR& color)
     :
-        shape_{center, param::unit_length / 2, color, 0}
+        shape{center, param::unit_length / 2, color, 0}
         // ,Visible{true}
     {}
 
-    void draw() const
+    void Draw() const
     {
         // if (!Visible)
         //     return;
 
-        shape_.draw();
+        shape.Draw();
     }
 
-    bool contain(const Vector& point) const
+    bool Contain(const Vector& point) const
     {
-        return shape_.contain(point);
+        return shape.Contain(point);
     }
 
-    static void update_translation(const Vector& start, const Vector& end)
+    static void Update_translation(const Vector& start, const Vector& end)
     {
-        translation_ = (end - start) / param::unit_length;
+        translation = (end - start) / param::unit_length;
     }
 
-    static void reset_translation_step_count()
+    static void Reset_translation_step_count()
     {
-        translation_step_count_ = 0;
+        translation_step_count = 0;
     }
 
-    static void stop()
+    static void Stop()
     {
-        translation_step_count_ = param::translation_step;
+        translation_step_count = param::translation_step;
     }
 
-    void move()
+    void Move()
     {
-        if (translation_step_count_ == param::translation_step)
+        if (translation_step_count == param::translation_step)
             return;
 
-        translation_step_count_ ++;
+        translation_step_count ++;
 
-        shape_.translate(translation_);
+        shape.Translate(translation);
     }
 
-    static bool finish_moving() { return translation_step_count_ == param::translation_step; }
+    static bool Finish_moving() { return translation_step_count == param::translation_step; }
 
-    void retreat(float compared_to_latest_translation)
+    void Retreat(float compared_to_latest_translation)
     {
-        shape_.translate(-compared_to_latest_translation * translation_);
+        shape.Translate(-compared_to_latest_translation * translation);
     }
 
-    void transform_color_to_vanish()
+    void Transform_color_to_vanish()
     {
-        shape_.transform_color_to(param::vanish, param::color_transformation_ratio);
+        shape.Transform_color_to(param::vanish, param::color_transformation_ratio);
     };
 
-    bool color_equal_vanish()
+    bool Color_equal_vanish()
     {
-        if(equal(shape_.color(), param::vanish, 0.05f))
+        if(Equal(shape.Color(), param::vanish, 0.05f))
             return true;
 
         return false;
@@ -201,24 +200,24 @@ public:
     //     Visible = false;
     // }
 
-    Line last_translation() const
+    Line Last_translation() const
     {
         return Line(
-            shape_.center() - translation_,
-            shape_.center()
+            shape.Center() - translation,
+            shape.Center()
         );
     }
 
-    Vector center() const { return shape_.center(); }
+    Vector Center() const { return shape.Center(); }
 
-    static void vanish_immediately(bool value) { vanish_immediately_ = value; }
-    static bool vanish_immediately() { return vanish_immediately_; }
+    static void Vanish_immediately(bool value) { vanish_immediately = value; }
+    static bool Vanish_immediately() { return vanish_immediately; }
 
-    const Circle& shape() const { return shape_; }
+    const Circle& Shape() const { return shape; }
 private:
-    inline static unsigned int translation_step_count_ = 0;
-    inline static Vector translation_ = Vector(0, 0);
-    inline static bool vanish_immediately_ = false;
-    Circle shape_;
+    inline static unsigned int translation_step_count = 0;
+    inline static Vector translation = Vector(0, 0);
+    inline static bool vanish_immediately = false;
+    Circle shape;
     // bool Visible;
 };

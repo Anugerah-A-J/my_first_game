@@ -12,14 +12,14 @@ namespace param
             const ALLEGRO_COLOR& active_text_color,
             const ALLEGRO_COLOR& background_color
         ):
-            passive_text_color_{passive_text_color},
-            active_text_color_{active_text_color},
-            background_color_{background_color}
+            passive_text_color{passive_text_color},
+            active_text_color{active_text_color},
+            background_color{background_color}
         {}
 
-        const ALLEGRO_COLOR passive_text_color_;
-        const ALLEGRO_COLOR active_text_color_;
-        const ALLEGRO_COLOR background_color_;
+        const ALLEGRO_COLOR passive_text_color;
+        const ALLEGRO_COLOR active_text_color;
+        const ALLEGRO_COLOR background_color;
     };
 
     static const int window_width      = 500;

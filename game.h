@@ -6,7 +6,7 @@
 #include <vector>
 #include <set>
 #include "collision.h"
-#include "tui.h"
+#include "ui.h"
 #pragma once
 
 enum class State
@@ -22,38 +22,38 @@ class Game
 public:
     Game();
     ~Game();
-    void run();
+    void Run();
 private:
-    void draw() const;
-    void update_aim_center(float x, float y);
-    void update_aim_direction(float x, float y);
-    void add_pawn();
-    void move_pawn();
-    void clean_pawn();
+    void Draw() const;
+    void Update_aim_center(float x, float y);
+    void Update_aim_direction(float x, float y);
+    void Add_pawn();
+    void Move_pawn();
+    void Clean_pawn();
 
-    State state_;
+    State state;
     // Turn turn;
 
-    ALLEGRO_TIMER* timer_;
-    ALLEGRO_EVENT_QUEUE* queue_;
-    ALLEGRO_DISPLAY* display_;
-    ALLEGRO_FONT* font_;
+    ALLEGRO_TIMER* timer;
+    ALLEGRO_EVENT_QUEUE* queue;
+    ALLEGRO_DISPLAY* display;
+    ALLEGRO_FONT* font;
 
-    Fence fence_;
-    Clipper clipper_;
-    Aim aim_;
-    King_magenta king_magenta_;
-    King_cyan king_cyan_;
-    std::vector<Pawn> pawns_magenta_;
-    std::vector<Pawn> pawns_cyan_;
+    Fence fence;
+    Clipper clipper;
+    Aim aim;
+    King_magenta king_magenta;
+    King_cyan king_cyan;
+    std::vector<Pawn> pawns_magenta;
+    std::vector<Pawn> pawns_cyan;
 
-    King* active_king_;
-    King* passive_king_;
-    std::vector<Pawn>* active_pawns_;
-    std::vector<Pawn>* passive_pawns_;
-    std::set<Pawn*> vanishing_pawns_;
+    King* active_king;
+    King* passive_king;
+    std::vector<Pawn>* active_pawns;
+    std::vector<Pawn>* passive_pawns;
+    std::set<Pawn*> vanishing_pawns;
 
-    End end_;
+    End end;
 
     // Map Map_1:
     // Box box; // yellow
@@ -64,115 +64,115 @@ private:
 
 Game::Game()
 :
-    state_{State::choose},
-    active_king_{&king_magenta_},
-    passive_king_{&king_cyan_},
-    active_pawns_{&pawns_magenta_},
-    passive_pawns_{&pawns_cyan_},
+    state{State::choose},
+    active_king{&king_magenta},
+    passive_king{&king_cyan},
+    active_pawns{&pawns_magenta},
+    passive_pawns{&pawns_cyan}
 {
     al_init();
     al_init_primitives_addon();
     al_install_keyboard();
     al_install_mouse();
 
-    timer_ = al_create_timer(1.0 / 30.0);
-    queue_ = al_create_event_queue();
-    display_ = al_create_display(param::window_width, param::window_height);
-    font_ = al_create_builtin_font();
+    timer = al_create_timer(1.0 / 30.0);
+    queue = al_create_event_queue();
+    display = al_create_display(param::window_width, param::window_height);
+    font = al_create_builtin_font();
 
-    One_line_text::font(font_);
+    One_line_text::Font(font);
 
     // al_set_window_position(display_, 0, 0);
 }
 
 Game::~Game()
 {
-    al_destroy_font(font_);
-    al_destroy_display(display_);
-    al_destroy_timer(timer_);
-    al_destroy_event_queue(queue_);
+    al_destroy_font(font);
+    al_destroy_display(display);
+    al_destroy_timer(timer);
+    al_destroy_event_queue(queue);
 }
 
-void Game::draw() const
+void Game::Draw() const
 {
     al_clear_to_color(param::black);
     
-    aim_.draw();
-    king_cyan_.draw();
-    king_magenta_.draw();
+    aim.Draw();
+    king_cyan.Draw();
+    king_magenta.Draw();
 
-    for (const auto& pawn_magenta: pawns_magenta_)
+    for (const auto& pawn_magenta: pawns_magenta)
     {
-        pawn_magenta.draw();
+        pawn_magenta.Draw();
     }
 
-    for (const auto& pawn_cyan: pawns_cyan_)
+    for (const auto& pawn_cyan: pawns_cyan)
     {
-        pawn_cyan.draw();
+        pawn_cyan.Draw();
     }
 
-    clipper_.draw();
-    fence_.draw();
-    king_cyan_.draw_life();
-    king_magenta_.draw_life();
+    clipper.Draw();
+    fence.Draw();
+    king_cyan.Draw_life();
+    king_magenta.Draw_life();
 
-    if (state_ == State::end)
-        end_.draw();
+    if (state == State::end)
+        end.Draw();
 }
 
-void Game::run()
+void Game::Run()
 {
-    al_register_event_source(queue_, al_get_keyboard_event_source());
-    al_register_event_source(queue_, al_get_display_event_source(display_));
-    al_register_event_source(queue_, al_get_timer_event_source(timer_));
-    al_register_event_source(queue_, al_get_mouse_event_source());
+    al_register_event_source(queue, al_get_keyboard_event_source());
+    al_register_event_source(queue, al_get_display_event_source(display));
+    al_register_event_source(queue, al_get_timer_event_source(timer));
+    al_register_event_source(queue, al_get_mouse_event_source());
 
     bool done = false;
     bool redraw = true;
     ALLEGRO_EVENT event;
 
-    al_start_timer(timer_);
+    al_start_timer(timer);
 
     while(true)
     {
-        al_wait_for_event(queue_, &event);
+        al_wait_for_event(queue, &event);
 
         switch(event.type)
         {
             case ALLEGRO_EVENT_TIMER:
-                if (state_ == State::shoot)
+                if (state == State::shoot)
                 {
-                    move_pawn();
-                    clean_pawn();
+                    Move_pawn();
+                    Clean_pawn();
                 }
                 redraw = true;
                 break;
 
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
 
-                if (event.mouse.button == 1 && state_ == State::aim_)
-                    add_pawn();
+                if (event.mouse.button == 1 && state == State::aim_)
+                    Add_pawn();
 
-                else if (event.mouse.button == 1 && state_ == State::end)
-                    play_again_or_quit(event.mouse.x, event.mouse.y);
+                else if (event.mouse.button == 1 && state == State::end)
+                    Play_again_or_quit(event.mouse.x, event.mouse.y);
             
                 break;
 
             case ALLEGRO_EVENT_MOUSE_AXES:
 
-                if (state_ == State::choose)
-                    update_aim_center(event.mouse.x, event.mouse.y);
+                if (state == State::choose)
+                    Update_aim_center(event.mouse.x, event.mouse.y);
             
-                else if (state_ == State::aim_)
-                    update_aim_direction(event.mouse.x, event.mouse.y);
+                else if (state == State::aim_)
+                    Update_aim_direction(event.mouse.x, event.mouse.y);
 
-                else if (state_ == State::end)
-                    highlight_end_choices(event.mouse.x, event.mouse.y);
+                else if (state == State::end)
+                    Highlight_end_choices(event.mouse.x, event.mouse.y);
             
                 break;
 
             case ALLEGRO_EVENT_KEY_DOWN:
-                highlight_end_choices(event.keyboard.keycode);
+                Highlight_end_choices(event.keyboard.keycode);
 
                 if (event.keyboard.keycode != ALLEGRO_KEY_ESCAPE)
                     break;
@@ -185,136 +185,136 @@ void Game::run()
         if(done)
             break;
 
-        if(redraw && al_is_event_queue_empty(queue_))
+        if(redraw && al_is_event_queue_empty(queue))
         {
-            draw();
+            Draw();
             al_flip_display();
             redraw = false;
         }
     }
 }
 
-void Game::update_aim_center(float x, float y)
+void Game::Update_aim_center(float x, float y)
 {
     Vector mouse_coordinate = Vector(x, y);
     
-    if (active_king_->contain(mouse_coordinate))
+    if (active_king->Contain(mouse_coordinate))
     {
-        aim_.center(active_king_->center());
-        aim_.show_reach_circle();
-        state_ = State::aim_;
+        aim.Center(active_king->Center());
+        aim.Show_reach_circle();
+        state = State::aim_;
     }
     else
     {
-        for (const auto &pawn : *active_pawns_)
+        for (const auto &pawn : *active_pawns)
         {
-            if (pawn.contain(mouse_coordinate))
+            if (pawn.Contain(mouse_coordinate))
             {
-                aim_.center(pawn.center());
-                aim_.show_reach_circle();
-                state_ = State::aim_;
+                aim.Center(pawn.Center());
+                aim.Show_reach_circle();
+                state = State::aim_;
             }
         }
     }
 }
 
-void Game::update_aim_direction(float x, float y)
+void Game::Update_aim_direction(float x, float y)
 {
     Vector mouse_coordinate = Vector(x, y);
     
-    if (active_king_->contain(mouse_coordinate))
-        aim_.center(active_king_->center());
+    if (active_king->Contain(mouse_coordinate))
+        aim.Center(active_king->Center());
 
     else
-        for (const auto &pawn : *active_pawns_)
-            if (pawn.contain(mouse_coordinate))
-                aim_.center(pawn.center());
+        for (const auto &pawn : *active_pawns)
+            if (pawn.Contain(mouse_coordinate))
+                aim.Center(pawn.Center());
 
-    aim_.update_direction(mouse_coordinate);
-    aim_.show_direction_sign();
+    aim.Update_direction(mouse_coordinate);
+    aim.Show_direction_sign();
 }
 
-void Game::add_pawn()
+void Game::Add_pawn()
 {
-    aim_.hide();
+    aim.Hide();
 
-    active_pawns_->emplace_back(Pawn(
-        aim_.center(),
-        active_king_->color()
+    active_pawns->emplace_back(Pawn(
+        aim.Center(),
+        active_king->Color()
     ));
 
-    Pawn::update_translation(aim_.center(), aim_.pawn_destination());
-    Pawn::reset_translation_step_count();
-    state_ = State::shoot;
+    Pawn::Update_translation(aim.Center(), aim.Pawn_destination());
+    Pawn::Reset_translation_step_count();
+    state = State::shoot;
 }
 
-void Game::move_pawn()
+void Game::Move_pawn()
 {
-    active_pawns_->back().move();
+    active_pawns->back().Move();
 
-    collision::response(vanishing_pawns_, active_pawns_->back(), *passive_pawns_);
+    collision::Response(vanishing_pawns, active_pawns->back(), *passive_pawns);
 
-    collision::response(active_pawns_->back(), *active_king_, [&](float t)
+    collision::Response(active_pawns->back(), *active_king, [&](float t)
     {
-        if (!active_king_->contain(aim_.center())) // when pawn doesn't come out of king
+        if (!active_king->Contain(aim.Center())) // when pawn doesn't come out of king
         {
-            active_pawns_->back().retreat(1 - t);
-            active_pawns_->back().stop();
+            active_pawns->back().Retreat(1 - t);
+            active_pawns->back().Stop();
         }
     });
 
-    collision::response(active_pawns_->back(), *passive_king_, [&](float f)
+    collision::Response(active_pawns->back(), *passive_king, [&](float f)
     {
-        Pawn::vanish_immediately(true);
+        Pawn::Vanish_immediately(true);
 
-        f = collision::circle_vs_circle(
-            active_pawns_->back().shape(),
-            passive_king_->king_shape(),
-            active_pawns_->back().last_translation()
+        f = collision::Circle_vs_circle(
+            active_pawns->back().Shape(),
+            passive_king->King_shape(),
+            active_pawns->back().Last_translation()
         );
 
         if (f <= 1)
-            passive_king_->life_decrease_by(1);
+            passive_king->Life_decrease_by(1);
     });
 
-    collision::response(vanishing_pawns_, active_pawns_->back(), fence_);
+    collision::Response(vanishing_pawns, active_pawns->back(), fence);
 }
 
-void Game::clean_pawn()
+void Game::Clean_pawn()
 {
-    if (Pawn::vanish_immediately() && Pawn::finish_moving())
+    if (Pawn::Vanish_immediately() && Pawn::Finish_moving())
     {
-        active_pawns_->pop_back();
-        Pawn::vanish_immediately(false);
+        active_pawns->pop_back();
+        Pawn::Vanish_immediately(false);
     }
-    else if (vanishing_pawns_.empty() && Pawn::finish_moving())
+    else if (vanishing_pawns.empty() && Pawn::Finish_moving())
     {
-        std::swap(active_king_, passive_king_);
-        std::swap(active_pawns_, passive_pawns_);
+        std::swap(active_king, passive_king);
+        std::swap(active_pawns, passive_pawns);
 
-        state_ = State::choose;
-        aim_.color(active_king_->color());
+        state = State::choose;
+        aim.Color(active_king->Color());
         // std::cout << "move pawn > choose and aim_\n";
     }
 
-    for(auto it = vanishing_pawns_.begin(); it != vanishing_pawns_.end();)
+    for(auto it = vanishing_pawns.begin(); it != vanishing_pawns.end();)
     {
-        if (!(*it)->color_equal_vanish())
+        if (!(*it)->Color_equal_vanish())
         {
-            (*it)->transform_color_to_vanish();
+            (*it)->Transform_color_to_vanish();
             ++it;
             continue;
         }
 
-        if (*it >= &pawns_magenta_.front() && *it <= &pawns_magenta_.back())
+        if (*it >= &pawns_magenta.front() && *it <= &pawns_magenta.back())
         {
-            pawns_magenta_.erase(pawns_magenta_.begin() + (*it - &pawns_magenta_.front()));
+            pawns_magenta.erase(pawns_magenta.begin() + (*it - &pawns_magenta.front()));
         }
-        else if (*it >= &pawns_cyan_.front() && *it <= &pawns_cyan_.back())
+        else if (*it >= &pawns_cyan.front() && *it <= &pawns_cyan.back())
         {
-            pawns_cyan_.erase(pawns_cyan_.begin() + (*it - &pawns_cyan_.front()));
+            pawns_cyan.erase(pawns_cyan.begin() + (*it - &pawns_cyan.front()));
         }
     
-        it = vanishing_pawns_.erase(it);
+        it = vanishing_pawns.erase(it);
     }
 }

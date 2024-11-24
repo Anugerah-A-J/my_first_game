@@ -2,18 +2,18 @@
 #include <allegro5/allegro_primitives.h>
 #pragma once
 
-bool equal(float f1, float f2, float margin)
+bool Equal(float f1, float f2, float margin)
 {
     return fabsf(f1 - f2) < margin;
 }
 
-bool equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float margin)
+bool Equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float margin)
 {
     return
-        equal(color_1.r, color_2.r, margin) &&
-        equal(color_1.g, color_2.g, margin) &&
-        equal(color_1.b, color_2.b, margin) &&
-        equal(color_1.a, color_2.a, margin);
+        Equal(color_1.r, color_2.r, margin) &&
+        Equal(color_1.g, color_2.g, margin) &&
+        Equal(color_1.b, color_2.b, margin) &&
+        Equal(color_1.a, color_2.a, margin);
 }
 
 class Vector

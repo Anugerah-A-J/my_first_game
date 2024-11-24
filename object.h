@@ -9,66 +9,66 @@ class Aim
 public:
     Aim()
     :
-        reach_circle_{0, 0, param::reach_radius, param::magenta, param::line_width},
-        pawn_destination_{0, 0},
-        direction_sign_{
+        reach_circle{0, 0, param::reach_radius, param::magenta, param::line_width},
+        pawn_destination{0, 0},
+        direction_sign{
             Vector(0, 0),
             Vector(0, 0),
             Vector(0, 0),
             param::magenta,
             param::line_width
         },
-        reach_circle_is_visible_{false},
-        direction_sign_is_visible_{false}
+        reach_circle_is_visible{false},
+        direction_sign_is_visible{false}
     {}
 
-    void draw() const
+    void Draw() const
     {
-        if (reach_circle_is_visible_)
-            reach_circle_.draw();
+        if (reach_circle_is_visible)
+            reach_circle.Draw();
 
-        if (direction_sign_is_visible_)
-            direction_sign_.draw();
+        if (direction_sign_is_visible)
+            direction_sign.Draw();
     }
 
-    void center(const Vector& point) { reach_circle_.center(point); }
-    const Vector& center() { return reach_circle_.center(); }
+    void Center(const Vector& point) { reach_circle.Center(point); }
+    const Vector& Center() { return reach_circle.Center(); }
 
-    const Vector& pawn_destination() const { return pawn_destination_; }
+    const Vector& Pawn_destination() const { return pawn_destination; }
 
-    void update_direction(const Vector& mouse_coordinate)
+    void Update_direction(const Vector& mouse_coordinate)
     {
-        Vector unit = (mouse_coordinate - reach_circle_.center()).unit();
+        Vector unit = (mouse_coordinate - reach_circle.Center()).Unit();
 
-        pawn_destination_ = reach_circle_.center() - unit * reach_circle_.radius();
+        pawn_destination = reach_circle.Center() - unit * reach_circle.Radius();
         
-        direction_sign_.vertex_1(reach_circle_.center() + unit * param::unit_length);
+        direction_sign.Vertex_1(reach_circle.Center() + unit * param::unit_length);
 
-        Vector temp = direction_sign_.vertex_1() + unit * param::unit_length;
+        Vector temp = direction_sign.Vertex_1() + unit * param::unit_length;
 
-        direction_sign_.vertex_2(temp + Matrix(0, 1, -1, 0) * unit * param::unit_length / param::sqrt_3);
+        direction_sign.Vertex_2(temp + Matrix(0, 1, -1, 0) * unit * param::unit_length / param::sqrt_3);
 
-        direction_sign_.vertex_3(temp + Matrix(0, -1, 1, 0) * unit * param::unit_length / param::sqrt_3);
+        direction_sign.Vertex_3(temp + Matrix(0, -1, 1, 0) * unit * param::unit_length / param::sqrt_3);
     }
 
-    void show_reach_circle() { reach_circle_is_visible_ = true; }
-    void show_direction_sign() { direction_sign_is_visible_ = true; }
-    void hide()
+    void Show_reach_circle() { reach_circle_is_visible = true; }
+    void Show_direction_sign() { direction_sign_is_visible = true; }
+    void Hide()
     {
-        reach_circle_is_visible_ = false;
-        direction_sign_is_visible_ = false;
+        reach_circle_is_visible = false;
+        direction_sign_is_visible = false;
     }
-    void color(const ALLEGRO_COLOR& color)
+    void Color(const ALLEGRO_COLOR& color)
     {
-        reach_circle_.color(color);
-        direction_sign_.color(color);
+        reach_circle.Color(color);
+        direction_sign.Color(color);
     }
 private:
-    Circle reach_circle_;
-    Vector pawn_destination_;
-    Triangle direction_sign_;
-    bool reach_circle_is_visible_;
-    bool direction_sign_is_visible_;
+    Circle reach_circle;
+    Vector pawn_destination;
+    Triangle direction_sign;
+    bool reach_circle_is_visible;
+    bool direction_sign_is_visible;
 };
 
 class Clipper
@@ -76,7 +76,7 @@ class Clipper
 public:
     Clipper()
     :
-        left_{
+        left{
             0,
             0,
             2 * param::unit_length,
@@ -84,7 +84,7 @@ public:
             param::black,
             0
         },
-        top_{
+        top{
             0,
             0,
             param::window_width,
@@ -92,7 +92,7 @@ public:
             param::black,
             0
         },
-        right_{
+        right{
             param::window_width - 2 * param::unit_length,
             0,
             2 * param::unit_length,
@@ -100,7 +100,7 @@ public:
             param::black,
             0
         },
-        bottom_{
+        bottom{
             0,
             param::window_height - param::unit_length,
             param::window_width,
@@ -110,18 +110,18 @@ public:
         }
     {};
 
-    void draw() const
+    void Draw() const
     {
-        left_.draw();
-        top_.draw();
-        right_.draw();
-        bottom_.draw();
+        left.Draw();
+        top.Draw();
+        right.Draw();
+        bottom.Draw();
     };
 private:
-    Rectangle left_;
-    Rectangle top_;
-    Rectangle right_;
-    Rectangle bottom_;
+    Rectangle left;
+    Rectangle top;
+    Rectangle right;
+    Rectangle bottom;
 };
 
 class Fence
@@ -129,7 +129,7 @@ class Fence
 public:
     Fence()
     :
-        shape_{
+        shape{
             2 * param::unit_length,
             param::unit_length,
             param::window_width - 4 * param::unit_length,
@@ -139,12 +139,12 @@ public:
         }
     {};
 
-    void draw() const
+    void Draw() const
     {
-        shape_.draw();
+        shape.Draw();
     };
 
-    const Rectangle& shape() const { return shape_; }
+    const Rectangle& Shape() const { return shape; }
 private:
-    Rectangle shape_;
+    Rectangle shape;
 };
