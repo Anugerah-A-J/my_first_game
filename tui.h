@@ -36,6 +36,8 @@ public:
 
     void Draw() const
     {
+        shape.Draw();
+
         al_draw_text(
             font,
             text_color,
@@ -44,7 +46,6 @@ public:
             ALLEGRO_ALIGN_LEFT,
             &text.front()
         );
-        shape.Draw();
     }
 
     bool Contain(const Vector& point) const { return shape.Contain(point); }
@@ -136,17 +137,17 @@ public:
         const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color)
     {
+        if (Messages_width() + al_get_text_width(font, &text.front()) > shape.Width())
+            shape.Width(Messages_width() + al_get_text_width(font, &text.front()));
+
+        shape.Origin(center - shape.Size());
+
         messages.emplace_back(One_line_text(
             Message_origin(),
             text,
             font,
             text_color,
             background_color));
-
-        if (Messages_width() > shape.Width())
-            shape.Width(Messages_width());
-
-        shape.Origin(center - shape.Size());
     }
 protected:
     Dialog_box(
@@ -168,6 +169,13 @@ protected:
         const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color)
     {
+        if (al_get_text_width(font, &text.front()) > shape.Width())
+            shape.Width(al_get_text_width(font, &text.front()));
+
+        shape.Height(shape.Height() + al_get_font_line_height(font));
+
+        shape.Origin(center - shape.Size());
+    
         choices.emplace_back(One_line_text(
             Choice_origin(),
             text,
@@ -177,13 +185,6 @@ protected:
 
         if (choices.size() == 1)
             selected_choice = &choices.front();
-
-        if (choices.back().Width() > shape.Width())
-            shape.Width(choices.back().Width());
-
-        shape.Height(shape.Height() + al_get_font_line_height(font));
-
-        shape.Origin(center - shape.Size());
     }
 private:
     float Messages_width() const

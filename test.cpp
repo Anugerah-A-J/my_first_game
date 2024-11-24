@@ -2,19 +2,6 @@
 #include "geometry.h"
 #include <iostream>
 
-class Vector
-{
-public:
-    int X() const { return data.x; }
-    int Y() const { return data.y; }
-private:
-    struct data
-    {
-        int x;
-        int y;
-    } data;
-};
-
 int main()
 {
     // al_init();

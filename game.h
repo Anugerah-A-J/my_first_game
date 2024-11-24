@@ -7,6 +7,7 @@
 #include <set>
 #include "collision.h"
 #include "ui.h"
+#include <iostream>
 #pragma once
 
 enum class State
@@ -129,7 +130,7 @@ void Game::Run()
     bool done = false;
     bool redraw = true;
     ALLEGRO_EVENT event;
-    
+
     End end = End(font);
     pointer_to_end = &end;
 
@@ -269,18 +270,20 @@ void Game::Move_pawn()
         }
     });
 
-    collision::Response(active_pawns->back(), *passive_king, [&](float f)
+    collision::Response(active_pawns->back(), *passive_king, [&](float t)
     {
         Pawn::Vanish_immediately(true);
 
-        f = collision::Circle_vs_circle(
+        t = collision::Circle_vs_circle(
             active_pawns->back().Shape(),
             passive_king->King_shape(),
             active_pawns->back().Last_translation()
         );
 
-        if (f <= 1)
+        if (t <= 1)
             passive_king->Life_decrease_by(1);
+        
+        std::cout << t << '\n';
 
         if (passive_king->Life() == 0)
         {
