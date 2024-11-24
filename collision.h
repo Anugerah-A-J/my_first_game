@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 #pragma once
 
 namespace collision
@@ -46,7 +47,7 @@ void collision::Response(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, 
 void collision::Response(Pawn& moving_pawn, King& king, const std::function<void(float f)>& what_to_do_when_collide)
 {
     float t = Circle_vs_rectangle(moving_pawn.Shape(), king.Throne_shape(), moving_pawn.Last_translation());
-
+    std::cout << "t throne: " << t << "\n";
     if (t == 2)
         return;
 

@@ -96,6 +96,17 @@ public:
     void Translate(const Vector& displacement) { start += displacement, end += displacement; };
     const Vector& Start() const { return start; }
     const Vector& End() const { return end; }
+    void Draw() const
+    {
+        al_draw_line(
+            start.X(),
+            start.Y(),
+            end.X(),
+            end.Y(),
+            al_map_rgb_f(1, 1, 1),
+            1
+        );
+    }
 private:
     Vector start;
     Vector end;
@@ -268,6 +279,9 @@ public:
     void Color(const ALLEGRO_COLOR& color) { this->color = color; }
 
     float Radius() const { return radius; }
+
+    void Line_width(float value) { line_width = value; }
+    float Line_width() const { return line_width; }
 private:
     Vector center;
     float radius;

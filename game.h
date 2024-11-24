@@ -57,6 +57,8 @@ private:
 
     End* pointer_to_end;
 
+    std::vector<Line> trail;
+
     // Map Map_1:
     // Box box; // yellow
     // Tree tree; // green
@@ -115,6 +117,20 @@ void Game::Draw() const
     fence.Draw();
     king_cyan.Draw_life();
     king_magenta.Draw_life();
+
+    Circle circle_magenta = king_magenta.King_shape();
+    circle_magenta.Add_radius_by(param::unit_length);
+    circle_magenta.Line_width(param::line_width);
+    std::cout << circle_magenta.Line_width() << "\n";
+    circle_magenta.Draw();
+
+    Circle circle_cyan = king_cyan.King_shape();
+    circle_cyan.Add_radius_by(param::unit_length);
+    circle_cyan.Line_width(param::line_width);
+    std::cout << circle_cyan.Line_width() << "\n";
+    circle_cyan.Draw();
+
+    std::for_each(trail.begin(), trail.end(), [](const Line& x){x.Draw();});
 
     if (state == State::end)
         pointer_to_end->Draw();
@@ -258,6 +274,7 @@ void Game::Add_pawn()
 void Game::Move_pawn()
 {
     active_pawns->back().Move();
+    trail.emplace_back(active_pawns->back().Last_translation());
 
     collision::Response(vanishing_pawns, active_pawns->back(), *passive_pawns);
 
@@ -281,9 +298,9 @@ void Game::Move_pawn()
         );
 
         if (t <= 1)
-            passive_king->Life_decrease_by(1);
+            passive_king->Life_will_be_decreased();
         
-        std::cout << t << '\n';
+        std::cout << "t king: " << t << "\n";
 
         if (passive_king->Life() == 0)
         {
@@ -305,6 +322,8 @@ void Game::Clean_pawn()
     }
     else if (vanishing_pawns.empty() && Pawn::Finish_moving())
     {
+        passive_king->Update_life();
+
         std::swap(active_king, passive_king);
         std::swap(active_pawns, passive_pawns);
 
@@ -350,6 +369,7 @@ void Game::Play_again_or_quit(bool& done)
         passive_pawns = &pawns_cyan;
         vanishing_pawns.clear();
         state = State::choose;
+        Pawn::Vanish_immediately(false);
         break;
 
     case 1:

@@ -52,13 +52,22 @@ public:
     const Circle& King_shape() const { return king_shape; }
     const Rectangle& Throne_shape() const { return throne_shape; }
     int Life() const { return life; }
-    void Life_decrease_by(int value) { life -= value; }
+    void Life_will_be_decreased() { decrease_life = true; }
+    void Update_life()
+    {
+        if (!decrease_life)
+            return;
+            
+        life--;
+        decrease_life = false;
+    }
     void Reset_life() { life = param::life; }
 private:
     Circle king_shape;
     Rectangle throne_shape;
     int life;
     std::vector<Circle> life_shapes;
+    bool decrease_life;
 };
 
 class King_magenta
