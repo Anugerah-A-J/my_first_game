@@ -118,19 +118,17 @@ void Game::Draw() const
     king_cyan.Draw_life();
     king_magenta.Draw_life();
 
-    Circle circle_magenta = king_magenta.King_shape();
-    circle_magenta.Add_radius_by(param::unit_length);
-    circle_magenta.Line_width(param::line_width);
-    std::cout << circle_magenta.Line_width() << "\n";
-    circle_magenta.Draw();
+    // Circle circle_magenta = king_magenta.King_shape();
+    // circle_magenta.Add_radius_by(param::unit_length);
+    // circle_magenta.Line_width(param::line_width);
+    // circle_magenta.Draw();
 
-    Circle circle_cyan = king_cyan.King_shape();
-    circle_cyan.Add_radius_by(param::unit_length);
-    circle_cyan.Line_width(param::line_width);
-    std::cout << circle_cyan.Line_width() << "\n";
-    circle_cyan.Draw();
+    // Circle circle_cyan = king_cyan.King_shape();
+    // circle_cyan.Add_radius_by(param::unit_length);
+    // circle_cyan.Line_width(param::line_width);
+    // circle_cyan.Draw();
 
-    std::for_each(trail.begin(), trail.end(), [](const Line& x){x.Draw();});
+    // std::for_each(trail.begin(), trail.end(), [](const Line& x){x.Draw();});
 
     if (state == State::end)
         pointer_to_end->Draw();
@@ -280,6 +278,9 @@ void Game::Move_pawn()
 
     collision::Response(active_pawns->back(), *active_king, [&](float t)
     {
+        if (t == 2)
+            return;
+
         if (!active_king->Contain(aim.Center())) // when pawn doesn't come out of king
         {
             active_pawns->back().Retreat(1 - t);
@@ -289,7 +290,8 @@ void Game::Move_pawn()
 
     collision::Response(active_pawns->back(), *passive_king, [&](float t)
     {
-        Pawn::Vanish_immediately(true);
+        if (t != 2)
+            Pawn::Vanish_immediately(true);
 
         t = collision::Circle_vs_circle(
             active_pawns->back().Shape(),
@@ -300,14 +302,7 @@ void Game::Move_pawn()
         if (t <= 1)
             passive_king->Life_will_be_decreased();
         
-        std::cout << "t king: " << t << "\n";
-
-        if (passive_king->Life() == 0)
-        {
-            std::string message = passive_king == &king_magenta ? "Cyan Win" : "Magenta Win";
-            pointer_to_end->Add_message(message, active_king->Color());
-            state = State::end;
-        }
+        // std::cout << "t king: " << t << "\n";
     });
 
     collision::Response(vanishing_pawns, active_pawns->back(), fence);
@@ -324,12 +319,20 @@ void Game::Clean_pawn()
     {
         passive_king->Update_life();
 
-        std::swap(active_king, passive_king);
-        std::swap(active_pawns, passive_pawns);
+        if (passive_king->Life() == 0)
+        {
+            std::string message = passive_king == &king_magenta ? "Cyan Win" : "Magenta Win";
+            pointer_to_end->Add_message(message, active_king->Color());
+            state = State::end;
+        }
+        else
+        {
+            std::swap(active_king, passive_king);
+            std::swap(active_pawns, passive_pawns);
 
-        state = State::choose;
-        aim.Color(active_king->Color());
-        // std::cout << "move pawn > choose and aim_\n";
+            state = State::choose;
+            aim.Color(active_king->Color());
+        }
     }
 
     for(auto it = vanishing_pawns.begin(); it != vanishing_pawns.end();)

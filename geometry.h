@@ -103,7 +103,7 @@ public:
             start.Y(),
             end.X(),
             end.Y(),
-            al_map_rgb_f(1, 1, 1),
+            al_map_rgb_f(0.5f, 0.5f, 0.5f),
             1
         );
     }
