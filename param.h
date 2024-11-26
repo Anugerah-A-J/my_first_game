@@ -10,16 +10,19 @@ namespace param
         Theme(
             const ALLEGRO_COLOR& passive_text_color,
             const ALLEGRO_COLOR& active_text_color,
-            const ALLEGRO_COLOR& background_color
+            const ALLEGRO_COLOR& background_color,
+            const ALLEGRO_COLOR& line_color
         ):
             passive_text_color{passive_text_color},
             active_text_color{active_text_color},
-            background_color{background_color}
+            background_color{background_color},
+            line_color{line_color}
         {}
 
         const ALLEGRO_COLOR passive_text_color;
         const ALLEGRO_COLOR active_text_color;
         const ALLEGRO_COLOR background_color;
+        const ALLEGRO_COLOR line_color;
     };
 
     const int window_width      = 500;
@@ -55,6 +58,7 @@ namespace param
     const Theme default_theme = Theme(
         al_map_rgba_f(0.6f, 0.6f, 0.6f, 1),
         al_map_rgba_f(0.8f, 0.8f, 0.8f, 1),
-        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1)
+        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
+        al_map_rgba_f(0.6f, 0.6f, 0.6f, 1)
     );
 };

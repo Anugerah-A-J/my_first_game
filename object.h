@@ -9,15 +9,15 @@ class Aim
 public:
     Aim()
     :
-        reach_circle{0, 0, param::reach_radius, param::magenta, param::line_width},
+        reach_circle{0, 0, param::reach_radius},
         pawn_destination{0, 0},
         direction_sign{
             Vector(0, 0),
             Vector(0, 0),
-            Vector(0, 0),
-            param::magenta,
-            param::line_width
+            Vector(0, 0)
         },
+        color{param::magenta},
+        line_width{param::line_width},
         reach_circle_is_visible{false},
         direction_sign_is_visible{false}
     {}
@@ -25,10 +25,10 @@ public:
     void Draw() const
     {
         if (reach_circle_is_visible)
-            reach_circle.Draw();
+            reach_circle.Draw(color, line_width);
 
         if (direction_sign_is_visible)
-            direction_sign.Draw();
+            direction_sign.Draw(color, line_width);
     }
 
     void Center(const Vector& point) { reach_circle.Center(point); }
@@ -58,15 +58,13 @@ public:
         reach_circle_is_visible = false;
         direction_sign_is_visible = false;
     }
-    void Color(const ALLEGRO_COLOR& color)
-    {
-        reach_circle.Color(color);
-        direction_sign.Color(color);
-    }
+    void Color(const ALLEGRO_COLOR& color) { this->color = color; }
 private:
     Circle reach_circle;
     Vector pawn_destination;
     Triangle direction_sign;
+    ALLEGRO_COLOR color;
+    float line_width;
     bool reach_circle_is_visible;
     bool direction_sign_is_visible;
 };
@@ -80,48 +78,42 @@ public:
             0,
             0,
             2 * param::unit_length,
-            param::window_height,
-            param::black,
-            0
+            param::window_height
         },
         top{
             0,
             0,
             param::window_width,
-            param::unit_length,
-            param::black,
-            0
+            param::unit_length
         },
         right{
             param::window_width - 2 * param::unit_length,
             0,
             2 * param::unit_length,
-            param::window_height,
-            param::black,
-            0
+            param::window_height
         },
         bottom{
             0,
             param::window_height - param::unit_length,
             param::window_width,
-            param::unit_length,
-            param::black,
-            0
-        }
+            param::unit_length
+        },
+        color{param::black}
     {};
 
     void Draw() const
     {
-        left.Draw();
-        top.Draw();
-        right.Draw();
-        bottom.Draw();
+        left.Draw(color);
+        top.Draw(color);
+        right.Draw(color);
+        bottom.Draw(color);
     };
 private:
     Rectangle left;
     Rectangle top;
     Rectangle right;
     Rectangle bottom;
+    ALLEGRO_COLOR color;
 };
 
 class Fence
@@ -133,18 +125,20 @@ public:
             2 * param::unit_length,
             param::unit_length,
             param::window_width - 4 * param::unit_length,
-            param::window_height - 2 * param::unit_length,
-            param::red,
-            param::line_width
-        }
+            param::window_height - 2 * param::unit_length
+        },
+        color{param::red},
+        line_width{param::line_width}
     {};
 
     void Draw() const
     {
-        shape.Draw();
+        shape.Draw(color, line_width);
     };
 
     const Rectangle& Shape() const { return shape; }
 private:
     Rectangle shape;
+    ALLEGRO_COLOR color;
+    float line_width;
 };

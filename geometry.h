@@ -16,6 +16,17 @@ bool Equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float mar
         Equal(color_1.a, color_2.a, margin);
 }
 
+void Transform_color(
+    ALLEGRO_COLOR& changed_color,
+    const ALLEGRO_COLOR& target_color,
+    float color_transformation_ratio)
+{
+    changed_color.r += (target_color.r - changed_color.r) * color_transformation_ratio;
+    changed_color.g += (target_color.g - changed_color.g) * color_transformation_ratio;
+    changed_color.b += (target_color.b - changed_color.b) * color_transformation_ratio;
+    changed_color.a += (target_color.a - changed_color.a) * color_transformation_ratio;
+}
+
 class Vector
 {
 public:
@@ -96,15 +107,15 @@ public:
     void Translate(const Vector& displacement) { start += displacement, end += displacement; };
     const Vector& Start() const { return start; }
     const Vector& End() const { return end; }
-    void Draw() const
+    void Draw(const ALLEGRO_COLOR& color, float line_width) const
     {
         al_draw_line(
             start.X(),
             start.Y(),
             end.X(),
             end.Y(),
-            al_map_rgb_f(0.5f, 0.5f, 0.5f),
-            1
+            color,
+            line_width
         );
     }
 private:
@@ -115,46 +126,42 @@ private:
 class Rectangle
 {
 public:
-    Rectangle(float x, float y, float w, float h, const ALLEGRO_COLOR& color, float line_width):
+    Rectangle(float x, float y, float w, float h):
         origin{x, y},
-        size{fabsf(w), fabsf(h)},
-        color{color},
-        line_width{line_width}
+        size{fabsf(w), fabsf(h)}
     {};
 
-    Rectangle(const Vector& origin, const Vector& size, const ALLEGRO_COLOR& color, float line_width):
+    Rectangle(const Vector& origin, const Vector& size):
         origin{origin},
-        size{size.Abs()},
-        color{color},
-        line_width{line_width}
+        size{size.Abs()}
     {};
 
-    Rectangle(const Vector& origin, float height, const ALLEGRO_COLOR& color):
+    Rectangle(const Vector& origin, float height):
         origin{origin},
-        size{0, height},
-        color{color},
-        line_width{0}
+        size{0, height}
     {};
 
-    void Draw() const
+    void Draw(const ALLEGRO_COLOR& color) const
     {
-        if (line_width == 0)
-            al_draw_filled_rectangle(
-                origin.X(),
-                origin.Y(),
-                origin.X() + size.X(),
-                origin.Y() + size.Y(),
-                color
-            );
-        else
-            al_draw_rectangle(
-                origin.X(),
-                origin.Y(),
-                origin.X() + size.X(),
-                origin.Y() + size.Y(),
-                color,
-                line_width
-            );
+        al_draw_filled_rectangle(
+            origin.X(),
+            origin.Y(),
+            origin.X() + size.X(),
+            origin.Y() + size.Y(),
+            color
+        );
+    }
+
+    void Draw(const ALLEGRO_COLOR& line_color, float line_width) const
+    {
+        al_draw_rectangle(
+            origin.X(),
+            origin.Y(),
+            origin.X() + size.X(),
+            origin.Y() + size.Y(),
+            line_color,
+            line_width
+        );
     }
 
     void Translate(const Vector& displacement) { origin += displacement; };
@@ -209,44 +216,40 @@ public:
 private:
     Vector origin;
     Vector size;
-    ALLEGRO_COLOR color;
-    float line_width;
 };
 
 class Circle
 {
 public:
-    Circle(float cx, float cy, float r, const ALLEGRO_COLOR& color, float line_width):
+    Circle(float cx, float cy, float r):
         center{cx, cy},
-        radius{r},
-        color{color},
-        line_width{line_width}
+        radius{r}
     {};
 
-    Circle(const Vector& center, float r, const ALLEGRO_COLOR& color, float line_width):
+    Circle(const Vector& center, float r):
         center{center},
-        radius{r},
-        color{color},
-        line_width{line_width}
+        radius{r}
     {};
 
-    void Draw() const
+    void Draw(const ALLEGRO_COLOR& color) const
     {
-        if (line_width == 0)
-            al_draw_filled_circle(
-                center.X(),
-                center.Y(),
-                radius,
-                color
-            );
-        else
-            al_draw_circle(
-                center.X(),
-                center.Y(),
-                radius,
-                color,
-                line_width
-            );
+        al_draw_filled_circle(
+            center.X(),
+            center.Y(),
+            radius,
+            color
+        );
+    }
+
+    void Draw(const ALLEGRO_COLOR& line_color, float line_width) const
+    {
+        al_draw_circle(
+            center.X(),
+            center.Y(),
+            radius,
+            line_color,
+            line_width
+        );
     }
 
     void Translate(const Vector& displacement) { center += displacement; }
@@ -254,75 +257,54 @@ public:
     void Scale(float multiplier) { radius *= multiplier; }
     void Add_radius_by(float value) { radius += value; }
 
-    void Transform_color_to(const ALLEGRO_COLOR& color, float color_transformation_ratio)
-    {
-        this->color.r += (color.r - this->color.r) * color_transformation_ratio;
-        this->color.g += (color.g - this->color.g) * color_transformation_ratio;
-        this->color.b += (color.b - this->color.b) * color_transformation_ratio;
-        this->color.a += (color.a - this->color.a) * color_transformation_ratio;
-    }
-
     bool Contain(const Vector& point) const
     {
         return (point - center).Magsq() <= radius * radius;
     }
 
-    // void red(float red) { color_.r = red; }
-    // void green(float green) { color_.g = green; }
-    // void blue(float blue) { color_.b = blue; }
-    // void alpha(float alpha) { color_.a = alpha; }
-
     const Vector& Center() const { return center; }
     void Center(const Vector& position) { center = position; }
 
-    const ALLEGRO_COLOR& Color() const { return color; }
-    void Color(const ALLEGRO_COLOR& color) { this->color = color; }
-
     float Radius() const { return radius; }
-
-    void Line_width(float value) { line_width = value; }
-    float Line_width() const { return line_width; }
 private:
     Vector center;
     float radius;
-    ALLEGRO_COLOR color;
-    float line_width;
 };
 
 class Triangle
 {
 public:
-    Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector& vertex_3, const ALLEGRO_COLOR& color, float line_width):
+    Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector& vertex_3):
         vertex_1{vertex_1},
         vertex_2{vertex_2},
-        vertex_3{vertex_3},
-        color{color},
-        line_width{line_width}
+        vertex_3{vertex_3}
     {};
 
-    void Draw() const
+    void Draw(const ALLEGRO_COLOR& color) const
     {
-        if (line_width == 0)
-            al_draw_filled_triangle(
-                vertex_1.X(),
-                vertex_1.Y(),
-                vertex_2.X(),
-                vertex_2.Y(),
-                vertex_3.X(),
-                vertex_3.Y(),
-                color
-            );
-        else
-            al_draw_triangle(
-                vertex_1.X(),
-                vertex_1.Y(),
-                vertex_2.X(),
-                vertex_2.Y(),
-                vertex_3.X(),
-                vertex_3.Y(),
-                color,
-                line_width
-            );
+        al_draw_filled_triangle(
+            vertex_1.X(),
+            vertex_1.Y(),
+            vertex_2.X(),
+            vertex_2.Y(),
+            vertex_3.X(),
+            vertex_3.Y(),
+            color
+        );
+    }
+
+    void Draw(const ALLEGRO_COLOR& line_color, float line_width) const
+    {
+        al_draw_triangle(
+            vertex_1.X(),
+            vertex_1.Y(),
+            vertex_2.X(),
+            vertex_2.Y(),
+            vertex_3.X(),
+            vertex_3.Y(),
+            line_color,
+            line_width
+        );
     }
 
     // void translate(const Vector& displacement)
@@ -339,12 +321,8 @@ public:
     const Vector& Vertex_1() const { return vertex_1; }
     const Vector& Vertex_2() const { return vertex_2; }
     const Vector& Vertex_3() const { return vertex_3; }
-
-    void Color(const ALLEGRO_COLOR& color) { this->color = color; }
 private:
     Vector vertex_1;
     Vector vertex_2;
     Vector vertex_3;
-    ALLEGRO_COLOR color;
-    float line_width;
 };

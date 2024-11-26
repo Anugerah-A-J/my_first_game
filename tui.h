@@ -16,8 +16,7 @@ public:
         const Vector& origin,
         const std::string& text,
         const ALLEGRO_FONT* const font,
-        const ALLEGRO_COLOR& text_color,
-        const ALLEGRO_COLOR& background_color
+        const ALLEGRO_COLOR& text_color
     ):
         text{text}, // no validation for \n
         font{font},
@@ -28,16 +27,12 @@ public:
                 // 8 * text.length(),
                 al_get_text_width(font, &text.front()),
                 al_get_font_line_height(font)
-            ),
-            background_color,
-            0
+            )
         }
     {}
 
     void Draw() const
     {
-        shape.Draw();
-
         al_draw_text(
             font,
             text_color,
@@ -118,7 +113,8 @@ public:
 
     void Draw() const
     {
-        shape.Draw();
+        shape.Draw(color);
+        shape.Draw(line_color, line_width);
         
         for (const One_line_text& message : messages)
             message.Draw();
@@ -140,28 +136,30 @@ public:
         if (Messages_width() + al_get_text_width(font, &text.front()) > shape.Width())
             shape.Width(Messages_width() + al_get_text_width(font, &text.front()));
 
-        shape.Origin(center - shape.Size());
+        shape.Origin(center - shape.Size() / 2);
 
         messages.emplace_back(One_line_text(
             Message_origin(),
             text,
             font,
-            text_color,
-            background_color));
+            text_color));
     }
 protected:
     Dialog_box(
         const Vector& center,
         const ALLEGRO_FONT* const font,
-        const ALLEGRO_COLOR& color = param::default_theme.background_color
+        const ALLEGRO_COLOR& color = param::default_theme.background_color,
+        const ALLEGRO_COLOR& line_color = param::default_theme.line_color
     ):
         center{center},
         font{font},
         shape{
             center - Vector(0, al_get_font_line_height(font)),
             al_get_font_line_height(font),
-            color
-        }
+        },
+        color{color},
+        line_color{line_color},
+        line_width{param::line_width}
     {}
 
     void Add_choice(
@@ -174,17 +172,19 @@ protected:
 
         shape.Height(shape.Height() + al_get_font_line_height(font));
 
-        shape.Origin(center - shape.Size());
+        shape.Origin(center - shape.Size() / 2);
     
         choices.emplace_back(One_line_text(
             Choice_origin(),
             text,
             font,
-            text_color,
-            background_color));
+            text_color));
 
         if (choices.size() == 1)
+        {
             selected_choice = &choices.front();
+            selected_choice->Make_active();
+        }
     }
 private:
     float Messages_width() const
@@ -210,6 +210,9 @@ private:
     const Vector center;
     const ALLEGRO_FONT* const font;
     Rectangle shape;
+    ALLEGRO_COLOR color;
+    ALLEGRO_COLOR line_color;
+    float line_width;
     std::vector<One_line_text> messages;
     std::vector<One_line_text> choices;
     One_line_text* selected_choice;
