@@ -73,13 +73,13 @@ public:
         if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice_index != choices.size() - 1)
             selected_choice_index++;
 
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice_index == choices.size() - 1)
+        else if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice_index == choices.size() - 1)
             selected_choice_index = 0;
 
         if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice_index != 0)
             selected_choice_index--;
 
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice_index == 0)
+        else if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice_index == 0)
             selected_choice_index = choices.size() - 1;
 
         choices.at(selected_choice_index).Make_active();
