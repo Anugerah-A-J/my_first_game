@@ -51,6 +51,8 @@ public:
 
     void Make_active() { text_color = param::default_theme.active_text_color; }
     void Make_passive() { text_color = param::default_theme.passive_text_color; }
+    const Vector& Origin() const { return shape.Origin(); }
+    void Translate(const Vector& displacement) { shape.Translate(displacement); }
 private:
     std::string text;
     const ALLEGRO_FONT* const font;
@@ -133,29 +135,33 @@ public:
         const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color)
     {
-        if (Messages_width() + al_get_text_width(font, &text.front()) > shape.Width())
-            shape.Width(Messages_width() + al_get_text_width(font, &text.front()));
+        if (Messages_width() + (text.length() + 1) * monospaced_font_width > shape.Width())
+            shape.Width(Messages_width() + (text.length() + 1) * monospaced_font_width);
 
-        shape.Origin(center - shape.Size() / 2);
+        shape.Origin(center - shape.Size() * 0.5f);
+
+        Update_messages_origin();
 
         messages.emplace_back(One_line_text(
             Message_origin(),
             text,
-            font,
+            monospaced_font,
             text_color));
     }
 protected:
     Dialog_box(
         const Vector& center,
-        const ALLEGRO_FONT* const font,
+        const ALLEGRO_FONT* const monospaced_font,
         const ALLEGRO_COLOR& color = param::default_theme.background_color,
         const ALLEGRO_COLOR& line_color = param::default_theme.line_color
     ):
         center{center},
-        font{font},
+        monospaced_font{monospaced_font},
+        monospaced_font_height{al_get_font_line_height(monospaced_font)},
+        monospaced_font_width{al_get_text_width(monospaced_font, "a")},
         shape{
-            center - Vector(0, al_get_font_line_height(font)),
-            al_get_font_line_height(font),
+            center - Vector(0, monospaced_font_height),
+            2 * monospaced_font_height,
         },
         color{color},
         line_color{line_color},
@@ -167,17 +173,19 @@ protected:
         const ALLEGRO_COLOR& text_color = param::default_theme.passive_text_color,
         const ALLEGRO_COLOR& background_color = param::default_theme.background_color)
     {
-        if (al_get_text_width(font, &text.front()) > shape.Width())
-            shape.Width(al_get_text_width(font, &text.front()));
+        if ((text.length() + 1) * monospaced_font_width > shape.Width())
+            shape.Width((text.length() + 1) * monospaced_font_width);
 
-        shape.Height(shape.Height() + al_get_font_line_height(font));
+        shape.Height(shape.Height() + 1.5 * monospaced_font_height);
 
-        shape.Origin(center - shape.Size() / 2);
+        shape.Origin(center - shape.Size() * 0.5);
+
+        Update_choices_origin();
     
         choices.emplace_back(One_line_text(
             Choice_origin(),
             text,
-            font,
+            monospaced_font,
             text_color));
 
         if (choices.size() == 1)
@@ -199,16 +207,52 @@ private:
 
     Vector Message_origin() const
     {
-        return shape.Origin() + Vector(Messages_width(), 0);
+        return shape.Origin() + Vector(
+            Messages_width() + monospaced_font_width * 0.5f,
+            monospaced_font_height * 0.5f);
+    }
+
+    void Update_messages_origin()
+    {
+        if (messages.empty())
+            return;
+
+        Vector displacement = shape.Origin() - messages.front().Origin();
+
+        std::for_each(messages.begin(), messages.end(), [&](One_line_text& choice){
+            choice.Translate(displacement);
+        });
+    }
+
+    void Update_choices_origin()
+    {
+        if (choices.empty())
+            return;
+
+        Vector displacement
+            = shape.Origin()
+            + Vector(
+                monospaced_font_width * 0.5f,
+                monospaced_font_height * 2)
+            - choices.front().Origin();
+
+        std::for_each(choices.begin(), choices.end(), [&](One_line_text& choice){
+            choice.Translate(displacement);
+        });
     }
 
     Vector Choice_origin() const
     {
-        return shape.Origin() + Vector(0, (1 + choices.size()) * al_get_font_line_height(font));
+        return shape.Origin()
+            + Vector(
+                monospaced_font_width * 0.5f,
+                (2 + choices.size() * 1.5) * monospaced_font_height);
     }
 
     const Vector center;
-    const ALLEGRO_FONT* const font;
+    const ALLEGRO_FONT* const monospaced_font;
+    int monospaced_font_height;
+    int monospaced_font_width;
     Rectangle shape;
     ALLEGRO_COLOR color;
     ALLEGRO_COLOR line_color;

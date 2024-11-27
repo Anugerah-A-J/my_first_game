@@ -4,27 +4,6 @@
 
 namespace param
 {
-    class Theme
-    {
-    public:
-        Theme(
-            const ALLEGRO_COLOR& passive_text_color,
-            const ALLEGRO_COLOR& active_text_color,
-            const ALLEGRO_COLOR& background_color,
-            const ALLEGRO_COLOR& line_color
-        ):
-            passive_text_color{passive_text_color},
-            active_text_color{active_text_color},
-            background_color{background_color},
-            line_color{line_color}
-        {}
-
-        const ALLEGRO_COLOR passive_text_color;
-        const ALLEGRO_COLOR active_text_color;
-        const ALLEGRO_COLOR background_color;
-        const ALLEGRO_COLOR line_color;
-    };
-
     const int window_width      = 500;
     const int window_height     = 500;
     const float unit_length     = 10;
@@ -55,10 +34,31 @@ namespace param
     const float sin_45 = sqrt_2 / 2;
     const float sin_75 = (sqrt_3 + 1) * sqrt_2 / 4;
 
+    class Theme
+    {
+    public:
+        Theme(
+            const ALLEGRO_COLOR& passive_text_color,
+            const ALLEGRO_COLOR& active_text_color,
+            const ALLEGRO_COLOR& background_color,
+            const ALLEGRO_COLOR& line_color
+        ):
+            passive_text_color{passive_text_color},
+            active_text_color{active_text_color},
+            background_color{background_color},
+            line_color{line_color}
+        {}
+
+        const ALLEGRO_COLOR passive_text_color;
+        const ALLEGRO_COLOR active_text_color;
+        const ALLEGRO_COLOR background_color;
+        const ALLEGRO_COLOR line_color;
+    };
+
     const Theme default_theme = Theme(
-        al_map_rgba_f(0.6f, 0.6f, 0.6f, 1),
+        param::gray,
         al_map_rgba_f(0.8f, 0.8f, 0.8f, 1),
         al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
-        al_map_rgba_f(0.6f, 0.6f, 0.6f, 1)
+        param::gray
     );
 };
