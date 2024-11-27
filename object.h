@@ -28,7 +28,10 @@ public:
             reach_circle.Draw(color, line_width);
 
         if (direction_sign_is_visible)
+        {
             direction_sign.Draw(color, line_width);
+            Line(reach_circle.Center(), pawn_destination).Draw(color, line_width);
+        }
     }
 
     void Center(const Vector& point) { reach_circle.Center(point); }

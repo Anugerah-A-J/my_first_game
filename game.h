@@ -55,7 +55,7 @@ private:
     std::vector<Pawn>* passive_pawns;
     std::set<Pawn*> vanishing_pawns;
 
-    End* pointer_to_end;
+    End_dialog_box* pointer_to_end_dialog_box;
 
     std::vector<Line> trail;
 
@@ -131,7 +131,7 @@ void Game::Draw() const
     // std::for_each(trail.begin(), trail.end(), [](const Line& x){x.Draw();});
 
     if (state == State::end)
-        pointer_to_end->Draw();
+        pointer_to_end_dialog_box->Draw();
 }
 
 void Game::Run()
@@ -145,8 +145,8 @@ void Game::Run()
     bool redraw = true;
     ALLEGRO_EVENT event;
 
-    End end = End(font);
-    pointer_to_end = &end;
+    End_dialog_box end_dialog_box = End_dialog_box(font);
+    pointer_to_end_dialog_box = &end_dialog_box;
 
     al_start_timer(timer);
 
@@ -184,13 +184,13 @@ void Game::Run()
                     Update_aim_direction(event.mouse.x, event.mouse.y);
 
                 else if (state == State::end)
-                    pointer_to_end->Update_selected_choice(Vector(event.mouse.x, event.mouse.y));
+                    pointer_to_end_dialog_box->Update_selected_choice(Vector(event.mouse.x, event.mouse.y));
             
                 break;
 
             case ALLEGRO_EVENT_KEY_CHAR:
                 if (state == State::end)
-                    pointer_to_end->Update_selected_choice(event.keyboard.keycode);
+                    pointer_to_end_dialog_box->Update_selected_choice(event.keyboard.keycode);
 
                 if (state == State::end && event.keyboard.keycode == ALLEGRO_KEY_ENTER)
                     Play_again_or_quit(done);
@@ -322,7 +322,7 @@ void Game::Clean_pawn()
         if (passive_king->Life() == 0)
         {
             std::string message = passive_king == &king_magenta ? "Cyan Win" : "Magenta Win";
-            pointer_to_end->Add_message(message, active_king->Color());
+            pointer_to_end_dialog_box->Add_message(message, active_king->Color());
             state = State::end;
         }
         else
@@ -359,20 +359,30 @@ void Game::Clean_pawn()
 
 void Game::Play_again_or_quit(bool& done)
 {
-    switch (pointer_to_end->Selected_choice_index())
+    switch (pointer_to_end_dialog_box->Selected_choice_index())
     {
     case 0:
+        aim.Color(param::magenta);
+
         king_cyan.Reset_life();
         king_magenta.Reset_life();
+        
         pawns_cyan.clear();
         pawns_magenta.clear();
+        
         active_king = &king_magenta;
         passive_king = &king_cyan;
+        
         active_pawns = &pawns_magenta;
         passive_pawns = &pawns_cyan;
         vanishing_pawns.clear();
+        
         state = State::choose;
+        
         Pawn::Vanish_immediately(false);
+
+        pointer_to_end_dialog_box->Erase_message();
+        
         break;
 
     case 1:

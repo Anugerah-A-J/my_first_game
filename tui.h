@@ -65,33 +65,24 @@ class Dialog_box
 public:
     void Update_selected_choice(int allegro_keyboard_event_keycode)
     {
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice != &choices.back())
-        {
-            selected_choice->Make_passive();
-            selected_choice++;
-            selected_choice->Make_active();
-        }
+        if (allegro_keyboard_event_keycode != ALLEGRO_KEY_DOWN && allegro_keyboard_event_keycode != ALLEGRO_KEY_UP)
+            return;
 
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice == &choices.back())
-        {
-            selected_choice->Make_passive();
-            selected_choice = &choices.front();
-            selected_choice->Make_active();
-        }
+        choices.at(selected_choice_index).Make_passive();
 
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice != &choices.front())
-        {
-            selected_choice->Make_passive();
-            selected_choice--;
-            selected_choice->Make_active();
-        }
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice_index != choices.size() - 1)
+            selected_choice_index++;
 
-        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice == &choices.front())
-        {
-            selected_choice->Make_passive();
-            selected_choice = &choices.back();
-            selected_choice->Make_active();
-        }
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_DOWN && selected_choice_index == choices.size() - 1)
+            selected_choice_index = 0;
+
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice_index != 0)
+            selected_choice_index--;
+
+        if (allegro_keyboard_event_keycode == ALLEGRO_KEY_UP && selected_choice_index == 0)
+            selected_choice_index = choices.size() - 1;
+
+        choices.at(selected_choice_index).Make_active();
     }
 
     void Update_selected_choice(const Vector& mouse_coordinate)
@@ -105,11 +96,12 @@ public:
             }
         );
 
-        if (selected_choice_iterator != choices.end() && &*selected_choice_iterator != selected_choice)
+        if (selected_choice_iterator != choices.end() &&
+            selected_choice_iterator - choices.begin() != selected_choice_index)
         {
-            selected_choice->Make_passive();
-            selected_choice = &*selected_choice_iterator;
-            selected_choice->Make_active();
+            choices.at(selected_choice_index).Make_passive();
+            selected_choice_index = selected_choice_iterator - choices.begin();
+            choices.at(selected_choice_index).Make_active();
         }
     }
 
@@ -127,7 +119,7 @@ public:
 
     int Selected_choice_index() const
     {
-        return selected_choice - &choices.front();
+        return selected_choice_index;
     }
 
     void Add_message(
@@ -148,6 +140,8 @@ public:
             monospaced_font,
             text_color));
     }
+
+    void Erase_message() { messages.clear(); }
 protected:
     Dialog_box(
         const Vector& center,
@@ -165,7 +159,8 @@ protected:
         },
         color{color},
         line_color{line_color},
-        line_width{param::line_width}
+        line_width{param::line_width},
+        selected_choice_index{0}
     {}
 
     void Add_choice(
@@ -181,7 +176,7 @@ protected:
         shape.Origin(center - shape.Size() * 0.5);
 
         Update_choices_origin();
-    
+
         choices.emplace_back(One_line_text(
             Choice_origin(),
             text,
@@ -189,10 +184,7 @@ protected:
             text_color));
 
         if (choices.size() == 1)
-        {
-            selected_choice = &choices.front();
-            selected_choice->Make_active();
-        }
+            choices.front().Make_active();
     }
 private:
     float Messages_width() const
@@ -219,8 +211,8 @@ private:
 
         Vector displacement = shape.Origin() - messages.front().Origin();
 
-        std::for_each(messages.begin(), messages.end(), [&](One_line_text& choice){
-            choice.Translate(displacement);
+        std::for_each(messages.begin(), messages.end(), [&](One_line_text& message){
+            message.Translate(displacement);
         });
     }
 
@@ -259,5 +251,5 @@ private:
     float line_width;
     std::vector<One_line_text> messages;
     std::vector<One_line_text> choices;
-    One_line_text* selected_choice;
+    int selected_choice_index;
 };

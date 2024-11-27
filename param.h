@@ -8,8 +8,10 @@ namespace param
     const int window_height     = 500;
     const float unit_length     = 10;
     const float line_width      = 1;
-    const float reach_radius    = window_height / 4;
-    const int life              = 3;
+    // const float reach_radius    = window_height / 4;
+    const float reach_radius    = window_height;
+    // const int life              = 3;
+    const int life              = 1;
     const int translation_step  = 10;
 
     // static float delta() { return 0.1f;
@@ -57,7 +59,7 @@ namespace param
 
     const Theme default_theme = Theme(
         param::gray,
-        al_map_rgba_f(0.8f, 0.8f, 0.8f, 1),
+        param::white,
         al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
         param::gray
     );
