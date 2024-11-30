@@ -8,6 +8,7 @@
 #include "collision.h"
 #include "ui.h"
 #include <iostream>
+#include "map.h"
 #pragma once
 
 enum class State
@@ -57,9 +58,9 @@ private:
 
     End_dialog_box* pointer_to_end_dialog_box;
 
-    std::vector<Line> trail;
+    // std::vector<Line> trail;
 
-    // Map Map_1:
+    Map_1 map_1:
     // Box box; // yellow
     // Tree tree; // green
     // X x; // red
@@ -272,7 +273,7 @@ void Game::Add_pawn()
 void Game::Move_pawn()
 {
     active_pawns->back().Move();
-    trail.emplace_back(active_pawns->back().Last_translation());
+    // trail.emplace_back(active_pawns->back().Last_translation());
 
     collision::Response(vanishing_pawns, active_pawns->back(), *passive_pawns);
 
