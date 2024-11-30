@@ -1,5 +1,5 @@
-/**/*.o
+.vscode/
+build/
+test/
 *.exe
-/**/*.d
-*.dll
-*.pdf
+*.md
