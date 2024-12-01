@@ -60,7 +60,7 @@ private:
 
     // std::vector<Line> trail;
 
-    // Map_1 map_1:
+    Map_1 map_1;
 };
 
 Game::Game()
@@ -69,7 +69,8 @@ Game::Game()
     active_king{&king_magenta},
     passive_king{&king_cyan},
     active_pawns{&pawns_magenta},
-    passive_pawns{&pawns_cyan}
+    passive_pawns{&pawns_cyan},
+    map_1{fence}
 {
     al_init();
     al_init_primitives_addon();
@@ -112,6 +113,7 @@ void Game::Draw() const
 
     clipper.Draw();
     fence.Draw();
+    map_1.Draw();
     king_cyan.Draw_life();
     king_magenta.Draw_life();
 

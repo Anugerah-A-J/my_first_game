@@ -100,13 +100,22 @@ Vector operator*(const Matrix& m, const Vector& v)
 class Line
 {
 public:
-    Line(float x1, float y1, float x2, float y2): start{x1, y1}, end{x2, y2} {};
-    Line(float x, float y, const Vector& end): start{x, y}, end{end} {};
-    Line(const Vector& start, float x, float y): start{start}, end{x, y} {};
-    Line(const Vector& start, const Vector& end): start{start}, end{end} {};
-    void Translate(const Vector& displacement) { start += displacement, end += displacement; };
+    Line(float x1, float y1, float x2, float y2): start{x1, y1}, end{x2, y2} {}
+
+    Line(float x, float y, const Vector& end): start{x, y}, end{end} {}
+
+    Line(const Vector& start, float x, float y): start{start}, end{x, y} {}
+
+    Line(const Vector& start, const Vector& end): start{start}, end{end} {}
+
+    void Translate(const Vector& displacement) { start += displacement, end += displacement; }
+
     const Vector& Start() const { return start; }
+
     const Vector& End() const { return end; }
+
+    float Length() const { return std::sqrtf((start - end).Magsq()); }
+
     void Draw(const ALLEGRO_COLOR& color, float line_width) const
     {
         al_draw_line(
@@ -116,6 +125,28 @@ public:
             end.Y(),
             color,
             line_width
+        );
+    }
+
+    Line Mirror_x(const Vector& point) const
+    {
+        Vector translate_start = Vector(0, (point - start).Y()) * 2;
+        Vector translate_end = Vector(0, (point - end).Y()) * 2;
+
+        return Line(
+            start + translate_start,
+            end + translate_end
+        );
+    }
+
+    Line Mirror_y(const Vector& point) const
+    {
+        Vector translate_start = Vector((point - start).X(), 0) * 2;
+        Vector translate_end = Vector((point - end).X(), 0) * 2;
+
+        return Line(
+            start + translate_start,
+            end + translate_end
         );
     }
 private:
@@ -213,6 +244,30 @@ public:
     
     const Vector& Origin() const { return origin; }
     void Origin(const Vector& origin) { this->origin = origin; }
+
+    Vector Center() const { return origin + size / 2; }
+
+    Rectangle Mirror_x(const Vector& point) const
+    {
+        Vector center = Center();
+        Vector translate = Vector(0, (point - center).Y());
+
+        return Rectangle(
+            center + translate * 2 - size / 2,
+            size
+        );
+    }
+
+    Rectangle Mirror_y(const Vector& point) const
+    {
+        Vector center = Center();
+        Vector translate = Vector((point - center).X(), 0);
+
+        return Rectangle(
+            center + translate * 2 - size / 2,
+            size
+        );
+    }
 private:
     Vector origin;
     Vector size;
@@ -266,6 +321,26 @@ public:
     void Center(const Vector& position) { center = position; }
 
     float Radius() const { return radius; }
+
+    Circle Mirror_x(const Vector& point) const
+    {
+        Vector translate = Vector(0, (point - center).Y());
+
+        return Circle(
+            center + translate * 2,
+            radius
+        );
+    }
+
+    Circle Mirror_y(const Vector& point) const
+    {
+        Vector translate = Vector((point - center).X(), 0);
+
+        return Circle(
+            center + translate * 2,
+            radius
+        );
+    }
 private:
     Vector center;
     float radius;

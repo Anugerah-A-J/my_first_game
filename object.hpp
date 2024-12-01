@@ -131,7 +131,7 @@ public:
             param::window_height - 2 * param::unit_length
         },
         color{param::red},
-        line_width{param::line_width}
+        line_width{param::line_width * 2}
     {};
 
     void Draw() const
@@ -140,6 +140,14 @@ public:
     };
 
     const Rectangle& Shape() const { return shape; }
+
+    const Vector& Origin() const { return shape.Origin(); }
+
+    Vector Center() const { return shape.Center(); }
+
+    float Width() const { return shape.Width(); }
+
+    float Height() const { return shape.Height(); }
 private:
     Rectangle shape;
     ALLEGRO_COLOR color;
