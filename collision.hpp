@@ -1,5 +1,5 @@
-#include "object.h"
-#include "character.h"
+#include "object.hpp"
+#include "character.hpp"
 #include <set>
 #include <vector>
 #include <algorithm>

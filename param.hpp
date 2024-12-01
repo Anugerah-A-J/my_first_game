@@ -4,14 +4,14 @@
 
 namespace param
 {
-    const int window_width      = 500;
-    const int window_height     = 500;
+    const int window_width      = 800;
+    const int window_height     = 600;
     const float unit_length     = 10;
     const float line_width      = 1;
-    // const float reach_radius    = window_height / 4;
-    const float reach_radius    = window_height;
-    // const int life              = 3;
-    const int life              = 1;
+    const float reach_radius    = window_height / 4;
+    // const float reach_radius    = window_height;
+    const int life              = 3;
+    // const int life              = 1;
     const int translation_step  = 10;
 
     // static float delta() { return 0.1f;

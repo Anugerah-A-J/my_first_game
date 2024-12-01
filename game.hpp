@@ -1,14 +1,14 @@
 #include <allegro5/allegro5.h>
 // #include <allegro5/allegro_primitives.h>
 // #include <string>
-#include "object.h"
-#include "character.h"
+#include "object.hpp"
+#include "character.hpp"
 #include <vector>
 #include <set>
-#include "collision.h"
-#include "ui.h"
+#include "collision.hpp"
+#include "ui.hpp"
 #include <iostream>
-#include "map.h"
+#include "map.hpp"
 #pragma once
 
 enum class State
@@ -60,11 +60,7 @@ private:
 
     // std::vector<Line> trail;
 
-    Map_1 map_1:
-    // Box box; // yellow
-    // Tree tree; // green
-    // X x; // red
-    // Glass glass; // white
+    // Map_1 map_1:
 };
 
 Game::Game()

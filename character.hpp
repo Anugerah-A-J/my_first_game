@@ -1,7 +1,7 @@
-#include "geometry.h"
+#include "geometry.hpp"
 #include <allegro5/color.h>
 #include <allegro5/allegro_primitives.h>
-#include "param.h"
+#include "param.hpp"
 #include <vector>
 #pragma once
 

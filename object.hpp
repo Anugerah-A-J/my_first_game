@@ -1,7 +1,7 @@
 #include <allegro5/color.h>
 #include <allegro5/allegro_primitives.h>
-#include "geometry.h"
-#include "param.h"
+#include "geometry.hpp"
+#include "param.hpp"
 #pragma once
 
 class Aim

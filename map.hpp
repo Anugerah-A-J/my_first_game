@@ -1,5 +1,5 @@
-#include "param.h"
-#include "geometry.h"
+#include "param.hpp"
+#include "geometry.hpp"
 #include <algorithm>
 #include <vector>
 #include <array>

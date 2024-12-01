@@ -1,8 +1,8 @@
 #include <string>
 #include <vector>
-#include "param.h"
+#include "param.hpp"
 #include <algorithm>
-#include "geometry.h"
+#include "geometry.hpp"
 #pragma once
 
 class One_line_text

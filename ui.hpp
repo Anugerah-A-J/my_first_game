@@ -1,4 +1,4 @@
-#include "tui.h"
+#include "tui.hpp"
 #pragma once
 
 class End_dialog_box : public Dialog_box
