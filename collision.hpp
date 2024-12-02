@@ -52,7 +52,7 @@ void collision::Response(Pawn& moving_pawn, King& king, const std::function<void
     //     return;
 
     what_to_do_when_collide(t);
-};
+}
 
 float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
 {

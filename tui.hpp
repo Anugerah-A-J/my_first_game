@@ -134,11 +134,11 @@ public:
 
         Update_messages_origin();
 
-        messages.emplace_back(One_line_text(
+        messages.emplace_back(
             Message_origin(),
             text,
             monospaced_font,
-            text_color));
+            text_color);
     }
 
     void Erase_message() { messages.clear(); }
@@ -177,11 +177,11 @@ protected:
 
         Update_choices_origin();
 
-        choices.emplace_back(One_line_text(
+        choices.emplace_back(
             Choice_origin(),
             text,
             monospaced_font,
-            text_color));
+            text_color);
 
         if (choices.size() == 1)
             choices.front().Make_active();

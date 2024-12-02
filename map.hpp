@@ -1,5 +1,6 @@
 #include "param.hpp"
 #include "geometry.hpp"
+#include "collision.hpp"
 #include <algorithm>
 #include <vector>
 #include <array>
@@ -170,22 +171,9 @@ private:
     Line shape;
 };
 
-class Map_1
+class Map
 {
 public:
-    Map_1(const Fence& fence):
-        fence{fence},
-        walls{6, Wall(fence.Origin(), Vector(param::unit_length, param::unit_length) * 6)},
-        windows{4, Window(fence.Origin(), fence.Origin() + Vector(0, walls.front().Height()))},
-        xs{5, X(fence.Origin(), param::unit_length * 6)},
-        trees{6, Tree(fence.Center(), param::unit_length * 6)}
-    {
-        arrange_walls();
-        arrange_windows();
-        arrange_xs();
-        arrange_trees();
-    }
-
     void Draw() const
     {
         for (const Window& window : windows)
@@ -200,13 +188,70 @@ public:
         for (const X& x : xs)
             x.Draw();
     }
-private:
+
+    void Wall_stops(Pawn &moving_pawn) const
+    {
+        std::for_each(walls.begin(), walls.end(), [&](const Wall& w)
+        {
+            float t = collision::Circle_vs_rectangle(moving_pawn.Shape(), w.Shape(), moving_pawn.Last_translation());
+
+            if (t == 2)
+                return;
+
+            moving_pawn.Retreat(1 - t);
+            moving_pawn.Stop();
+        });
+    }
+protected:
+    Map(const Fence& fence,
+        float the_number_of_walls,
+        float the_number_of_windows,
+        float the_number_of_xs,
+        float the_number_of_trees)
+    :
+        fence{fence}
+        // walls{the_number_of_walls},
+        // windows{the_number_of_windows},
+        // xs{the_number_of_xs},
+        // trees{the_number_of_trees}
+    {
+        walls.reserve(the_number_of_walls);
+        windows.reserve(the_number_of_windows);
+        xs.reserve(the_number_of_xs);
+        trees.reserve(the_number_of_trees);
+    }
+
     const Fence& fence;
     std::vector<Wall> walls;
     std::vector<Window> windows;
     std::vector<X> xs;
     std::vector<Tree> trees;
+};
 
+class Map_1 : public Map
+{
+public:
+    Map_1(const Fence& fence):
+        Map{fence, 6, 4, 5, 6}
+    {
+        for (int i = 0; i < walls.capacity(); i++)
+            walls.emplace_back(fence.Origin(), Vector(param::unit_length, param::unit_length) * 6);
+
+        for (int i = 0; i < windows.capacity(); i++)
+            windows.emplace_back(fence.Origin(), fence.Origin() + Vector(0, walls.front().Height()));
+
+        for (int i = 0; i < xs.capacity(); i++)
+            xs.emplace_back(fence.Origin(), param::unit_length * 6);
+
+        for (int i = 0; i < trees.capacity(); i++)
+            trees.emplace_back(fence.Center(), param::unit_length * 6);
+        
+        arrange_walls();
+        arrange_windows();
+        arrange_xs();
+        arrange_trees();
+    }
+private:
     void arrange_walls()
     {
         std::vector<Wall> corners {3, walls.front()};

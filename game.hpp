@@ -258,10 +258,10 @@ void Game::Add_pawn()
 {
     aim.Hide();
 
-    active_pawns->emplace_back(Pawn(
+    active_pawns->emplace_back(
         aim.Center(),
         active_king->Color()
-    ));
+    );
 
     Pawn::Update_translation(aim.Center(), aim.Pawn_destination());
     Pawn::Reset_translation_step_count();
@@ -303,6 +303,8 @@ void Game::Move_pawn()
         
         // std::cout << "t king: " << t << "\n";
     });
+
+    map_1.Wall_stops(active_pawns->back());
 
     collision::Response(vanishing_pawns, active_pawns->back(), fence);
 }
