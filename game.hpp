@@ -60,17 +60,22 @@ private:
 
     // std::vector<Line> trail;
 
-    Map_1 map_1;
+    // Map_1 map_1;
 };
 
 Game::Game()
 :
-    state{State::choose},
-    active_king{&king_magenta},
-    passive_king{&king_cyan},
-    active_pawns{&pawns_magenta},
-    passive_pawns{&pawns_cyan},
-    map_1{fence}
+    state{State::choose}
+    ,
+    active_king{&king_magenta}
+    ,
+    passive_king{&king_cyan}
+    ,
+    active_pawns{&pawns_magenta}
+    ,
+    passive_pawns{&pawns_cyan}
+    // ,
+    // map_1{fence}
 {
     al_init();
     al_init_primitives_addon();
@@ -113,21 +118,9 @@ void Game::Draw() const
 
     clipper.Draw();
     fence.Draw();
-    map_1.Draw();
+    // map_1.Draw();
     king_cyan.Draw_life();
     king_magenta.Draw_life();
-
-    // Circle circle_magenta = king_magenta.King_shape();
-    // circle_magenta.Add_radius_by(param::unit_length);
-    // circle_magenta.Line_width(param::line_width);
-    // circle_magenta.Draw();
-
-    // Circle circle_cyan = king_cyan.King_shape();
-    // circle_cyan.Add_radius_by(param::unit_length);
-    // circle_cyan.Line_width(param::line_width);
-    // circle_cyan.Draw();
-
-    // std::for_each(trail.begin(), trail.end(), [](const Line& x){x.Draw();});
 
     if (state == State::end)
         pointer_to_end_dialog_box->Draw();
@@ -273,40 +266,15 @@ void Game::Move_pawn()
     active_pawns->back().Move();
     // trail.emplace_back(active_pawns->back().Last_translation());
 
-    collision::Response(vanishing_pawns, active_pawns->back(), *passive_pawns);
+    active_pawns->back().Kills(*passive_pawns, vanishing_pawns);
 
-    collision::Response(active_pawns->back(), *active_king, [&](float t)
-    {
-        if (t == 2)
-            return;
+    active_pawns->back().Stopped_by(*active_king, aim.Center());
 
-        if (!active_king->Contain(aim.Center())) // when pawn doesn't come out of king
-        {
-            active_pawns->back().Retreat(1 - t);
-            active_pawns->back().Stop();
-        }
-    });
+    active_pawns->back().Hurts(*passive_king);
 
-    collision::Response(active_pawns->back(), *passive_king, [&](float t)
-    {
-        if (t != 2)
-            Pawn::Vanish_immediately(true);
+    // map_1.Wall_stops(active_pawns->back());
 
-        t = collision::Circle_vs_circle(
-            active_pawns->back().Shape(),
-            passive_king->King_shape(),
-            active_pawns->back().Last_translation()
-        );
-
-        if (t <= 1)
-            passive_king->Life_will_be_decreased();
-        
-        // std::cout << "t king: " << t << "\n";
-    });
-
-    map_1.Wall_stops(active_pawns->back());
-
-    collision::Response(vanishing_pawns, active_pawns->back(), fence);
+    fence.Kills(active_pawns->back(), vanishing_pawns);
 }
 
 void Game::Clean_pawn()

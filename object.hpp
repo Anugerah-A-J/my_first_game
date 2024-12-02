@@ -2,6 +2,8 @@
 #include <allegro5/allegro_primitives.h>
 #include "geometry.hpp"
 #include "param.hpp"
+#include "collision.hpp"
+#include "character.hpp"
 #pragma once
 
 class Aim
@@ -148,6 +150,18 @@ public:
     float Width() const { return shape.Width(); }
 
     float Height() const { return shape.Height(); }
+
+    void Kills(Pawn& moving_pawn, std::set<Pawn*>& dying_pawns) const
+    {
+        float t = collision::Circle_inside_rectangle(moving_pawn.Shape(), shape, moving_pawn.Last_translation());
+
+        if (t == 2 || Pawn::Vanish_immediately())
+            return;
+        
+        moving_pawn.Retreat(1 - t);
+        moving_pawn.Stop();
+        dying_pawns.emplace(&moving_pawn);
+    }
 private:
     Rectangle shape;
     ALLEGRO_COLOR color;

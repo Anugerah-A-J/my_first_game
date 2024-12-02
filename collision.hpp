@@ -1,18 +1,13 @@
-#include "object.hpp"
-#include "character.hpp"
+// #include "object.hpp"
+// #include "character.hpp"
 #include <set>
 #include <vector>
 #include <algorithm>
-#include <functional>
 #include <iostream>
 #pragma once
 
 namespace collision
 {
-    void Response(std::set<Pawn*>& dying_pawns, Pawn& moving_pawn, const Fence& fence);
-    void Response(std::set<Pawn*>& dying_pawns, const Pawn& moving_pawn, std::vector<Pawn>& pawns);
-    void Response(Pawn& moving_pawn, King& king, const std::function<void(float f)>& what_to_do);
-
     float Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
     float Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
     float Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
@@ -20,39 +15,6 @@ namespace collision
     float Intersect(const Line& line1, const Line& line2);
     float Intersect(const Line& line, const Circle& circle);
 };
-
-void collision::Response(std::set<Pawn*>& dying_pawns ,Pawn& moving_pawn, const Fence& fence)
-{
-    float t = Circle_inside_rectangle(moving_pawn.Shape(), fence.Shape(), moving_pawn.Last_translation());
-
-    if (t == 2 || Pawn::Vanish_immediately())
-        return;
-    
-    moving_pawn.Retreat(1 - t);
-    moving_pawn.Stop();
-    dying_pawns.emplace(&moving_pawn);
-};
-
-void collision::Response(std::set<Pawn*>& dying_pawns ,const Pawn& moving_pawn, std::vector<Pawn>& pawns)
-{
-    for (auto& pawn: pawns)
-    {
-        if (Circle_vs_circle(moving_pawn.Shape(), pawn.Shape(), moving_pawn.Last_translation()) == 2)
-            continue;
-
-        dying_pawns.emplace(&pawn);
-    }
-};
-
-void collision::Response(Pawn& moving_pawn, King& king, const std::function<void(float f)>& what_to_do_when_collide)
-{
-    float t = Circle_vs_rectangle(moving_pawn.Shape(), king.Throne_shape(), moving_pawn.Last_translation());
-    // std::cout << "t throne: " << t << "\n";
-    // if (t == 2)
-    //     return;
-
-    what_to_do_when_collide(t);
-}
 
 float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
 {

@@ -210,10 +210,6 @@ protected:
         float the_number_of_trees)
     :
         fence{fence}
-        // walls{the_number_of_walls},
-        // windows{the_number_of_windows},
-        // xs{the_number_of_xs},
-        // trees{the_number_of_trees}
     {
         walls.reserve(the_number_of_walls);
         windows.reserve(the_number_of_windows);

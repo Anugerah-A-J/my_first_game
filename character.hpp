@@ -69,6 +69,20 @@ public:
         decrease_life = false;
     }
     void Reset_life() { life = param::life; }
+
+    // void Stops(Pawn& moving_pawn, const Vector& moving_pawn_spawn_position) const
+    // {
+    //     float t = collision::Circle_vs_rectangle(moving_pawn.Shape(), throne_shape, moving_pawn.Last_translation());
+
+    //     if (t == 2)
+    //         return;
+
+    //     if (!Contain(moving_pawn_spawn_position)) // when pawn doesn't come out of king
+    //     {
+    //         moving_pawn.Retreat(1 - t);
+    //         moving_pawn.Stop();
+    //     }
+    // }
 private:
     Circle king_shape;
     Rectangle throne_shape;
@@ -221,6 +235,48 @@ public:
     static bool Vanish_immediately() { return vanish_immediately; }
 
     const Circle& Shape() const { return shape; }
+
+    void Kills(std::vector<Pawn>& pawns, std::set<Pawn*>& dying_pawns) const
+    {
+        for (auto& pawn: pawns)
+        {
+            if (collision::Circle_vs_circle(shape, pawn.Shape(), Last_translation()) == 2)
+                continue;
+
+            dying_pawns.emplace(&pawn);
+        }
+    }
+
+    void Hurts(King& king) const
+    {
+        float t = collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
+
+        if (t != 2)
+            Pawn::Vanish_immediately(true);
+
+        t = collision::Circle_vs_circle(
+            shape,
+            king.King_shape(),
+            Last_translation()
+        );
+
+        if (t <= 1)
+            king.Life_will_be_decreased();
+    }
+
+    void Stopped_by(const King& king, const Vector& moving_pawn_spawn_position)
+    {
+        float t = collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
+
+        if (t == 2)
+            return;
+
+        if (!king.Contain(moving_pawn_spawn_position)) // when pawn doesn't come out of king
+        {
+            Retreat(1 - t);
+            Stop();
+        }
+    }
 private:
     inline static unsigned int translation_step_count = 0;
     inline static Vector translation = Vector(0, 0);
