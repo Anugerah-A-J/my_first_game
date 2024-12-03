@@ -229,12 +229,12 @@ public:
         );
     }
 
+    const Circle& Shape() const { return shape; }
+
     Vector Center() const { return shape.Center(); }
 
     static void Vanish_immediately(bool value) { vanish_immediately = value; }
     static bool Vanish_immediately() { return vanish_immediately; }
-
-    const Circle& Shape() const { return shape; }
 
     void Kills(std::vector<Pawn>& pawns, std::set<Pawn*>& dying_pawns) const
     {

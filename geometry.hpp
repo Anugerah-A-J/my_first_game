@@ -268,6 +268,9 @@ public:
             size
         );
     }
+
+    Vector Closest_point_to(const Vector& point) const
+    {}
 private:
     Vector origin;
     Vector size;

@@ -26,6 +26,14 @@ float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& non
 
 float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
+    Vector rectangle_closest_point_to_circle = nonmoving_rectangle.Closest_point_to(moving_circle.Center());
+
+    if (rectangle_closest_point_to_circle.Magsq() >= moving_circle.Radius() * moving_circle.Radius())
+    {
+        if () return 2;
+        if () return 0;
+    }
+
     Line top = nonmoving_rectangle.Top();
     Line right = nonmoving_rectangle.Right();
     Line bottom = nonmoving_rectangle.Bottom();
@@ -47,6 +55,7 @@ float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     left.Translate(Vector(-moving_circle.Radius(), 0));
 
     std::vector<float> ts;
+    ts.reserve(8);
 
     ts.emplace_back(Intersect(velocity, top));
     ts.emplace_back(Intersect(velocity, right));
@@ -75,7 +84,7 @@ float collision::Circle_inside_rectangle(const Circle& moving_circle, const Rect
     ts.emplace_back(Intersect(velocity, rectangle.Left()));
 
     return *std::min_element(ts.begin(), ts.end());
-};
+}
 
 float collision::Intersect(const Line& line1, const Line& line2)
 {
@@ -146,4 +155,18 @@ float collision::Intersect(const Line& line, const Circle& circle)
             return 2;
         }
     }
-};
+}
+
+// float collision::Square_min_distance(const Vector &point, const Rectangle &rectangle)
+// {
+//     // Compute differences for each axis
+
+//     float dx = std::max(rectangle.Origin().X() - point.X(), 0);
+//     dx = std::max(dx, point.X() - rectangle.Origin().X() - rectangle.Size().X());
+    
+//     float dy = std::max(rectangle.Origin().Y() - point.Y(), 0);
+//     dy = std::max(dy, point.Y() - rectangle.Origin().Y() - rectangle.Size().Y());
+
+//     // Distance squared formula
+//     return dx * dx + dy * dy;
+// }
