@@ -1,4 +1,5 @@
 #include <math.h>
+#include <algorithm>
 #include <allegro5/allegro_primitives.h>
 #pragma once
 
@@ -30,39 +31,41 @@ void Transform_color(
 class Vector
 {
 public:
-    Vector(float x, float y): x{x}, y{y} {};
+    Vector(float x, float y): x{x}, y{y} {}
     
-    float X() const { return x; };
-    float Y() const { return y; };
+    float X() const { return x; }
+    float Y() const { return y; }
 
-    void X(float val) { x = val; };
-    void Y(float val) { y = val; };
+    void X(float val) { x = val; }
+    void Y(float val) { y = val; }
 
-    Vector operator-() const { return Vector(-x, -y); };
+    Vector operator-() const { return Vector(-x, -y); }
 
-    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y); };
+    Vector operator+(const Vector& v) const { return Vector(x + v.x, y + v.y); }
 
-    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y); };
+    Vector operator-(const Vector& v) const { return Vector(x - v.x, y - v.y); }
 
-    Vector operator*(float f) const { return Vector(x * f, y * f); };
+    Vector operator*(float f) const { return Vector(x * f, y * f); }
 
-    Vector operator/(float f) const { return Vector(x / f, y / f); };
+    Vector operator/(float f) const { return Vector(x / f, y / f); }
 
-    void operator*=(float f) { x *= f, y *= f; };
+    void operator*=(float f) { x *= f, y *= f; }
 
-    void operator/=(float f) { x /= f, y /= f; };
+    void operator/=(float f) { x /= f, y /= f; }
 
-    void operator+=(const Vector& v) { x += v.x, y += v.y; };
+    void operator+=(const Vector& v) { x += v.x, y += v.y; }
 
-    void operator-=(const Vector& v) { x -= v.x, y -= v.y; };
+    void operator-=(const Vector& v) { x -= v.x, y -= v.y; }
 
-    Vector Unit() const { return *this / sqrtf(x * x + y * y); };
+    bool operator==(const Vector& v) const { return v.x == x && v.y == y; }
 
-    Vector Abs() const { return Vector(fabsf(x), fabsf(y)); };
+    Vector Unit() const { return *this / sqrtf(x * x + y * y); }
+
+    Vector Abs() const { return Vector(fabsf(x), fabsf(y)); }
 
     static float Dot(const Vector& v1, const Vector& v2);
 
-    float Magsq() const { return x * x + y * y; };
+    float Magsq() const { return x * x + y * y; }
 private:
     float x;
     float y;
@@ -81,9 +84,9 @@ float Vector::Dot(const Vector& v1, const Vector& v2)
 class Matrix
 {
 public:
-    Matrix(float f1, float f2, float f3, float f4): row_1{f1, f2}, row_2{f3, f4} {};
-    const Vector& Row_1() const { return row_1; };
-    const Vector& Row_2() const { return row_2; };
+    Matrix(float f1, float f2, float f3, float f4): row_1{f1, f2}, row_2{f3, f4} {}
+    const Vector& Row_1() const { return row_1; }
+    const Vector& Row_2() const { return row_2; }
 private:
     Vector row_1;
     Vector row_2;
@@ -160,17 +163,17 @@ public:
     Rectangle(float x, float y, float w, float h):
         origin{x, y},
         size{fabsf(w), fabsf(h)}
-    {};
+    {}
 
     Rectangle(const Vector& origin, const Vector& size):
         origin{origin},
         size{size.Abs()}
-    {};
+    {}
 
     Rectangle(const Vector& origin, float height):
         origin{origin},
         size{0, height}
-    {};
+    {}
 
     void Draw(const ALLEGRO_COLOR& color) const
     {
@@ -201,13 +204,13 @@ public:
         origin,
         origin.X() + size.X(),
         origin.Y()
-    ); };
+    ); }
 
     Line Right() const { return Line(
         origin + size,
         origin.X() + size.X(),
         origin.Y()
-    ); };
+    ); }
 
     Line Bottom() const { return Line(
         origin + size,
@@ -270,7 +273,27 @@ public:
     }
 
     Vector Closest_point_to(const Vector& point) const
-    {}
+    // return the point on the rectangle edge if arg is outside rectangle
+    // return arg itself if arg is inside rectangle
+    {
+        // float dx = std::max((origin - point).X(), 0.f);
+        // dx = std::max(dx, (point - origin - size).X());
+
+        // float dy = std::max((origin - point).Y(), 0.f);
+        // dy = std::max(dy, (point - origin - size).Y());
+        
+        // return dx * dx + dy * dy;
+
+        float x = point.X();
+        x = std::max(x, origin.X());
+        x = std::min(x, (origin + size).X());
+
+        float y = point.Y();
+        y = std::max(y, origin.Y());
+        y = std::min(y, (origin + size).Y());
+
+        return Vector(x, y);
+    }
 private:
     Vector origin;
     Vector size;

@@ -1,5 +1,6 @@
 // #include "object.hpp"
 // #include "character.hpp"
+#include "geometry.hpp"
 #include <set>
 #include <vector>
 #include <algorithm>
@@ -28,10 +29,10 @@ float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangl
 {
     Vector rectangle_closest_point_to_circle = nonmoving_rectangle.Closest_point_to(moving_circle.Center());
 
-    if (rectangle_closest_point_to_circle.Magsq() >= moving_circle.Radius() * moving_circle.Radius())
+    if (rectangle_closest_point_to_circle == moving_circle.Center())
     {
-        if () return 2;
-        if () return 0;
+        if () return 2; // angle <= abs(90)
+        if () return 0; // angle > abs(90)
     }
 
     Line top = nonmoving_rectangle.Top();
@@ -87,6 +88,8 @@ float collision::Circle_inside_rectangle(const Circle& moving_circle, const Rect
 }
 
 float collision::Intersect(const Line& line1, const Line& line2)
+// return 0 to 1 if intersect
+// return 2 if not intersect
 {
     Vector A = line1.End() - line1.Start();
     Vector B = line2.Start() - line2.End();
@@ -119,6 +122,8 @@ float collision::Intersect(const Line& line1, const Line& line2)
 };
 
 float collision::Intersect(const Line& line, const Circle& circle)
+// return 0 to 1 if intersect
+// return 2 if not intersect
 {
     Vector X = line.Start() - circle.Center();
     Vector Y = line.End() - line.Start();
