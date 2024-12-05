@@ -152,6 +152,8 @@ public:
             end + translate_end
         );
     }
+
+    Vector Direction() const { return end - start; }
 private:
     Vector start;
     Vector end;

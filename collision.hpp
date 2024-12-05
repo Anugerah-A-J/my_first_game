@@ -27,12 +27,13 @@ float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& non
 
 float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
-    Vector rectangle_closest_point_to_circle = nonmoving_rectangle.Closest_point_to(moving_circle.Center());
+    Vector rectangle_to_circle_past = velocity.Start() - nonmoving_rectangle.Closest_point_to(velocity.Start());
 
-    if (rectangle_closest_point_to_circle == moving_circle.Center())
+    if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius())
     {
-        if () return 2; // angle <= abs(90)
-        if () return 0; // angle > abs(90)
+        if (Vector::Dot(rectangle_to_circle_past, velocity.Direction()) >= 0)
+            return 2; // angle <= abs(90)
+        // if () return 0; // angle > abs(90)
     }
 
     Line top = nonmoving_rectangle.Top();

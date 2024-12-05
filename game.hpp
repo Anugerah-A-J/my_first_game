@@ -60,7 +60,7 @@ private:
 
     // std::vector<Line> trail;
 
-    // Map_1 map_1;
+    Map_1 map_1;
 };
 
 Game::Game()
@@ -74,8 +74,8 @@ Game::Game()
     active_pawns{&pawns_magenta}
     ,
     passive_pawns{&pawns_cyan}
-    // ,
-    // map_1{fence}
+    ,
+    map_1{fence}
 {
     al_init();
     al_init_primitives_addon();
@@ -118,7 +118,7 @@ void Game::Draw() const
 
     clipper.Draw();
     fence.Draw();
-    // map_1.Draw();
+    map_1.Draw();
     king_cyan.Draw_life();
     king_magenta.Draw_life();
 
@@ -272,7 +272,7 @@ void Game::Move_pawn()
 
     active_pawns->back().Hurts(*passive_king);
 
-    // map_1.Wall_stops(active_pawns->back());
+    map_1.Wall_stops(active_pawns->back());
 
     fence.Kills(active_pawns->back(), vanishing_pawns);
 }

@@ -3,6 +3,8 @@
 #include <allegro5/allegro_primitives.h>
 #include "param.hpp"
 #include <vector>
+#include <set>
+#include "collision.hpp"
 #pragma once
 
 class King
