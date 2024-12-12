@@ -29,6 +29,14 @@ endif()
 # Specify where to build Allegro
 set(ALLEGRO_BUILD_SHARED_LIBS ON CACHE BOOL "Build Allegro as shared libraries")
 
+if (MSVC)
+    # warning level 4
+    add_compile_options(/W4)
+else()
+    # additional warnings and debug
+    add_compile_options(-Wall -Wextra -Wpedantic -g)
+endif()
+
 add_executable(my_first_game main.cpp)
 target_include_directories(my_first_game PUBLIC ${allegro5_SOURCE_DIR}/include)
 target_include_directories(my_first_game PUBLIC ${allegro5_BINARY_DIR}/include)

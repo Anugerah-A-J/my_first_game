@@ -5,7 +5,7 @@
 #include "character.hpp"
 #include <vector>
 #include <set>
-#include "collision.hpp"
+// #include "collision.hpp"
 #include "ui.hpp"
 #include <iostream>
 #include "map.hpp"
@@ -273,6 +273,7 @@ void Game::Move_pawn()
     active_pawns->back().Hurts(*passive_king);
 
     map_1.Wall_stops(active_pawns->back());
+    map_1.Tree_stops(active_pawns->back());
 
     fence.Kills(active_pawns->back(), vanishing_pawns);
 }

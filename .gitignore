@@ -1,7 +1,4 @@
-.vscode/
+.cache/
 build/
-test/
-*.exe
-*.md
-*.c
-test.cpp
+.clangd
+compile_flags.txt

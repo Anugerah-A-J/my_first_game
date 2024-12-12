@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 #include <array>
+#include "character.hpp"
+#include "object.hpp"
 #pragma once
 
 class Wall
@@ -115,6 +117,17 @@ public:
 
         return temp;
     }
+
+    float Min_t(const Pawn& moving_pawn) const
+    {
+        std::vector<float> t;
+        t.reserve(shape.size());
+
+        for(const Circle& circle : shape)
+            t.push_back(collision::Circle_vs_circle(moving_pawn.Shape(), circle, moving_pawn.Last_translation()));
+
+        return *std::min_element(t.begin(), t.end());
+    }
 private:
     float diameter;
     std::vector<Circle> shape;
@@ -191,9 +204,9 @@ public:
 
     void Wall_stops(Pawn &moving_pawn) const
     {
-        std::for_each(walls.begin(), walls.end(), [&](const Wall& w)
+        std::for_each(walls.begin(), walls.end(), [&](const Wall& wall)
         {
-            float t = collision::Circle_vs_rectangle(moving_pawn.Shape(), w.Shape(), moving_pawn.Last_translation());
+            float t = collision::Circle_vs_rectangle(moving_pawn.Shape(), wall.Shape(), moving_pawn.Last_translation());
 
             if (t == 2)
                 return;
@@ -201,6 +214,20 @@ public:
             moving_pawn.Retreat(1 - t);
             moving_pawn.Stop();
         });
+    }
+
+    void Tree_stops(Pawn &moving_pawn) const
+    {
+        std::for_each(trees.begin(), trees.end(), [&](const Tree& tree)
+        {
+            float t = tree.Min_t(moving_pawn);
+
+            if (t == 2)
+                return;
+
+            moving_pawn.Retreat(1 - t);
+            moving_pawn.Stop();
+        });;
     }
 protected:
     Map(const Fence& fence,
