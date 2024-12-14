@@ -59,6 +59,8 @@ public:
 
     bool operator==(const Vector& v) const { return v.x == x && v.y == y; }
 
+    Vector Swap() const { return Vector(y, x); }
+
     Vector Unit() const { return *this / sqrtf(x * x + y * y); }
 
     Vector Abs() const { return Vector(fabsf(x), fabsf(y)); }

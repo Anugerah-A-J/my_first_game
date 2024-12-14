@@ -266,16 +266,17 @@ void Game::Move_pawn()
     active_pawns->back().Move();
     // trail.emplace_back(active_pawns->back().Last_translation());
 
-    active_pawns->back().Kills(*passive_pawns, vanishing_pawns);
+    active_pawns->back().Kill(*passive_pawns, vanishing_pawns);
 
     active_pawns->back().Stopped_by(*active_king, aim.Center());
+    active_pawns->back().Hurt(*passive_king);
 
-    active_pawns->back().Hurts(*passive_king);
+    map_1.Wall_stop(active_pawns->back());
+    map_1.Tree_stop(active_pawns->back());
+    map_1.X_kill(active_pawns->back(), vanishing_pawns);
+    map_1.Window_only_shoot(active_pawns->back());
 
-    map_1.Wall_stops(active_pawns->back());
-    map_1.Tree_stops(active_pawns->back());
-
-    fence.Kills(active_pawns->back(), vanishing_pawns);
+    fence.Kill(active_pawns->back(), vanishing_pawns);
 }
 
 void Game::Clean_pawn()

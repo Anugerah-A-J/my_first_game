@@ -10,6 +10,7 @@
 namespace collision
 {
     float Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
+    float Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
     float Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
     float Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
     
@@ -19,11 +20,42 @@ namespace collision
 
 float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
 {
+    Vector normal = velocity.Start() - nonmoving_circle.Center();
+
+    if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius() &&
+        Vector::Dot(normal, velocity.Direction()) >= 0)
+        return 2;
+
     Circle circle = nonmoving_circle;
     circle.Add_radius_by(moving_circle.Radius());
 
     return Intersect(velocity, circle);
 };
+
+float collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity)
+{
+    Line line_1 = nonmoving_line;
+    Line line_2 = nonmoving_line;
+    Circle start = moving_circle;
+    Circle end = moving_circle;
+
+    Vector translate = nonmoving_line.Direction().Unit().Swap() * moving_circle.Radius();
+
+    line_1.Translate(translate);
+    line_2.Translate(-translate);
+    start.Center(nonmoving_line.Start());
+    end.Center(nonmoving_line.End());
+
+    std::vector<float> ts;
+    ts.reserve(4);
+
+    ts.push_back(Intersect(velocity, line_1));
+    ts.push_back(Intersect(velocity, line_2));
+    ts.push_back(Intersect(velocity, start));
+    ts.push_back(Intersect(velocity, end));
+
+    return *std::min_element(ts.begin(), ts.end());
+}
 
 float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
@@ -59,15 +91,15 @@ float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     std::vector<float> ts;
     ts.reserve(8);
 
-    ts.emplace_back(Intersect(velocity, top));
-    ts.emplace_back(Intersect(velocity, right));
-    ts.emplace_back(Intersect(velocity, bottom));
-    ts.emplace_back(Intersect(velocity, left));
+    ts.push_back(Intersect(velocity, top));
+    ts.push_back(Intersect(velocity, right));
+    ts.push_back(Intersect(velocity, bottom));
+    ts.push_back(Intersect(velocity, left));
 
-    ts.emplace_back(Intersect(velocity, top_left));
-    ts.emplace_back(Intersect(velocity, top_right));
-    ts.emplace_back(Intersect(velocity, bottom_right));
-    ts.emplace_back(Intersect(velocity, bottom_left));
+    ts.push_back(Intersect(velocity, top_left));
+    ts.push_back(Intersect(velocity, top_right));
+    ts.push_back(Intersect(velocity, bottom_right));
+    ts.push_back(Intersect(velocity, bottom_left));
 
     return *std::min_element(ts.begin(), ts.end());
 };
@@ -80,10 +112,10 @@ float collision::Circle_inside_rectangle(const Circle& moving_circle, const Rect
 
     std::vector<float> ts;
 
-    ts.emplace_back(Intersect(velocity, rectangle.Top()));
-    ts.emplace_back(Intersect(velocity, rectangle.Right()));
-    ts.emplace_back(Intersect(velocity, rectangle.Bottom()));
-    ts.emplace_back(Intersect(velocity, rectangle.Left()));
+    ts.push_back(Intersect(velocity, rectangle.Top()));
+    ts.push_back(Intersect(velocity, rectangle.Right()));
+    ts.push_back(Intersect(velocity, rectangle.Bottom()));
+    ts.push_back(Intersect(velocity, rectangle.Left()));
 
     return *std::min_element(ts.begin(), ts.end());
 }

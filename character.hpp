@@ -238,18 +238,18 @@ public:
     static void Vanish_immediately(bool value) { vanish_immediately = value; }
     static bool Vanish_immediately() { return vanish_immediately; }
 
-    void Kills(std::vector<Pawn>& pawns, std::set<Pawn*>& dying_pawns) const
+    void Kill(std::vector<Pawn>& pawns, std::set<Pawn*>& dying_pawns) const
     {
         for (auto& pawn: pawns)
         {
             if (collision::Circle_vs_circle(shape, pawn.Shape(), Last_translation()) == 2)
                 continue;
 
-            dying_pawns.emplace(&pawn);
+            dying_pawns.insert(&pawn);
         }
     }
 
-    void Hurts(King& king) const
+    void Hurt(King& king) const
     {
         float t = collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
 

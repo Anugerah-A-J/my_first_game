@@ -165,6 +165,17 @@ public:
     }
 
     float Size() const { return size; }
+
+    float Min_t(const Pawn& moving_pawn) const
+    {
+        std::vector<float> t;
+        t.reserve(shape.size());
+
+        for(const Line& line : shape)
+            t.push_back(collision::Circle_vs_line(moving_pawn.Shape(), line, moving_pawn.Last_translation()));
+
+        return *std::min_element(t.begin(), t.end());
+    }
 private:
     float size;
     std::array<Line, 4> shape;
@@ -180,6 +191,8 @@ public:
     void Translate(const Vector& displacement) { shape.Translate(displacement); }
 
     float Length() const { return shape.Length(); }
+
+    const Line& Shape() const { return shape; }
 private:
     Line shape;
 };
@@ -202,7 +215,7 @@ public:
             x.Draw();
     }
 
-    void Wall_stops(Pawn &moving_pawn) const
+    void Wall_stop(Pawn &moving_pawn) const
     {
         std::for_each(walls.begin(), walls.end(), [&](const Wall& wall)
         {
@@ -216,7 +229,7 @@ public:
         });
     }
 
-    void Tree_stops(Pawn &moving_pawn) const
+    void Tree_stop(Pawn &moving_pawn) const
     {
         std::for_each(trees.begin(), trees.end(), [&](const Tree& tree)
         {
@@ -227,7 +240,33 @@ public:
 
             moving_pawn.Retreat(1 - t);
             moving_pawn.Stop();
-        });;
+        });
+    }
+
+    void X_kill(Pawn& moving_pawn, std::set<Pawn*>& dying_pawns) const
+    {
+        std::for_each(xs.begin(), xs.end(), [&](const X& x)
+        {
+            float t = x.Min_t(moving_pawn);
+
+            if (t == 2 || Pawn::Vanish_immediately())
+                return;
+            
+            moving_pawn.Retreat(1 - t);
+            moving_pawn.Stop();
+            dying_pawns.insert(&moving_pawn);
+        });
+    }
+
+    void Window_only_shoot(Pawn& moving_pawn) const
+    {
+        std::for_each(windows.begin(), windows.end(), [&](const Window& window)
+        {
+            float t = collision::Circle_vs_line(moving_pawn.Shape(), window.Shape(), moving_pawn.Last_translation());
+
+            if (t != 2)
+                Pawn::Vanish_immediately(true);
+        });
     }
 protected:
     Map(const Fence& fence,

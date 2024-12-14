@@ -151,7 +151,7 @@ public:
 
     float Height() const { return shape.Height(); }
 
-    void Kills(Pawn& moving_pawn, std::set<Pawn*>& dying_pawns) const
+    void Kill(Pawn& moving_pawn, std::set<Pawn*>& dying_pawns) const
     {
         float t = collision::Circle_inside_rectangle(moving_pawn.Shape(), shape, moving_pawn.Last_translation());
 
@@ -160,7 +160,7 @@ public:
         
         moving_pawn.Retreat(1 - t);
         moving_pawn.Stop();
-        dying_pawns.emplace(&moving_pawn);
+        dying_pawns.insert(&moving_pawn);
     }
 private:
     Rectangle shape;

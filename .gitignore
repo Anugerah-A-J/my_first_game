@@ -1,4 +1,2 @@
-.cache/
+.vscode/
 build/
-.clangd
-compile_flags.txt
