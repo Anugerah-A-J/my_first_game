@@ -1,29 +1,36 @@
 // #include "object.hpp"
 // #include "character.hpp"
 #include "geometry.hpp"
-#include <set>
-#include <vector>
 #include <algorithm>
 #include <iostream>
+#include <set>
+#include <vector>
 #pragma once
 
-namespace collision
-{
-    float Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
-    float Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
-    float Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    float Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    
-    float Intersect(const Line& line1, const Line& line2);
-    float Intersect(const Line& line, const Circle& circle);
-};
+namespace collision {
+float Circle_vs_circle(const Circle &moving_circle,
+                       const Circle &nonmoving_circle,
+                       const Line &velocity);
+float Circle_vs_line(const Circle &moving_circle, const Line &nonmoving_line, const Line &velocity);
+float Circle_vs_rectangle(const Circle &moving_circle,
+                          const Rectangle &nonmoving_rectangle,
+                          const Line &velocity);
+float Circle_inside_rectangle(const Circle &moving_circle,
+                              const Rectangle &nonmoving_rectangle,
+                              const Line &velocity);
 
-float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
+float Intersect(const Line &line1, const Line &line2);
+float Intersect(const Line &line, const Circle &circle);
+}; // namespace collision
+
+float collision::Circle_vs_circle(const Circle &moving_circle,
+                                  const Circle &nonmoving_circle,
+                                  const Line &velocity)
 {
     Vector normal = velocity.Start() - nonmoving_circle.Center();
 
-    if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius() &&
-        Vector::Dot(normal, velocity.Direction()) >= 0)
+    if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius()
+        && Vector::Dot(normal, velocity.Direction()) >= 0)
         return 2;
 
     Circle circle = nonmoving_circle;
@@ -32,7 +39,9 @@ float collision::Circle_vs_circle(const Circle& moving_circle, const Circle& non
     return Intersect(velocity, circle);
 };
 
-float collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity)
+float collision::Circle_vs_line(const Circle &moving_circle,
+                                const Line &nonmoving_line,
+                                const Line &velocity)
 {
     Line line_1 = nonmoving_line;
     Line line_2 = nonmoving_line;
@@ -57,12 +66,14 @@ float collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmovi
     return *std::min_element(ts.begin(), ts.end());
 }
 
-float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+float collision::Circle_vs_rectangle(const Circle &moving_circle,
+                                     const Rectangle &nonmoving_rectangle,
+                                     const Line &velocity)
 {
-    Vector rectangle_to_circle_past = velocity.Start() - nonmoving_rectangle.Closest_point_to(velocity.Start());
+    Vector rectangle_to_circle_past = velocity.Start()
+                                      - nonmoving_rectangle.Closest_point_to(velocity.Start());
 
-    if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius())
-    {
+    if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius()) {
         if (Vector::Dot(rectangle_to_circle_past, velocity.Direction()) >= 0)
             return 2; // angle <= abs(90)
         // if () return 0; // angle > abs(90)
@@ -104,7 +115,9 @@ float collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangl
     return *std::min_element(ts.begin(), ts.end());
 };
 
-float collision::Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
+float collision::Circle_inside_rectangle(const Circle &moving_circle,
+                                         const Rectangle &nonmoving_rectangle,
+                                         const Line &velocity)
 {
     Rectangle rectangle = nonmoving_rectangle;
     rectangle.Translate(Vector(moving_circle.Radius(), moving_circle.Radius()));
@@ -120,7 +133,7 @@ float collision::Circle_inside_rectangle(const Circle& moving_circle, const Rect
     return *std::min_element(ts.begin(), ts.end());
 }
 
-float collision::Intersect(const Line& line1, const Line& line2)
+float collision::Intersect(const Line &line1, const Line &line2)
 // return 0 to 1 if intersect
 // return 2 if not intersect
 {
@@ -154,7 +167,7 @@ float collision::Intersect(const Line& line1, const Line& line2)
     return t;
 };
 
-float collision::Intersect(const Line& line, const Circle& circle)
+float collision::Intersect(const Line &line, const Circle &circle)
 // return 0 to 1 if intersect
 // return 2 if not intersect
 {
@@ -167,29 +180,21 @@ float collision::Intersect(const Line& line, const Circle& circle)
 
     float discriminant = b * b - 4 * a * c;
 
-    if (discriminant < 0)
-    {
+    if (discriminant < 0) {
         return 2;
-    }
-    else
-    {
+    } else {
         discriminant = sqrtf(discriminant);
 
         // Compute min and max solutions of t
         float t_min = (-b - discriminant) / (2 * a);
         float t_max = (-b + discriminant) / (2 * a);
-        
+
         // Check whether either t is within bounds of segment
-        if (t_min >= 0 && t_min <= 1)
-        {
+        if (t_min >= 0 && t_min <= 1) {
             return t_min;
-        }
-        else if (t_max >= 0 && t_max <= 1)
-        {
+        } else if (t_max >= 0 && t_max <= 1) {
             return t_max;
-        }
-        else
-        {
+        } else {
             return 2;
         }
     }
@@ -201,7 +206,7 @@ float collision::Intersect(const Line& line, const Circle& circle)
 
 //     float dx = std::max(rectangle.Origin().X() - point.X(), 0);
 //     dx = std::max(dx, point.X() - rectangle.Origin().X() - rectangle.Size().X());
-    
+
 //     float dy = std::max(rectangle.Origin().Y() - point.Y(), 0);
 //     dy = std::max(dy, point.Y() - rectangle.Origin().Y() - rectangle.Size().Y());
 
