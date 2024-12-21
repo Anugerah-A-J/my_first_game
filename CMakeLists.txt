@@ -3,8 +3,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 # project(my_first_game LANGUAGES CXX)
 project(my_first_game)
-include(FetchContent)
 
+include(FetchContent)
 FetchContent_Declare(
     allegro5
     GIT_REPOSITORY https://github.com/liballeg/allegro5.git
@@ -36,10 +36,12 @@ else()
     # additional warnings and debug
     add_compile_options(-Wall -Wextra -Wpedantic -g)
 endif()
+add_link_options(-static-libstdc++ -static-libgcc)
 
 add_executable(my_first_game main.cpp)
 target_include_directories(my_first_game PUBLIC ${allegro5_SOURCE_DIR}/include)
 target_include_directories(my_first_game PUBLIC ${allegro5_BINARY_DIR}/include)
+# target_link_options(my_first_game INTERFACE "-static-libstdc++ and -static-libgcc")
 target_link_libraries(my_first_game LINK_PUBLIC allegro allegro_primitives allegro_font)
 
 # These include files are typically copied into the correct places via allegro's install
@@ -52,8 +54,30 @@ file(COPY ${allegro5_SOURCE_DIR}/addons/primitives/allegro5/allegro_primitives.h
 )
 
 # Specify where to copy the DLLs (e.g., in the same directory as your executable)
-add_custom_command(TARGET my_first_game POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${allegro5_BINARY_DIR}/lib
-        $<TARGET_FILE_DIR:my_first_game>
-)
+if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro_font-5.2.dll")
+    add_custom_command(TARGET my_first_game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${allegro5_BINARY_DIR}/lib/allegro_font-5.2.dll
+            $<TARGET_FILE_DIR:my_first_game>/allegro_font-5.2.dll
+    )
+endif()
+
+if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro_primitives-5.2.dll")
+    add_custom_command(TARGET my_first_game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${allegro5_BINARY_DIR}/lib/allegro_primitives-5.2.dll
+            $<TARGET_FILE_DIR:my_first_game>/allegro_primitives-5.2.dll
+    )
+endif()
+
+if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro-5.2.dll")
+    add_custom_command(TARGET my_first_game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${allegro5_BINARY_DIR}/lib/allegro-5.2.dll
+            $<TARGET_FILE_DIR:my_first_game>/allegro-5.2.dll
+    )
+endif()
+
+
+# cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -G Ninja -B build
+# ninja -C build
