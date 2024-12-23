@@ -10,17 +10,15 @@
 class King
 {
 public:
-    King(const Circle &king_shape,
-         const Rectangle &throne_shape,
-         const ALLEGRO_COLOR &color,
-         float line_width,
-         const Vector &last_life_position)
-        : king_shape{king_shape}
-        , throne_shape{throne_shape}
-        , color{color}
-        , line_width{line_width}
-        , life{param::life}
-        , life_shapes{king_shape, king_shape, king_shape}
+    King(const Circle &king_shape, const Rectangle &throne_shape, const ALLEGRO_COLOR &color, float line_width, const Vector &last_life_position)
+    :
+		king_shape{king_shape},
+		throne_shape{throne_shape},
+		color{color},
+		line_width{line_width},
+		life{param::life},
+		life_shapes{king_shape, king_shape, king_shape},
+		decrease_life{false}
     {
         for (auto &life_shape : life_shapes) {
             life_shape.Scale(0.5);
@@ -28,14 +26,14 @@ public:
         }
 
         for (auto it = life_shapes.begin() + 1; it != life_shapes.end(); ++it)
-            (*it).Translate(0, -throne_shape.Size().Y() / 2 * (it - life_shapes.begin()));
-    };
+            (*it).Translate(Vector(0, -throne_shape.Size().Y() / 2 * (it - life_shapes.begin())));
+    }
 
     void Draw() const
     {
         king_shape.Draw(color);
         throne_shape.Draw(color, line_width);
-    };
+    }
 
     void Draw_life() const
     {
@@ -90,38 +88,61 @@ class King_magenta : public King
 {
 public:
     King_magenta()
-        : King{Circle(param::window_width - param::unit_length * 3.5,
-                      param::window_height / 2,
-                      param::unit_length / 2),
-               Rectangle(param::window_width - param::unit_length * 5,
-                         param::window_height / 2 - param::unit_length * 1.5,
-                         param::unit_length * 3,
-                         param::unit_length * 3),
-               param::magenta,
-               param::line_width,
-               Vector(param::window_width - param::unit_length,
-                      param::window_height / 2 + param::unit_length * 1.5)} {};
+    :
+        King{
+            Circle(
+                Vector(
+                    param::window_width - param::unit_length * 3.5,
+                    param::window_height / 2
+                ),
+                param::unit_length / 2
+            ),
+            Rectangle(
+                Vector(
+                    param::window_width - param::unit_length * 5,
+                    param::window_height / 2 - param::unit_length * 1.5
+                ),
+                Vector(
+                    param::unit_length * 3,
+                    param::unit_length * 
+                3)
+            ),
+            param::magenta,
+            param::line_width,
+            Vector(
+                param::window_width - param::unit_length,
+                param::window_height / 2 + param::unit_length * 1.5
+            )
+        }
+    {};
 };
 
 class King_cyan : public King
 {
 public:
     King_cyan()
-        : King{Circle(param::unit_length * 3.5, param::window_height / 2, param::unit_length / 2),
-               Rectangle(param::unit_length * 2,
-                         param::window_height / 2 - param::unit_length * 1.5,
-                         param::unit_length * 3,
-                         param::unit_length * 3),
-               param::cyan,
-               param::line_width,
-               Vector(param::unit_length, param::window_height / 2 + param::unit_length * 1.5)} {};
+    :
+        King{
+            Circle(
+                Vector(param::unit_length * 3.5, param::window_height / 2),
+                param::unit_length / 2
+            ),
+            Rectangle(
+                Vector(param::unit_length * 2, param::window_height / 2 - param::unit_length * 1.5),
+                Vector(param::unit_length * 3, param::unit_length * 3)
+            ),
+            param::cyan,
+            param::line_width,
+            Vector(param::unit_length, param::window_height / 2 + param::unit_length * 1.5)
+        }
+    {};
 };
 
 class Pawn
 {
 public:
     Pawn(float cx, float cy, const ALLEGRO_COLOR &color)
-        : shape{cx, cy, param::unit_length / 2}
+        : shape{Vector(cx, cy), param::unit_length / 2}
         , color{color}
     {}
 
@@ -136,7 +157,7 @@ public:
 
     static void Update_translation(const Vector &start, const Vector &end)
     {
-        translation = (end - start) / param::unit_length;
+        translation = (end - start) / param::translation_step;
     }
 
     static void Reset_translation_step_count() { translation_step_count = 0; }
@@ -163,7 +184,7 @@ public:
     void Transform_color_to_vanish()
     {
         Transform_color(color, param::vanish, param::color_transformation_ratio);
-    };
+    }
 
     bool Color_equal_vanish()
     {
@@ -171,7 +192,7 @@ public:
             return true;
 
         return false;
-    };
+    }
 
     Line Last_translation() const { return Line(shape.Center() - translation, shape.Center()); }
 

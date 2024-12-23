@@ -77,7 +77,3 @@ if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro-5.2.dll")
             $<TARGET_FILE_DIR:my_first_game>/allegro-5.2.dll
     )
 endif()
-
-
-# cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -G Ninja -B build
-# ninja -C build

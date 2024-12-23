@@ -10,13 +10,14 @@ class Aim
 {
 public:
     Aim()
-        : reach_circle{0, 0, param::reach_radius}
-        , pawn_destination{0, 0}
-        , direction_sign{Vector(0, 0), Vector(0, 0), Vector(0, 0)}
-        , color{param::magenta}
-        , line_width{param::line_width}
-        , reach_circle_is_visible{false}
-        , direction_sign_is_visible{false}
+    : 
+        reach_circle{Vector(0, 0), param::reach_radius},
+        pawn_destination{0, 0},
+        direction_sign{Vector(0, 0), Vector(0, 0), Vector(0, 0)},
+        color{param::magenta},
+        line_width{param::line_width},
+        reach_circle_is_visible{false},
+        direction_sign_is_visible{false}
     {}
 
     void Draw() const
@@ -75,17 +76,25 @@ class Clipper
 {
 public:
     Clipper()
-        : left{0, 0, 2 * param::unit_length, param::window_height}
-        , top{0, 0, param::window_width, param::unit_length}
-        , right{param::window_width - 2 * param::unit_length,
-                0,
-                2 * param::unit_length,
-                param::window_height}
-        , bottom{0,
-                 param::window_height - param::unit_length,
-                 param::window_width,
-                 param::unit_length}
-        , color{param::black} {};
+    : 
+        left{
+            Vector(0, 0),
+            Vector(2 * param::unit_length, param::window_height)
+        },
+        top{
+            Vector(0, 0),
+            Vector(param::window_width, param::unit_length)
+        },
+        right{
+            Vector(param::window_width - 2 * param::unit_length, 0),
+            Vector(2 * param::unit_length, param::window_height)
+        },
+        bottom{
+            Vector(0, param::window_height - param::unit_length),
+            Vector(param::window_width, param::unit_length)
+        },
+        color{param::black}
+    {};
 
     void Draw() const
     {
@@ -107,12 +116,14 @@ class Fence
 {
 public:
     Fence()
-        : shape{2 * param::unit_length,
-                param::unit_length,
-                param::window_width - 4 * param::unit_length,
-                param::window_height - 2 * param::unit_length}
-        , color{param::red}
-        , line_width{param::line_width * 2} {};
+    :
+        shape{
+            Vector(2 * param::unit_length, param::unit_length),
+            Vector(param::window_width - 4 * param::unit_length, param::window_height - 2 * param::unit_length)
+        },
+        color{param::red},
+        line_width{param::line_width * 2}
+    {};
 
     void Draw() const { shape.Draw(color, line_width); };
 

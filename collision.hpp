@@ -89,10 +89,10 @@ float collision::Circle_vs_rectangle(const Circle &moving_circle,
     Circle bottom_right = moving_circle;
     Circle bottom_left = moving_circle;
 
-    top_left.Center(top.Start());
-    top_right.Center(top.End());
-    bottom_right.Center(bottom.Start());
-    bottom_left.Center(bottom.End());
+    top_left.Center(nonmoving_rectangle.Top_left());
+    top_right.Center(nonmoving_rectangle.Top_right());
+    bottom_right.Center(nonmoving_rectangle.Bottom_right());
+    bottom_left.Center(nonmoving_rectangle.Bottom_left());
 
     top.Translate(Vector(0, -moving_circle.Radius()));
     right.Translate(Vector(moving_circle.Radius(), 0));
@@ -162,7 +162,7 @@ float collision::Intersect(const Line &line1, const Line &line2)
         return 2;
 
     float t = t_numerator / denominator;
-    float u = u_numerator / denominator;
+    // float u = u_numerator / denominator;
 
     return t;
 };

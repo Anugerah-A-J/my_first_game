@@ -141,7 +141,7 @@ protected:
         monospaced_font_width{al_get_text_width(monospaced_font, "a")},
         shape{
             center - Vector(0, monospaced_font_height),
-            2 * monospaced_font_height,
+            Vector(0, 2 * monospaced_font_height),
         },
         color{color},
         line_color{line_color},
