@@ -1,70 +1,24 @@
-#include "character.hpp"
-#include "collision.hpp"
-#include "geometry.hpp"
-#include "param.hpp"
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/color.h>
+#include "Shape.hpp"
+#include "Param.hpp"
+#include <array>
 #pragma once
 
 class Aim
 {
 public:
-    Aim()
-    : 
-        reach_circle{Vector(0, 0), param::reach_radius},
-        pawn_destination{0, 0},
-        direction_sign{Vector(0, 0), Vector(0, 0), Vector(0, 0)},
-        color{param::magenta},
-        line_width{param::line_width},
-        reach_circle_is_visible{false},
-        direction_sign_is_visible{false}
-    {}
-
-    void Draw() const
-    {
-        if (reach_circle_is_visible)
-            reach_circle.Draw(color, line_width);
-
-        if (direction_sign_is_visible) {
-            direction_sign.Draw(color, line_width);
-            // Line(reach_circle.Center(), pawn_destination).Draw(color, line_width);
-        }
-    }
-
-    void Center(const Vector &point) { reach_circle.Center(point); }
-    const Vector &Center() { return reach_circle.Center(); }
-
-    const Vector &Pawn_destination() const { return pawn_destination; }
-
-    void Update_direction(const Vector &mouse_coordinate)
-    {
-        Vector unit = (mouse_coordinate - reach_circle.Center()).Unit();
-
-        pawn_destination = reach_circle.Center() - unit * reach_circle.Radius();
-
-        direction_sign.Vertex_1(reach_circle.Center() + unit * param::unit_length);
-
-        Vector temp = direction_sign.Vertex_1() + unit * param::unit_length;
-
-        direction_sign.Vertex_2(temp
-                                + Matrix(0, 1, -1, 0) * unit * param::unit_length / param::sqrt_3);
-
-        direction_sign.Vertex_3(temp
-                                + Matrix(0, -1, 1, 0) * unit * param::unit_length / param::sqrt_3);
-    }
-
-    void Show_reach_circle() { reach_circle_is_visible = true; }
-    void Show_direction_sign() { direction_sign_is_visible = true; }
-    void Hide()
-    {
-        reach_circle_is_visible = false;
-        direction_sign_is_visible = false;
-    }
-    void Color(const ALLEGRO_COLOR &color) { this->color = color; }
-
+    Aim();
+    void Draw() const;
+    void Center(const Vector& point);
+    const Vector& Center();
+    const Vector& End_point() const;
+    void Update_direction(const Vector& mouse_coordinate);
+    void Show_reach_circle();
+    void Show_direction_sign();
+    void Hide();
+    void Color(const ALLEGRO_COLOR& color);
 private:
     Circle reach_circle;
-    Vector pawn_destination;
+    Vector end_point;
     Triangle direction_sign;
     ALLEGRO_COLOR color;
     float line_width;
@@ -75,35 +29,8 @@ private:
 class Clipper
 {
 public:
-    Clipper()
-    : 
-        left{
-            Vector(0, 0),
-            Vector(2 * param::unit_length, param::window_height)
-        },
-        top{
-            Vector(0, 0),
-            Vector(param::window_width, param::unit_length)
-        },
-        right{
-            Vector(param::window_width - 2 * param::unit_length, 0),
-            Vector(2 * param::unit_length, param::window_height)
-        },
-        bottom{
-            Vector(0, param::window_height - param::unit_length),
-            Vector(param::window_width, param::unit_length)
-        },
-        color{param::black}
-    {};
-
-    void Draw() const
-    {
-        left.Draw(color);
-        top.Draw(color);
-        right.Draw(color);
-        bottom.Draw(color);
-    };
-
+    Clipper(const Fence& fence);
+    void Draw() const;
 private:
     Rectangle left;
     Rectangle top;
@@ -115,44 +42,103 @@ private:
 class Fence
 {
 public:
-    Fence()
-    :
-        shape{
-            Vector(2 * param::unit_length, param::unit_length),
-            Vector(param::window_width - 4 * param::unit_length, param::window_height - 2 * param::unit_length)
-        },
-        color{param::red},
-        line_width{param::line_width * 2}
-    {};
-
-    void Draw() const { shape.Draw(color, line_width); };
-
-    const Rectangle &Shape() const { return shape; }
-
-    const Vector &Origin() const { return shape.Origin(); }
-
-    Vector Center() const { return shape.Center(); }
-
-    float Width() const { return shape.Width(); }
-
-    float Height() const { return shape.Height(); }
-
-    void Kill(Pawn &moving_pawn, std::set<Pawn *> &dying_pawns) const
-    {
-        float t = collision::Circle_inside_rectangle(moving_pawn.Shape(),
-                                                     shape,
-                                                     moving_pawn.Last_translation());
-
-        if (t == 2 || Pawn::Vanish_immediately())
-            return;
-
-        moving_pawn.Retreat(1 - t);
-        moving_pawn.Stop();
-        dying_pawns.insert(&moving_pawn);
-    }
-
+    Fence();
+    void Draw() const;
+    const Vector& Origin() const;
+    const Vector& Top_right() const;
+    const Vector& Bottom_left() const;
+    Vector Center() const;
+    float Width() const;
+    float Height() const;
+    // void Hurt(Player& player) const;
 private:
     Rectangle shape;
     ALLEGRO_COLOR color;
     float line_width;
+};
+
+class Wall
+{
+public:
+    Wall(const Vector& origin, const Vector& size);
+    void Draw() const;
+    const Rectangle& Shape() const;
+    void Center(const Vector& point);
+private:
+    Rectangle shape;
+};
+
+class Tree
+{
+public:
+    Tree(const Vector& center, float overall_diameter);
+    void Draw() const;
+    void Translate(const Vector& displacement);
+    Tree Mirror_x(const Vector& point) const;
+    Tree Mirror_y(const Vector& point) const;
+    float Min_t(const Pawn& moving_pawn) const;
+private:
+    float diameter;
+    std::vector<Circle> shape;
+    Circle filler;
+};
+
+class X
+{
+public:
+    X(const Vector& origin, float size);
+    void Draw() const;
+    void Translate(const Vector& displacement);
+    float Min_t(const Pawn& moving_pawn) const;
+    X Mirror_y(const Vector& point) const;
+    X Mirror_x(const Vector& point) const;
+private:
+    float size;
+    std::array<Line, 2> shape;
+};
+
+class Window
+{
+public:
+    Window(const Vector& start, const Vector& end);
+    void Draw() const;
+    const Line& Shape() const;
+    void Translate(const Vector& displacement);
+    Window Mirror_y(const Vector& point) const;
+    Window Mirror_x(const Vector& point) const;
+private:
+    Line shape;
+};
+
+class Map
+{
+public:
+    void Draw() const;
+    void Wall_stop(Pawn& moving_pawn) const;
+    void Tree_stop(Pawn& moving_pawn) const;
+    void X_kill(Pawn& moving_pawn, std::set<Pawn *> &dying_pawns) const;
+    void Window_only_shoot(Pawn& moving_pawn) const;
+protected:
+    Map(
+        float the_number_of_walls,
+        float the_number_of_windows,
+        float the_number_of_xs,
+        float the_number_of_trees
+    );
+    const Fence fence;
+    std::vector<Wall> walls;
+    std::vector<Window> windows;
+    std::vector<X> xs;
+    std::vector<Tree> trees;
+};
+
+class Map_1 : public Map
+{
+public:
+    Map_1();
+private:
+    void Arrange_walls();
+    void Arrange_windows();
+    void Arrange_xs();
+    void Arrange_trees();
 };

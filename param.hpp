@@ -2,7 +2,7 @@
 #include <allegro5/color.h>
 #pragma once
 
-namespace param
+namespace Param
 {
     const float unit_length = 12;
     const float line_width = 1;
@@ -39,14 +39,16 @@ namespace param
     class Theme
     {
     public:
-        Theme(const ALLEGRO_COLOR &passive_text_color,
-            const ALLEGRO_COLOR &active_text_color,
-            const ALLEGRO_COLOR &background_color,
-            const ALLEGRO_COLOR &line_color)
-            : passive_text_color{passive_text_color}
-            , active_text_color{active_text_color}
-            , background_color{background_color}
-            , line_color{line_color}
+        Theme(
+            const ALLEGRO_COLOR& passive_text_color,
+            const ALLEGRO_COLOR& active_text_color,
+            const ALLEGRO_COLOR& background_color,
+            const ALLEGRO_COLOR& line_color
+        ):
+            passive_text_color{passive_text_color},
+            active_text_color{active_text_color},
+            background_color{background_color},
+            line_color{line_color}
         {}
 
         const ALLEGRO_COLOR passive_text_color;
@@ -55,8 +57,10 @@ namespace param
         const ALLEGRO_COLOR line_color;
     };
 
-    const Theme default_theme = Theme(param::gray,
-                                    param::white,
-                                    al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
-                                  param::gray);
-} // namespace param
+    const Theme default_theme = Theme(
+        Param::gray,
+        Param::white,
+        al_map_rgba_f(0.2f, 0.2f, 0.2f, 1),
+        Param::gray
+    );
+}

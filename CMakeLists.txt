@@ -38,7 +38,7 @@ else()
 endif()
 add_link_options(-static-libstdc++ -static-libgcc)
 
-add_executable(my_first_game main.cpp)
+add_executable(my_first_game main.cpp Shape.cpp)
 target_include_directories(my_first_game PUBLIC ${allegro5_SOURCE_DIR}/include)
 target_include_directories(my_first_game PUBLIC ${allegro5_BINARY_DIR}/include)
 # target_link_options(my_first_game INTERFACE "-static-libstdc++ and -static-libgcc")

@@ -1,5 +1,5 @@
-#include "geometry.hpp"
-#include "param.hpp"
+#include "Shape.hpp"
+#include "Param.hpp"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -12,10 +12,10 @@ public:
     // float Font_height() { return al_get_font_line_height(font); }
     // static float font_width() { return al_get_font_line_height(font_); }
 
-    One_line_text(const Vector &origin,
-                  const std::string &text,
+    One_line_text(const Vector& origin,
+                  const std::string& text,
                   const ALLEGRO_FONT *const font,
-                  const ALLEGRO_COLOR &text_color)
+                  const ALLEGRO_COLOR& text_color)
         : text{text}
         , // no validation for \n
         font{font}
@@ -37,16 +37,16 @@ public:
                      &text.front());
     }
 
-    bool Contain(const Vector &point) const { return shape.Contain(point); }
+    bool Contain(const Vector& point) const { return shape.Contain(point); }
 
     float Width() const { return shape.Width(); }
 
-    const std::string &Text() const { return text; }
+    const std::string& Text() const { return text; }
 
-    void Make_active() { text_color = param::default_theme.active_text_color; }
-    void Make_passive() { text_color = param::default_theme.passive_text_color; }
-    const Vector &Origin() const { return shape.Origin(); }
-    void Translate(const Vector &displacement) { shape.Translate(displacement); }
+    void Make_active() { text_color = Param::default_theme.active_text_color; }
+    void Make_passive() { text_color = Param::default_theme.passive_text_color; }
+    const Vector& Origin() const { return shape.Origin(); }
+    void Translate(const Vector& displacement) { shape.Translate(displacement); }
 
 private:
     std::string text;
@@ -83,10 +83,10 @@ public:
         choices.at(selected_choice_index).Make_active();
     }
 
-    void Update_selected_choice(const Vector &mouse_coordinate)
+    void Update_selected_choice(const Vector& mouse_coordinate)
     {
         std::vector<One_line_text>::iterator selected_choice_iterator
-            = find_if(choices.begin(), choices.end(), [&](const One_line_text &choice) {
+            = find_if(choices.begin(), choices.end(), [&](const One_line_text& choice) {
                   return choice.Contain(mouse_coordinate);
               });
 
@@ -103,18 +103,18 @@ public:
         shape.Draw(color);
         shape.Draw(line_color, line_width);
 
-        for (const One_line_text &message : messages)
+        for (const One_line_text& message : messages)
             message.Draw();
 
-        for (const One_line_text &choice : choices)
+        for (const One_line_text& choice : choices)
             choice.Draw();
     }
 
     int Selected_choice_index() const { return selected_choice_index; }
 
-    void Add_message(const std::string &text,
-                     const ALLEGRO_COLOR &text_color = param::default_theme.passive_text_color,
-                     const ALLEGRO_COLOR &background_color = param::default_theme.background_color)
+    void Add_message(const std::string& text,
+                     const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
+                     const ALLEGRO_COLOR& background_color = Param::default_theme.background_color)
     {
         if (Messages_width() + (text.length() + 1) * monospaced_font_width > shape.Width())
             shape.Width(Messages_width() + (text.length() + 1) * monospaced_font_width);
@@ -132,8 +132,8 @@ protected:
     Dialog_box(
         const Vector& center,
         const ALLEGRO_FONT* const monospaced_font,
-        const ALLEGRO_COLOR& color = param::default_theme.background_color,
-        const ALLEGRO_COLOR& line_color = param::default_theme.line_color
+        const ALLEGRO_COLOR& color = Param::default_theme.background_color,
+        const ALLEGRO_COLOR& line_color = Param::default_theme.line_color
     ):
         center{center},
         monospaced_font{monospaced_font},
@@ -145,13 +145,13 @@ protected:
         },
         color{color},
         line_color{line_color},
-        line_width{param::line_width},
+        line_width{Param::line_width},
         selected_choice_index{0}
     {}
 
-    void Add_choice(const std::string &text,
-                    const ALLEGRO_COLOR &text_color = param::default_theme.passive_text_color,
-                    const ALLEGRO_COLOR &background_color = param::default_theme.background_color)
+    void Add_choice(const std::string& text,
+                    const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
+                    const ALLEGRO_COLOR& background_color = Param::default_theme.background_color)
     {
         if ((text.length() + 1) * monospaced_font_width > shape.Width())
             shape.Width((text.length() + 1) * monospaced_font_width);
@@ -173,7 +173,7 @@ private:
     {
         float sum = 0;
 
-        for (const One_line_text &message : messages)
+        for (const One_line_text& message : messages)
             sum += message.Width();
 
         return sum;
@@ -193,7 +193,7 @@ private:
 
         Vector displacement = shape.Origin() - messages.front().Origin();
 
-        std::for_each(messages.begin(), messages.end(), [&](One_line_text &message) {
+        std::for_each(messages.begin(), messages.end(), [&](One_line_text& message) {
             message.Translate(displacement);
         });
     }
@@ -207,7 +207,7 @@ private:
                               + Vector(monospaced_font_width * 0.5f, monospaced_font_height * 2)
                               - choices.front().Origin();
 
-        std::for_each(choices.begin(), choices.end(), [&](One_line_text &choice) {
+        std::for_each(choices.begin(), choices.end(), [&](One_line_text& choice) {
             choice.Translate(displacement);
         });
     }
