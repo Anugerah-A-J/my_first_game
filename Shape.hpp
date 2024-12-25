@@ -1,30 +1,13 @@
 #include <allegro5/allegro_primitives.h>
-#include <math.h>
 #pragma once
 
-bool Equal(float f1, float f2, float margin)
-{
-    return fabsf(f1 - f2) < margin;
-}
+bool Equal(float f1, float f2, float margin);
 
-bool Equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float margin)
-{
-    return Equal(color_1.r, color_2.r, margin) && Equal(color_1.g, color_2.g, margin)
-        && Equal(color_1.b, color_2.b, margin) && Equal(color_1.a, color_2.a, margin);
-}
+bool Equal(const ALLEGRO_COLOR& color_1, const ALLEGRO_COLOR& color_2, float margin);
 
-void Transform_color(ALLEGRO_COLOR& changed_color, const ALLEGRO_COLOR& target_color, float color_transformation_ratio)
-{
-    changed_color.r += (target_color.r - changed_color.r) * color_transformation_ratio;
-    changed_color.g += (target_color.g - changed_color.g) * color_transformation_ratio;
-    changed_color.b += (target_color.b - changed_color.b) * color_transformation_ratio;
-    changed_color.a += (target_color.a - changed_color.a) * color_transformation_ratio;
-}
+void Transform_color(ALLEGRO_COLOR& changed_color, const ALLEGRO_COLOR& target_color, float color_transformation_ratio);
 
-float Average(float f1, float f2)
-{
-    return (f1 + f2) / 2;
-}
+float Average(float f1, float f2);
 
 class Vector
 {
@@ -54,10 +37,7 @@ private:
     float y;
 };
 
-Vector operator*(float f, const Vector& v)
-{
-    return v * f;
-}
+Vector operator*(float f, const Vector& v);
 
 class Matrix
 {
@@ -70,10 +50,7 @@ private:
     Vector row_2;
 };
 
-Vector operator*(const Matrix& m, const Vector& v)
-{
-    return Vector(Vector::Dot(m.Row_1(), v), Vector::Dot(m.Row_2(), v));
-}
+Vector operator*(const Matrix& m, const Vector& v);
 
 class Line
 {

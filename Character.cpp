@@ -206,7 +206,7 @@ public:
     void Kill(std::vector<Pawn> &pawns, std::set<Pawn *> &dying_pawns) const
     {
         for (auto& pawn : pawns) {
-            if (collision::Circle_vs_circle(shape, pawn.Shape(), Last_translation()) == 2)
+            if (Collision::Circle_vs_circle(shape, pawn.Shape(), Last_translation()) == 2)
                 continue;
 
             dying_pawns.insert(&pawn);
@@ -215,12 +215,12 @@ public:
 
     void Hurt(King& king) const
     {
-        float t = collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
+        float t = Collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
 
         if (t != 2)
             Pawn::Vanish_immediately(true);
 
-        t = collision::Circle_vs_circle(shape, king.King_shape(), Last_translation());
+        t = Collision::Circle_vs_circle(shape, king.King_shape(), Last_translation());
 
         if (t <= 1)
             king.Life_will_be_decreased();
@@ -228,7 +228,7 @@ public:
 
     void Stopped_by(const King& king, const Vector& moving_pawn_spawn_position)
     {
-        float t = collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
+        float t = Collision::Circle_vs_rectangle(shape, king.Throne_shape(), Last_translation());
 
         if (t == 2)
             return;

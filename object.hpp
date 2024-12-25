@@ -1,6 +1,8 @@
 #include "Shape.hpp"
 #include "Param.hpp"
+// #include "Character.hpp"
 #include <array>
+#include <vector>
 #pragma once
 
 class Aim
@@ -16,6 +18,8 @@ public:
     void Show_direction_sign();
     void Hide();
     void Color(const ALLEGRO_COLOR& color);
+    bool Reach_circle_is_visible() const;
+    bool Direction_sign_is_visible() const;
 private:
     Circle reach_circle;
     Vector end_point;
@@ -29,7 +33,7 @@ private:
 class Clipper
 {
 public:
-    Clipper(const Fence& fence);
+    Clipper(const Rectangle& map_fence_shape);
     void Draw() const;
 private:
     Rectangle left;
@@ -42,14 +46,15 @@ private:
 class Fence
 {
 public:
-    Fence();
+    Fence(const Vector& origin, const Vector& size);
     void Draw() const;
     const Vector& Origin() const;
-    const Vector& Top_right() const;
-    const Vector& Bottom_left() const;
+    Vector Top_right() const;
+    Vector Bottom_left() const;
     Vector Center() const;
     float Width() const;
     float Height() const;
+    const Rectangle& Shape() const;
     // void Hurt(Player& player) const;
 private:
     Rectangle shape;
@@ -57,79 +62,75 @@ private:
     float line_width;
 };
 
-class Wall
-{
-public:
-    Wall(const Vector& origin, const Vector& size);
-    void Draw() const;
-    const Rectangle& Shape() const;
-    void Center(const Vector& point);
-private:
-    Rectangle shape;
-};
+// class Wall
+// {
+// public:
+//     Wall(const Vector& origin, const Vector& size);
+//     void Draw() const;
+//     const Rectangle& Shape() const;
+//     void Center(const Vector& point);
+// private:
+//     Rectangle shape;
+// };
 
-class Tree
-{
-public:
-    Tree(const Vector& center, float overall_diameter);
-    void Draw() const;
-    void Translate(const Vector& displacement);
-    Tree Mirror_x(const Vector& point) const;
-    Tree Mirror_y(const Vector& point) const;
-    float Min_t(const Pawn& moving_pawn) const;
-private:
-    float diameter;
-    std::vector<Circle> shape;
-    Circle filler;
-};
+// class Tree
+// {
+// public:
+//     Tree(const Vector& center, float overall_diameter);
+//     void Draw() const;
+//     void Translate(const Vector& displacement);
+//     Tree Mirror_x(const Vector& point) const;
+//     Tree Mirror_y(const Vector& point) const;
+//     // float Min_t(const Player& moving_pawn) const;
+// private:
+//     float diameter;
+//     std::vector<Circle> shape;
+//     Circle filler;
+// };
 
-class X
-{
-public:
-    X(const Vector& origin, float size);
-    void Draw() const;
-    void Translate(const Vector& displacement);
-    float Min_t(const Pawn& moving_pawn) const;
-    X Mirror_y(const Vector& point) const;
-    X Mirror_x(const Vector& point) const;
-private:
-    float size;
-    std::array<Line, 2> shape;
-};
+// class X
+// {
+// public:
+//     X(const Vector& origin, float size);
+//     void Draw() const;
+//     void Translate(const Vector& displacement);
+//     // float Min_t(const Player& moving_pawn) const;
+//     X Mirror_y(const Vector& point) const;
+//     X Mirror_x(const Vector& point) const;
+// private:
+//     float size;
+//     std::array<Line, 2> shape;
+// };
 
-class Window
-{
-public:
-    Window(const Vector& start, const Vector& end);
-    void Draw() const;
-    const Line& Shape() const;
-    void Translate(const Vector& displacement);
-    Window Mirror_y(const Vector& point) const;
-    Window Mirror_x(const Vector& point) const;
-private:
-    Line shape;
-};
+// class Glass
+// {
+// public:
+//     Glass(const Vector& start, const Vector& end);
+//     void Draw() const;
+//     const Line& Shape() const;
+//     void Translate(const Vector& displacement);
+//     Glass Mirror_y(const Vector& point) const;
+//     Glass Mirror_x(const Vector& point) const;
+// private:
+//     Line shape;
+// };
 
 class Map
 {
 public:
     void Draw() const;
-    void Wall_stop(Pawn& moving_pawn) const;
-    void Tree_stop(Pawn& moving_pawn) const;
-    void X_kill(Pawn& moving_pawn, std::set<Pawn *> &dying_pawns) const;
-    void Window_only_shoot(Pawn& moving_pawn) const;
+    // void Reflect(Player* const player) const;
+    // void Hurt(Player* const player) const;
+    // void Hide(Player* const player) const;
+    // void Obstruct(Player* const player) const;
 protected:
-    Map(
-        float the_number_of_walls,
-        float the_number_of_windows,
-        float the_number_of_xs,
-        float the_number_of_trees
-    );
-    const Fence fence;
-    std::vector<Wall> walls;
-    std::vector<Window> windows;
-    std::vector<X> xs;
-    std::vector<Tree> trees;
+    Map(const Vector& size, float the_number_of_wall, float the_number_of_xs, float the_number_of_glass, float the_number_of_tree);
+    Fence fence;
+    Clipper clipper;
+    // std::vector<Wall> wall;
+    // std::vector<X> xs;
+    // std::vector<Glass> glass;
+    // std::vector<Tree> tree;
 };
 
 class Map_1 : public Map
@@ -137,8 +138,8 @@ class Map_1 : public Map
 public:
     Map_1();
 private:
-    void Arrange_walls();
-    void Arrange_windows();
-    void Arrange_xs();
-    void Arrange_trees();
+    // void Arrange_walls();
+    // void Arrange_windows();
+    // void Arrange_xs();
+    // void Arrange_trees();
 };

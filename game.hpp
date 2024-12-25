@@ -1,9 +1,8 @@
 #include <allegro5/allegro5.h>
+#include <functional>
 #include "Character.hpp"
 #include "Object.hpp"
-#include "map.hpp"
-#include "ui.hpp"
-#include <functional>
+#include "UI.hpp"
 #pragma once
 
 class Game
@@ -14,33 +13,33 @@ public:
     void Run();
 private:
     void Draw() const;
-    void Update_aim_center(float x, float y);
-    void Update_aim_direction(float x, float y);
-    void Play_again_or_quit(bool& done);
-
-    bool exit;
-    Vector mouse_position;
-    std::function<void()>* what_to_do;
-
     std::function<void()> aiming;
-    std::function<void()> shooting;
+    std::function<void()> moving;
+    std::function<void()> ending;
+
+    bool al_init_is_success;
+    bool al_init_primitives_addon_is_success;
+    bool al_install_keyboard_is_success;
+    bool al_install_mouse_is_success;
 
     ALLEGRO_TIMER* timer;
     ALLEGRO_EVENT_QUEUE* queue;
     ALLEGRO_DISPLAY* display;
     ALLEGRO_FONT* font;
-
-    Fence fence;
-    Clipper clipper;
-    Aim aim;
-    Player_magenta player_magenta;
-    Player_cyan player_cyan;
-
-    Player* active_player;
-    Player* passive_player;
-
-    End_dialog_box* pointer_to_end_dialog_box;
-    // std::vector<Line> trail;
+    ALLEGRO_EVENT event;
 
     Map_1 map_1;
+
+    // Aim aim;
+    // Player_magenta player_magenta;
+    // Player_cyan player_cyan;
+    
+    // End_dialog_box end_dialog_box;
+
+    // Player* active_player;
+    // Player* passive_player;
+    std::function<void()>* what_to_do;
+    
+    Vector mouse_position;
+    bool exit;
 };
