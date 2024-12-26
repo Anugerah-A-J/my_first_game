@@ -135,9 +135,19 @@ Vector Fence::Top_right() const
     return shape.Top_right();
 }
 
+Vector Fence::Top_left() const
+{
+    return shape.Top_left();
+}
+
 Vector Fence::Bottom_left() const
 {
     return shape.Bottom_left();
+}
+
+Vector Fence::Bottom_right() const
+{
+    return shape.Bottom_right();
 }
 
 Vector Fence::Center() const
@@ -405,6 +415,16 @@ void Map::Draw() const
     //     x.Draw();
 }
 
+Vector Map::Magenta_lives_start_position() const
+{
+    return fence.Top_right() + Vector(1.5, 0.5) * Param::unit_length;
+}
+
+Vector Map::Cyan_lives_start_position() const
+{
+    return fence.Top_left() + Vector(-1.5, 0.5) * Param::unit_length;
+}
+
     // void Reflect(Player& moving_pawn) const
     // {
     //     std::for_each(walls.begin(), walls.end(), [&](const Wall& wall) {
@@ -485,6 +505,16 @@ Map_1::Map_1()
     // Arrange_windows();
     // Arrange_xs();
     // Arrange_trees();
+}
+
+Vector Map_1::Magenta_spawn_position() const
+{
+    return (fence.Top_right() + fence.Bottom_right()) / 2 + Vector(-1.5, 0) * Param::unit_length;
+}
+
+Vector Map_1::Cyan_spawn_position() const
+{
+    return (fence.Top_left() + fence.Bottom_left()) / 2 + Vector(1.5, 0) * Param::unit_length;
 }
 
     // void Arrange_walls()

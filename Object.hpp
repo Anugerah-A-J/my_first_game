@@ -50,7 +50,9 @@ public:
     void Draw() const;
     const Vector& Origin() const;
     Vector Top_right() const;
+    Vector Top_left() const;
     Vector Bottom_left() const;
+    Vector Bottom_right() const;
     Vector Center() const;
     float Width() const;
     float Height() const;
@@ -119,6 +121,10 @@ class Map
 {
 public:
     void Draw() const;
+    virtual Vector Magenta_spawn_position() const = 0;
+    virtual Vector Cyan_spawn_position() const = 0;
+    Vector Magenta_lives_start_position() const;
+    Vector Cyan_lives_start_position() const;
     // void Reflect(Player* const player) const;
     // void Hurt(Player* const player) const;
     // void Hide(Player* const player) const;
@@ -137,6 +143,8 @@ class Map_1 : public Map
 {
 public:
     Map_1();
+    Vector Magenta_spawn_position() const override;
+    Vector Cyan_spawn_position() const override;
 private:
     // void Arrange_walls();
     // void Arrange_windows();

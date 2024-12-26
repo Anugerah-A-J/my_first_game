@@ -505,11 +505,11 @@ const Vector& Triangle::Vertex_3() const
 
 float Collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
 {
-    Vector normal = velocity.Start() - nonmoving_circle.Center();
+    // Vector normal = velocity.Start() - nonmoving_circle.Center();
 
-    if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius()
-        && Vector::Dot(normal, velocity.Direction()) >= 0)
-        return 2;
+    // if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius()
+    //     && Vector::Dot(normal, velocity.Direction()) >= 0)
+    //     return 2;
 
     Circle circle = nonmoving_circle;
     circle.Add_radius_by(moving_circle.Radius());
@@ -544,14 +544,14 @@ float Collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmovi
 
 float Collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
 {
-    Vector rectangle_to_circle_past = velocity.Start()
-                                      - nonmoving_rectangle.Closest_point_to(velocity.Start());
+    // Vector rectangle_to_circle_past = velocity.Start()
+    //                                   - nonmoving_rectangle.Closest_point_to(velocity.Start());
 
-    if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius()) {
-        if (Vector::Dot(rectangle_to_circle_past, velocity.Direction()) >= 0)
-            return 2; // angle <= abs(90)
-        // if () return 0; // angle > abs(90)
-    }
+    // if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius()) {
+    //     if (Vector::Dot(rectangle_to_circle_past, velocity.Direction()) >= 0)
+    //         return 2; // angle <= abs(90)
+    //     // if () return 0; // angle > abs(90)
+    // }
 
     Line top = nonmoving_rectangle.Top();
     Line right = nonmoving_rectangle.Right();

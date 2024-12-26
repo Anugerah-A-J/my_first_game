@@ -14,43 +14,46 @@ Game::Game()
 
     // end_dialog_box{font},
 
-    // active_player{&player_magenta},
-    // passive_player{&player_cyan},
+    player_magenta{map_1},
+    player_cyan{map_1},
+
+    active_player{&player_magenta},
+    passive_player{&player_cyan},
     what_to_do{&aiming},
 
     mouse_position{0, 0},
     exit{false}
 {
-    // aiming = [&]()
-    // {
-    //     if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
-    //     {
-    //         if (active_player->Contain(mouse_position))
-    //         {
-    //             aim.Center(active_player->Center());
-    //             aim.Show_reach_circle();
-    //         }
-    //         else if (aim.Reach_circle_is_visible() && active_player->Reach(mouse_position))
-    //         {
-    //             aim.Update_direction(mouse_position);
-    //             aim.Show_direction_sign();
-    //         }
-    //         else if (aim.Direction_sign_is_visible())
-    //             aim.Hide();
-    //     }
+    aiming = [&]()
+    {
+        if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
+        {
+            if (active_player->Contain(mouse_position))
+            {
+                aim.Center(active_player->Center());
+                aim.Show_reach_circle();
+            }
+            else if (aim.Reach_circle_is_visible() && active_player->Reach(mouse_position))
+            {
+                aim.Update_direction(mouse_position);
+                aim.Show_direction_sign();
+            }
+            else if (aim.Direction_sign_is_visible())
+                aim.Hide();
+        }
 
-    //     if (
-    //         aim.Direction_sign_is_visible() &&
-    //         event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN &&
-    //         event.mouse.button == 1 &&
-    //         active_player->Reach(mouse_position))
-    //     {    
-    //         aim.Hide();
-    //         what_to_do = &moving;
-    //         Player::Update_translation(aim.Center(), aim.End_point());
-    //         Player::Reset_translation_step_count();
-    //     }
-    // };
+        // if (
+        //     aim.Direction_sign_is_visible() &&
+        //     event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN &&
+        //     event.mouse.button == 1 &&
+        //     active_player->Reach(mouse_position))
+        // {    
+        //     aim.Hide();
+        //     what_to_do = &moving;
+        //     Player::Update_translation(aim.Center(), aim.End_point());
+        //     Player::Reset_translation_step_count();
+        // }
+    };
 
     // moving = [&]()
     // {
@@ -169,12 +172,12 @@ void Game::Draw() const
 {
     al_clear_to_color(Param::black);
 
-    // aim.Draw();
+    aim.Draw();
 
     map_1.Draw();
     
-    // player_cyan.Draw();
-    // player_magenta.Draw();
+    player_cyan.Draw();
+    player_magenta.Draw();
 
     // end_dialog_box.Draw();
 }

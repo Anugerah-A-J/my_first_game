@@ -30,14 +30,14 @@ private:
 
     Map_1 map_1;
 
-    // Aim aim;
-    // Player_magenta player_magenta;
-    // Player_cyan player_cyan;
+    Aim aim;
+    Player_magenta player_magenta;
+    Player_cyan player_cyan;
     
     // End_dialog_box end_dialog_box;
 
-    // Player* active_player;
-    // Player* passive_player;
+    Player* active_player;
+    Player* passive_player;
     std::function<void()>* what_to_do;
     
     Vector mouse_position;
