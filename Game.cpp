@@ -160,7 +160,7 @@ void Game::Run()
         if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
             mouse_position = Vector(event.mouse.x, event.mouse.y);
 
-        // (*what_to_do)();
+        (*what_to_do)();
 
         if (event.type == ALLEGRO_EVENT_TIMER && al_is_event_queue_empty(queue))
             Draw(),
