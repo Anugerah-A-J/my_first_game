@@ -28,6 +28,11 @@ float Average(float f1, float f2)
     return (f1 + f2) / 2;
 }
 
+float Square(float f)
+{
+    return f * f;
+}
+
 Vector operator*(float f, const Vector& v)
 {
     return v * f;
@@ -503,20 +508,6 @@ const Vector& Triangle::Vertex_3() const
     return vertex_3;
 }
 
-// float Collision::Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity)
-// {
-//     // Vector normal = velocity.Start() - nonmoving_circle.Center();
-
-//     // if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius()
-//     //     && Vector::Dot(normal, velocity.Direction()) >= 0)
-//     //     return 2;
-
-//     Circle circle = nonmoving_circle;
-//     circle.Add_radius_by(moving_circle.Radius());
-
-//     return Intersect(velocity, circle);
-// }
-
 // float Collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity)
 // {
 //     Line line_1 = nonmoving_line;
@@ -611,14 +602,34 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
 
     // reflection:
-    Vector normal = Vector(0, 0);
+    Vector normal_unit = Vector(0, 0);
 
     if (min_t_index % 2 == 0)
-        normal = Vector(0, 1);
+        normal_unit = Vector(0, 1);
     else
-        normal = Vector(1, 0);
+        normal_unit = Vector(1, 0);
 
-    circle_translation.Update_displacement_using_normal_unit_vector(normal);
+    circle_translation.Set_displacement_using_normal_unit_vector(normal_unit);
+}
+
+// circle1 is the moving circle
+// circle2 is initially nonmoving, moved by circle1 if they collide
+void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1, Circle &circle2, Translation &translation2)
+{
+    float t = Intersect(circle1, translation1, circle2, translation2);
+
+    if (t == 2)
+        return;
+
+    // collision solving
+    circle1.Translate((t - 1) * translation1.Displacement());
+    circle2.Translate((t - 1) * translation2.Displacement());
+
+    // reflection
+    Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
+
+    translation1.Reflected_by(normal_unit);
+    translation2.Reflected_by(-normal_unit);
 }
 
 // return 0 to 1 if intersect
@@ -688,9 +699,45 @@ float Collision::Intersect(const Line& line, const Circle& circle)
     }
 }
 
+// return 0 to 1 if intersect
+// return 2 if not intersect
+float Collision::Intersect(const Circle &circle1, const Translation &translation1, const Circle &circle2, const Translation &translation2)
+{
+    Vector c1 = translation1.Last_translation().Start();
+    Vector c2 = translation2.Last_translation().Start();
+    Vector v1 = translation1.Last_translation().Direction();
+    Vector v2 = translation2.Last_translation().Direction();
+
+    Vector c = c2 - c1;
+    Vector v = v2 - v1;
+
+    float a = v.Magsq();
+
+    float discriminant_square = Square(circle1.Radius() + circle2.Radius()) * a - Square(Vector::Dot(c, Matrix(0, 1, -1, 0) * v));
+
+    if (discriminant_square < 0)
+        return 2;
+
+    float discriminant = sqrtf(discriminant_square);
+
+    float b = Vector::Dot(c, v);
+
+    float t1 = (-b + discriminant) / a;
+
+    if (t1 >= 0 && t1 <= 1)
+        return t1;
+
+    float t2 = (-b - discriminant) / a;
+
+    if (t2 >= 0 && t2 <= 1)
+        return t2;
+
+    return 2;
+}
+
 Translation::Translation()
 :
-    translation_step_count{0},
+    translation_step_count{Param::translation_step},
     last_position_index{0},
     displacement{0, 0},
     position{Param::translation_step + 1, displacement}
@@ -703,7 +750,7 @@ void Translation::Update_all(const Vector &start, const Vector &end)
     displacement = (end - start) / Param::translation_step;
     std::fill(position.begin(), position.end(), start);
 
-    for (int i = 1; i < position.size(); i++)
+    for (unsigned int i = 1; i < position.size(); i++)
         position.at(i) = position.at(i - 1) + displacement;
 }
 
@@ -722,14 +769,7 @@ const Vector &Translation::Displacement() const
     return displacement;
 }
 
-void Translation::Displacement(const Vector &new_displacement)
-{
-    Vector new_displacement_unit = new_displacement.Unit();
-
-    displacement = displacement.Magsq() * new_displacement_unit;
-}
-
-void Translation::Update_displacement_using_normal_unit_vector(const Vector &normal_unit)
+void Translation::Set_displacement_using_normal_unit_vector(const Vector &normal_unit)
 {
     Vector normal_displacement = Vector::Dot(displacement, normal_unit) * normal_unit;
 	Vector tangential_displacement = displacement - normal_displacement;

@@ -34,7 +34,7 @@ public:
     static constexpr int translation_step = unit_length;
     static constexpr int window_width = 1000;
     static constexpr int window_height = 800;
-    static constexpr float reach_radius = unit_length * translation_step;
+    static constexpr float reach_radius = unit_length * translation_step * 2;
 
     // static float delta() { return 0.1f;
 

@@ -15,9 +15,9 @@ public:
     
     // The functions below are needed to move player
     const Vector& Center() const;
-    static void Update_translation(const Vector& start, const Vector& end);
-    void Move(const Map& map);
-    static bool Finish_moving();
+    void Update_translation(const Vector& start, const Vector& end);
+    void Move(const Map& map, Player* const enemy);
+    bool Finish_moving();
     const ALLEGRO_COLOR& Color() const;
 
     // The functions below are needed to reflect and hurt player
@@ -44,7 +44,7 @@ protected:
     int life;
     std::vector<Circle> life_shapes;
     bool decrease_life;
-    inline static Translation translation;
+    Translation translation;
 };
 
 class Player_magenta : public Player

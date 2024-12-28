@@ -10,6 +10,8 @@ void Transform_color(ALLEGRO_COLOR& changed_color, const ALLEGRO_COLOR& target_c
 
 float Average(float f1, float f2);
 
+float Square(float f);
+
 class Vector
 {
 public:
@@ -154,8 +156,7 @@ public:
     bool Finish() const;
     void Update_count();
     const Vector& Displacement() const;
-    void Displacement(const Vector& new_displacement);
-    void Update_displacement_using_normal_unit_vector(const Vector& normal);
+    void Set_displacement_using_normal_unit_vector(const Vector& normal_unit);
     Line Last_translation() const;
     void Stop();
 private:
@@ -174,15 +175,29 @@ public:
         const Rectangle& nonmoving_rectangle
     );
 
-    static float Circle_circle(
+    static void Reflect_circle_circle(
+        Circle& circle1,
+        Translation& translation1,
+        Circle& circle2,
+        Translation& translation2
+    );
+    static void Reflect_circle_line(
+        Circle& moving_circle,
+        Translation& circle_translation,
+        const Line& nonmoving_line
+    );
+    static void Reflect_circle_rectangle(
+        Circle& moving_circle,
+        Translation& circle_translation,
+        const Rectangle& nonmoving_rectangle
+    );
+private:
+    static float Intersect(const Line& line1, const Line& line2);
+    static float Intersect(const Line& line, const Circle& circle);
+    static float Intersect(
         const Circle& circle1,
         const Translation& translation1,
         const Circle& circle2,
         const Translation& translation2
     );
-    static float Circle_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
-    static float Circle_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-private:
-    static float Intersect(const Line& line1, const Line& line2);
-    static float Intersect(const Line& line, const Circle& circle);
 };

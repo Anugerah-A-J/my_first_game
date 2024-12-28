@@ -36,16 +36,25 @@ const Vector& Player::Center() const
     return shape.Center();
 }
 
-void Player::Move(const Map& map)
+void Player::Move(const Map& map, Player* const enemy)
 {
-    if (translation.Finish())
+    if (Finish_moving() && enemy->Finish_moving())
         return;
+    
+    if (!Finish_moving())
+    {
+        translation.Update_count();
+        shape.Translate(translation.Displacement());
+        Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
+    }
+    if (!enemy->Finish_moving())
+    {
+        enemy->translation.Update_count();
+        enemy->shape.Translate(translation.Displacement());
+        Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
+    }
 
-    translation.Update_count();
-
-    shape.Translate(translation.Displacement());
-
-    Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
+    Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
 }
 
 // void Player::Reflect(Player &enemy)

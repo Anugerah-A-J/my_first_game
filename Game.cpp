@@ -50,7 +50,7 @@ Game::Game()
         {    
             aim.Hide();
             what_to_do = &moving;
-            Player::Update_translation(aim.Center(), aim.End_point());
+            active_player->Update_translation(aim.Center(), aim.End_point());
         }
     };
 
@@ -59,14 +59,14 @@ Game::Game()
         if (event.type != ALLEGRO_EVENT_TIMER)
             return;
 
-        active_player->Move(map_1);
+        active_player->Move(map_1, passive_player);
         // trail.emplace_back(active_pawns->back().Last_translation());
         // active_player->Reflect(*passive_player);
 
         // map_1.Reflect(active_player);
         // map_1.Reflect_and_hurt(active_player);
 
-        if (Player::Finish_moving())
+        if (active_player->Finish_moving() && passive_player->Finish_moving())
         {
             passive_player->Update_life();
 
