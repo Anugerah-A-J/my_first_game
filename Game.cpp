@@ -59,7 +59,7 @@ Game::Game()
         if (event.type != ALLEGRO_EVENT_TIMER)
             return;
 
-        active_player->Move();
+        active_player->Move(map_1);
         // trail.emplace_back(active_pawns->back().Last_translation());
         // active_player->Reflect(*passive_player);
 
@@ -69,7 +69,6 @@ Game::Game()
         if (Player::Finish_moving())
         {
             passive_player->Update_life();
-            // active_player->Reset_translation_step_count();
 
             // if (passive_player->Dead())
             // {

@@ -154,9 +154,10 @@ public:
     bool Finish() const;
     void Update_count();
     const Vector& Displacement() const;
-    void Pause();
-    void Update_direction(const Vector& new_direction);
+    void Displacement(const Vector& new_displacement);
+    void Update_displacement_using_normal_unit_vector(const Vector& normal);
     Line Last_translation() const;
+    void Stop();
 private:
     unsigned int translation_step_count;
     unsigned int last_position_index;
@@ -164,16 +165,24 @@ private:
     std::vector<Vector> position;
 };
 
-namespace Collision {
-    float Circle_circle(
+class Collision
+{
+public:
+    static void Reflect_circle_inside_rectangle(
+        Circle& moving_circle,
+        Translation& circle_translation,
+        const Rectangle& nonmoving_rectangle
+    );
+
+    static float Circle_circle(
         const Circle& circle1,
         const Translation& translation1,
         const Circle& circle2,
         const Translation& translation2
     );
-    float Circle_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
-    float Circle_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    float Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
-    float Intersect(const Line& line1, const Line& line2);
-    float Intersect(const Line& line, const Circle& circle);
+    static float Circle_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
+    static float Circle_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
+private:
+    static float Intersect(const Line& line1, const Line& line2);
+    static float Intersect(const Line& line, const Circle& circle);
 };

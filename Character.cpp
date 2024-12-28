@@ -36,7 +36,7 @@ const Vector& Player::Center() const
     return shape.Center();
 }
 
-void Player::Move()
+void Player::Move(const Map& map)
 {
     if (translation.Finish())
         return;
@@ -44,6 +44,8 @@ void Player::Move()
     translation.Update_count();
 
     shape.Translate(translation.Displacement());
+
+    Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
 }
 
 // void Player::Reflect(Player &enemy)
@@ -213,11 +215,6 @@ void Player::Update_translation(const Vector &start, const Vector &end)
 // Line Player::Last_translation() const
 // {
 //     return Line(shape.Center() - translation, shape.Center());
-// }
-
-// void Player::Retreat(float compared_to_latest_translation)
-// {
-//     shape.Translate(-compared_to_latest_translation * translation);
 // }
 
 // const Circle &Player::Shape() const

@@ -401,6 +401,7 @@ const Rectangle &Fence::Shape() const
 
 void Map::Draw() const
 {
+    clipper.Draw();
     fence.Draw();
     // for (const Glass& g : glass)
     //     g.Draw();
@@ -423,6 +424,11 @@ Vector Map::Magenta_lives_start_position() const
 Vector Map::Cyan_lives_start_position() const
 {
     return fence.Top_left() + Vector(-1.5, 0.5) * Param::unit_length;
+}
+
+const Rectangle &Map::Fence_shape() const
+{
+    return fence.Shape();
 }
 
 // void Map::Reflect_and_hurt(Player *const player) const

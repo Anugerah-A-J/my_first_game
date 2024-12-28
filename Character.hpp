@@ -13,12 +13,14 @@ public:
     bool Contain(const Vector& point) const;
     bool Reach(const Vector& point) const;
     
+    // The functions below are needed to move player
     const Vector& Center() const;
     static void Update_translation(const Vector& start, const Vector& end);
-    void Move();
+    void Move(const Map& map);
     static bool Finish_moving();
     const ALLEGRO_COLOR& Color() const;
 
+    // The functions below are needed to reflect and hurt player
     void Update_life();
     // void Reflect(Player& enemy);
     // bool Dead();
@@ -26,7 +28,6 @@ public:
     
     // const Circle& Shape() const;
     // Line Last_translation() const;
-    // void Retreat(float compared_to_latest_translation);
     // static void Reset_translation_step_count();
 
     // int Life() const;

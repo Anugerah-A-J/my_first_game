@@ -124,6 +124,7 @@ public:
     virtual Vector Cyan_spawn_position() const = 0;
     Vector Magenta_lives_start_position() const;
     Vector Cyan_lives_start_position() const;
+    const Rectangle& Fence_shape() const;
     // void Reflect_and_hurt(Player* const player) const;
     // void Reflect(Player* const player) const;
     // void Hide(Player* const player) const;
