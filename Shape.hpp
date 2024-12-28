@@ -1,4 +1,5 @@
 #include <allegro5/allegro_primitives.h>
+#include <vector>
 #pragma once
 
 bool Equal(float f1, float f2, float margin);
@@ -145,10 +146,33 @@ private:
     Vector vertex_3;
 };
 
+class Translation
+{
+public:
+    Translation();
+    void Update_all(const Vector& start, const Vector& end);
+    bool Finish() const;
+    void Update_count();
+    const Vector& Displacement() const;
+    void Pause();
+    void Update_direction(const Vector& new_direction);
+    Line Last_translation() const;
+private:
+    unsigned int translation_step_count;
+    unsigned int last_position_index;
+    Vector displacement;
+    std::vector<Vector> position;
+};
+
 namespace Collision {
-    float Circle_vs_circle(const Circle& moving_circle, const Circle& nonmoving_circle, const Line& velocity);
-    float Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
-    float Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
+    float Circle_circle(
+        const Circle& circle1,
+        const Translation& translation1,
+        const Circle& circle2,
+        const Translation& translation2
+    );
+    float Circle_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity);
+    float Circle_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
     float Circle_inside_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity);
     float Intersect(const Line& line1, const Line& line2);
     float Intersect(const Line& line, const Circle& circle);

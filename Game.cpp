@@ -42,50 +42,50 @@ Game::Game()
                 aim.Hide();
         }
 
-        // if (
-        //     aim.Direction_sign_is_visible() &&
-        //     event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN &&
-        //     event.mouse.button == 1 &&
-        //     active_player->Reach(mouse_position))
-        // {    
-        //     aim.Hide();
-        //     what_to_do = &moving;
-        //     Player::Update_translation(aim.Center(), aim.End_point());
-        //     Player::Reset_translation_step_count();
-        // }
+        if (
+            aim.Direction_sign_is_visible() &&
+            event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN &&
+            event.mouse.button == 1 &&
+            active_player->Reach(mouse_position))
+        {    
+            aim.Hide();
+            what_to_do = &moving;
+            Player::Update_translation(aim.Center(), aim.End_point());
+        }
     };
 
-    // moving = [&]()
-    // {
-    //     if (event.type != ALLEGRO_EVENT_TIMER)
-    //         return;
+    moving = [&]()
+    {
+        if (event.type != ALLEGRO_EVENT_TIMER)
+            return;
 
-    //     active_player->Move();
-    //     // trail.emplace_back(active_pawns->back().Last_translation());
-    //     active_player->Reflect(*passive_player);
+        active_player->Move();
+        // trail.emplace_back(active_pawns->back().Last_translation());
+        // active_player->Reflect(*passive_player);
 
-    //     map_1.Reflect(active_player);
-    //     map_1.Hurt(active_player);
+        // map_1.Reflect(active_player);
+        // map_1.Reflect_and_hurt(active_player);
 
-    //     if (Player::Finish_moving())
-    //     {
-    //         passive_player->Update_life();
+        if (Player::Finish_moving())
+        {
+            passive_player->Update_life();
+            // active_player->Reset_translation_step_count();
 
-    //         if (passive_player->Dead())
-    //         {
-    //             std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
-    //             end_dialog_box.Add_message(message, active_player->Color());
-    //             end_dialog_box.Show();
-    //             what_to_do = &ending;
-    //         }
-    //         else
-    //         {
-    //             std::swap(active_player, passive_player);
-    //             aim.Color(active_player->Color());
-    //             what_to_do = &aiming;
-    //         }
-    //     }
-    // };
+            // if (passive_player->Dead())
+            // {
+            //     std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
+            //     end_dialog_box.Add_message(message, active_player->Color());
+            //     end_dialog_box.Show();
+            //     what_to_do = &ending;
+            // }
+            // else
+            // {
+                std::swap(active_player, passive_player);
+                aim.Color(active_player->Color());
+                what_to_do = &aiming;
+            // }
+        }
+    };
 
     // ending = [&]()
     // {

@@ -425,6 +425,16 @@ Vector Map::Cyan_lives_start_position() const
     return fence.Top_left() + Vector(-1.5, 0.5) * Param::unit_length;
 }
 
+// void Map::Reflect_and_hurt(Player *const player) const
+// {
+//     float t = Collision::Circle_inside_rectangle(player->Shape(), fence.Shape(), player->Last_translation());
+
+//     if (t == 2)
+//         return;
+
+//     player->Retreat(1 - t);
+// }
+
     // void Reflect(Player& moving_pawn) const
     // {
     //     std::for_each(walls.begin(), walls.end(), [&](const Wall& wall) {

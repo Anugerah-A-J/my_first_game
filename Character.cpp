@@ -6,10 +6,9 @@ Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
     shape{center, Param::unit_length / 2},
     color{color},
     life{Param::life},
-    decrease_life{false}
-{
-    life_shapes.reserve(life);
-}
+    decrease_life{false},
+    life_shapes{Param::life, shape}
+{}
 
 void Player::Draw() const
 {
@@ -39,26 +38,26 @@ const Vector& Player::Center() const
 
 void Player::Move()
 {
-    if (translation_step_count == Param::translation_step)
+    if (translation.Finish())
         return;
 
-    translation_step_count++;
+    translation.Update_count();
 
-    shape.Translate(translation);
+    shape.Translate(translation.Displacement());
 }
 
-void Player::Reflect(Player &enemy)
-{
-    Line last_translation = Last_translation();
+// void Player::Reflect(Player &enemy)
+// {
+//     Line last_translation = Last_translation();
 
-    float t = Collision::Circle_vs_circle(shape, enemy.shape, last_translation);
+//     float t = Collision::Circle_vs_circle(shape, enemy.shape, last_translation);
 
-    if (t == 2)
-        return;
+//     if (t == 2)
+//         return;
 
-    Retreat(t);
+//     Retreat(t);
 
-    Vector normal = last_translation.Start() - enemy.Center();
+//     Vector normal = last_translation.Start() - enemy.Center();
 
     // Vector 
 
@@ -79,11 +78,11 @@ void Player::Reflect(Player &enemy)
     // if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius() &&
     //     Vector::Dot(normal, velocity.Direction()) >= 0)
     //     return 2;
-}
+// }
 
 bool Player::Finish_moving()
 {
-    return translation_step_count == Param::translation_step;
+    return translation.Finish();
 }
 
 void Player::Update_life()
@@ -95,30 +94,30 @@ void Player::Update_life()
     decrease_life = false;
 }
 
-bool Player::Dead()
-{
-    return life == 0;
-}
+// bool Player::Dead()
+// {
+//     return life == 0;
+// }
 
 const ALLEGRO_COLOR &Player::Color() const
 {
     return color;
 }
 
-void Player::Reset_life()
-{
-    life = Param::life;
-}
+// void Player::Reset_life()
+// {
+//     life = Param::life;
+// }
 
 void Player::Update_translation(const Vector &start, const Vector &end)
 {
-    translation = (end - start) / Param::translation_step;
+    translation.Update_all(start, end);
 }
 
-void Player::Reset_translation_step_count()
-{
-    translation_step_count = 0;
-}
+// void Player::Reset_translation_step_count()
+// {
+//     translation_step_count = 0;
+// }
 
     // int Life() const { return life; }
     // void Life_will_be_decreased() { decrease_life = true; }
@@ -211,15 +210,20 @@ void Player::Reset_translation_step_count()
     //     }
     // }
 
-Line Player::Last_translation() const
-{
-    return Line(shape.Center() - translation, shape.Center());
-}
+// Line Player::Last_translation() const
+// {
+//     return Line(shape.Center() - translation, shape.Center());
+// }
 
-void Player::Retreat(float compared_to_latest_translation)
-{
-    shape.Translate(-compared_to_latest_translation * translation);
-}
+// void Player::Retreat(float compared_to_latest_translation)
+// {
+//     shape.Translate(-compared_to_latest_translation * translation);
+// }
+
+// const Circle &Player::Shape() const
+// {
+//     return shape;
+// }
 
 Player_magenta::Player_magenta(const Map& map)
 :
@@ -228,7 +232,7 @@ Player_magenta::Player_magenta(const Map& map)
     Circle c = shape;
     c.Center(map.Magenta_lives_start_position());
 
-    life_shapes.assign(Param::life, c);
+    std::fill(life_shapes.begin(), life_shapes.end(), c);
 
     // 0 -> 0
     // 1 -> 2u
@@ -244,7 +248,7 @@ Player_cyan::Player_cyan(const Map& map)
     Circle c = shape;
     c.Center(map.Cyan_lives_start_position());
 
-    life_shapes.assign(Param::life, c);
+    std::fill(life_shapes.begin(), life_shapes.end(), c);
 
     // 0 -> 0
     // 1 -> 2u

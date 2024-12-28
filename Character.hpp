@@ -12,23 +12,26 @@ public:
     void Draw() const;
     bool Contain(const Vector& point) const;
     bool Reach(const Vector& point) const;
+    
     const Vector& Center() const;
-    void Move();
-    void Reflect(Player& enemy);
-    static bool Finish_moving();
-    void Update_life();
-    bool Dead();
-    const ALLEGRO_COLOR& Color() const;
-    void Reset_life();
     static void Update_translation(const Vector& start, const Vector& end);
-    static void Reset_translation_step_count();
-    Line Last_translation() const;
-    void Retreat(float compared_to_latest_translation);
+    void Move();
+    static bool Finish_moving();
+    const ALLEGRO_COLOR& Color() const;
+
+    void Update_life();
+    // void Reflect(Player& enemy);
+    // bool Dead();
+    // void Reset_life();
+    
+    // const Circle& Shape() const;
+    // Line Last_translation() const;
+    // void Retreat(float compared_to_latest_translation);
+    // static void Reset_translation_step_count();
 
     // int Life() const;
     // void Life_will_be_decreased();
     // void Decrease_life();
-    // void Stop();
     // void Transform_color_to_vanish();
     // bool Color_equal_vanish();
     // const Circle& Shape() const;
@@ -40,8 +43,7 @@ protected:
     int life;
     std::vector<Circle> life_shapes;
     bool decrease_life;
-    inline static unsigned int translation_step_count = 0;
-    inline static Vector translation = Vector(0, 0);
+    inline static Translation translation;
 };
 
 class Player_magenta : public Player

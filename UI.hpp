@@ -2,6 +2,7 @@
 #include "Param.hpp"
 #include <string>
 #include <vector>
+#include <allegro5/allegro_font.h>
 #pragma once
 
 class One_line_text

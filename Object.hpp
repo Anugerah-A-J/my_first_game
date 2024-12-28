@@ -1,6 +1,5 @@
 #include "Shape.hpp"
 #include "Param.hpp"
-// #include "Character.hpp"
 #include <array>
 #include <vector>
 #pragma once
@@ -125,8 +124,8 @@ public:
     virtual Vector Cyan_spawn_position() const = 0;
     Vector Magenta_lives_start_position() const;
     Vector Cyan_lives_start_position() const;
+    // void Reflect_and_hurt(Player* const player) const;
     // void Reflect(Player* const player) const;
-    // void Hurt(Player* const player) const;
     // void Hide(Player* const player) const;
     // void Obstruct(Player* const player) const;
 protected:
