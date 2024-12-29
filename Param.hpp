@@ -27,14 +27,14 @@ class Param
 {
 public:
     static constexpr float unit_length = 10;
+    static constexpr int translation_step = 10;
+    static constexpr float reach_radius = 200;
     static constexpr float line_width = 1;
     // static constexpr float reach_radius    = window_height;
     static constexpr int life = 3;
     // static constexpr int life              = 1;
-    static constexpr int translation_step = unit_length;
     static constexpr int window_width = 1000;
     static constexpr int window_height = 800;
-    static constexpr float reach_radius = unit_length * translation_step * 2;
 
     // static float delta() { return 0.1f;
 

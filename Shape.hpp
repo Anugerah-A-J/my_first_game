@@ -66,7 +66,6 @@ public:
     void Draw(const ALLEGRO_COLOR& color, float line_width) const;
     Line Mirror_x(const Vector& point) const;
     Line Mirror_y(const Vector& point) const;
-    Vector Direction() const;
     Vector Center() const;
     void Center(const Vector& point);
 private:
@@ -151,19 +150,18 @@ private:
 class Translation
 {
 public:
-    Translation();
-    void Update_all(const Vector& start, const Vector& end);
+    Translation(const Vector& initial_position);
+    void Reset(const Vector& start, const Vector& end);
     bool Finish() const;
-    void Update_count();
-    const Vector& Displacement() const;
-    void Set_displacement_using_normal_unit_vector(const Vector& normal_unit);
-    Line Last_translation() const;
+    void Next();
+    const Vector Displacement() const;
+    void Reflected_by(const Vector &start, const Vector &normal_unit);
+    Line Latest_translation() const;
     void Stop();
 private:
     unsigned int translation_step_count;
-    unsigned int last_position_index;
     Vector displacement;
-    std::vector<Vector> position;
+    Line latest_translation;
 };
 
 class Collision

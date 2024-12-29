@@ -1,80 +1,16 @@
-cmake_minimum_required(VERSION 3.11)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED true)
-# project(my_first_game LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10)
+
 project(my_first_game)
 
-include(FetchContent)
-FetchContent_Declare(
-    allegro5
-    GIT_REPOSITORY https://github.com/liballeg/allegro5.git
-    GIT_TAG master
-    # GIT_TAG 5.2.8
-)
-FetchContent_MakeAvailable(allegro5)
-# FetchContent_GetProperties(allegro5)
-if(NOT allegro5_POPULATED)
-  FetchContent_Populate(allegro5)
-	if (MSVC)
-		set(SHARED ON)
-	else()
-		set(SHARED OFF)
-	endif()
-	set(WANT_TESTS OFF)
-	set(WANT_EXAMPLES OFF)
-	set(WANT_DEMO OFF)
-  add_subdirectory(${allegro5_SOURCE_DIR} ${allegro5_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+find_package(Allegro CONFIG REQUIRED)
 
-# Specify where to build Allegro
-set(ALLEGRO_BUILD_SHARED_LIBS ON CACHE BOOL "Build Allegro as shared libraries")
+# add_link_options(-static-libstdc++ -static-libgcc)
+add_executable(my_first_game Character.cpp Game.cpp main.cpp Object.cpp Shape.cpp)
 
-if (MSVC)
-    # warning level 4
-    add_compile_options(/W4)
+if(MSVC)
+    target_compile_options(my_first_game PRIVATE /W4 /WX)
 else()
-    # additional warnings and debug
-    add_compile_options(-Wall -Wextra -Wpedantic -g)
-endif()
-add_link_options(-static-libstdc++ -static-libgcc)
-
-# add_executable(my_first_game main.cpp Shape.cpp Game.cpp Object.cpp Character.cpp UI.cpp)
-add_executable(my_first_game main.cpp Shape.cpp Game.cpp Object.cpp Character.cpp)
-target_include_directories(my_first_game PUBLIC ${allegro5_SOURCE_DIR}/include)
-target_include_directories(my_first_game PUBLIC ${allegro5_BINARY_DIR}/include)
-# target_link_options(my_first_game INTERFACE "-static-libstdc++ and -static-libgcc")
-target_link_libraries(my_first_game LINK_PUBLIC allegro allegro_primitives allegro_font)
-
-# These include files are typically copied into the correct places via allegro's install
-# target, but we do it manually.
-file(COPY ${allegro5_SOURCE_DIR}/addons/font/allegro5/allegro_font.h
-	DESTINATION ${allegro5_SOURCE_DIR}/include/allegro5
-)
-file(COPY ${allegro5_SOURCE_DIR}/addons/primitives/allegro5/allegro_primitives.h
-	DESTINATION ${allegro5_SOURCE_DIR}/include/allegro5
-)
-
-# Specify where to copy the DLLs (e.g., in the same directory as your executable)
-if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro_font-5.2.dll")
-    add_custom_command(TARGET my_first_game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${allegro5_BINARY_DIR}/lib/allegro_font-5.2.dll
-            $<TARGET_FILE_DIR:my_first_game>/allegro_font-5.2.dll
-    )
+    target_compile_options(my_first_game PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
-if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro_primitives-5.2.dll")
-    add_custom_command(TARGET my_first_game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${allegro5_BINARY_DIR}/lib/allegro_primitives-5.2.dll
-            $<TARGET_FILE_DIR:my_first_game>/allegro_primitives-5.2.dll
-    )
-endif()
-
-if(EXISTS "${allegro5_BINARY_DIR}/lib/allegro-5.2.dll")
-    add_custom_command(TARGET my_first_game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${allegro5_BINARY_DIR}/lib/allegro-5.2.dll
-            $<TARGET_FILE_DIR:my_first_game>/allegro-5.2.dll
-    )
-endif()
+target_link_libraries(my_first_game PRIVATE allegro allegro_primitives allegro_font)

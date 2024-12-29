@@ -6,8 +6,9 @@ Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
     shape{center, Param::unit_length / 2},
     color{color},
     life{Param::life},
+    life_shapes{Param::life, shape},
     decrease_life{false},
-    life_shapes{Param::life, shape}
+    translation{center}
 {}
 
 void Player::Draw() const
@@ -43,13 +44,13 @@ void Player::Move(const Map& map, Player* const enemy)
     
     if (!Finish_moving())
     {
-        translation.Update_count();
+        translation.Next();
         shape.Translate(translation.Displacement());
         Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
     }
     if (!enemy->Finish_moving())
     {
-        enemy->translation.Update_count();
+        enemy->translation.Next();
         enemy->shape.Translate(translation.Displacement());
         Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
     }
@@ -122,7 +123,7 @@ const ALLEGRO_COLOR &Player::Color() const
 
 void Player::Update_translation(const Vector &start, const Vector &end)
 {
-    translation.Update_all(start, end);
+    translation.Reset(start, end);
 }
 
 // void Player::Reset_translation_step_count()

@@ -499,7 +499,8 @@ const Rectangle &Map::Fence_shape() const
     //     });
     // }
 
-Map::Map(const Vector& size, float the_number_of_wall, float the_number_of_glass, float the_number_of_xs, float the_number_of_tree)
+Map::Map(const Vector& size)
+// Map::Map(const Vector& size, float the_number_of_wall, float the_number_of_glass, float the_number_of_xs, float the_number_of_tree)
 :
     fence{
         (Vector(Param::window_width, Param::window_height) - size) / 2,
@@ -515,7 +516,8 @@ Map::Map(const Vector& size, float the_number_of_wall, float the_number_of_glass
 
 Map_1::Map_1()
 :
-    Map{Vector(720, 720), 0, 0, 0, 0}
+    Map{Vector(720, 720)}
+    // Map{Vector(720, 720), 0, 0, 0, 0}
 {
     // Arrange_walls();
     // Arrange_windows();

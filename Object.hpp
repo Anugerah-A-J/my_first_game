@@ -130,7 +130,8 @@ public:
     // void Hide(Player* const player) const;
     // void Obstruct(Player* const player) const;
 protected:
-    Map(const Vector& size, float the_number_of_wall, float the_number_of_xs, float the_number_of_glass, float the_number_of_tree);
+    Map(const Vector& size);
+    // Map(const Vector& size, float the_number_of_wall, float the_number_of_xs, float the_number_of_glass, float the_number_of_tree);
     Fence fence;
     Clipper clipper;
     // std::vector<Wall> wall;
