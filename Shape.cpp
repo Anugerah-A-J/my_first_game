@@ -608,7 +608,7 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     // ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
     // moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
     ts.at(min_t_index) = std::truncf(ts.at(min_t_index) * 10) / 10;
-    moving_circle.Translate((1 - ts.at(min_t_index)) * circle_translation.Displacement());
+    moving_circle.Translate((ts.at(min_t_index) - 1) * circle_translation.Displacement());
     circle_translation.Stop(); return;
 
     // reflection:
@@ -697,7 +697,7 @@ void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float
 
     float t1_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * s);
 
-    if (t1_num < 0 || t1_num > 1)
+    if (t1_num < 0 || t1_num > 1)wrong
     {
         t1 = 2;
         t2 = 2;
@@ -706,7 +706,7 @@ void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float
 
     float t2_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * v);
 
-    if (t2_num < 0 || t2_num > 1)
+    if (t2_num < 0 || t2_num > 1)wrong
     {
         t1 = 2;
         t2 = 2;
