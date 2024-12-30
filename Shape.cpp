@@ -594,9 +594,10 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
         return;
 
     // collision solving:
+    ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
     // moving_circle.Translate((1 - ts.at(min_t_index)) * circle_translation.Displacement());
     moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
-    // circle_translation.Stop(); return;
+    circle_translation.Stop(); return;
 
     // reflection:
     Vector normal_unit = Vector(0, 0);
@@ -623,12 +624,12 @@ void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1
     circle2.Translate((t - 1) * translation2.Displacement());
 
     // reflection
-    Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
+    // Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
+    // translation1.Reflected_by(circle1.Center(), normal_unit);
+    // translation2.Reflected_by(circle2.Center(), -normal_unit);
 
-    // translation1.Stop();
-    // translation2.Stop();
-    translation1.Reflected_by(circle1.Center(), normal_unit);
-    translation2.Reflected_by(circle2.Center(), -normal_unit);
+    translation1.Stop();
+    translation2.Stop();
 }
 
 // return 0 to 1 if intersect
@@ -709,10 +710,11 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
 
     Vector c = c2 - c1;
     Vector v = v2 - v1;
+    float r = circle1.Radius() + circle2.Radius();
 
     float a = v.Magsq();
 
-    float discriminant_square = Square(circle1.Radius() + circle2.Radius()) * a - Square(Vector::Dot(c, Matrix(0, 1, -1, 0) * v));
+    float discriminant_square = Square(r) * a - Square(Vector::Dot(c, Matrix(0, 1, -1, 0) * v));
 
     if (discriminant_square < 0)
         return 2;
@@ -721,17 +723,19 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
 
     float b = Vector::Dot(c, v);
 
+    std::vector<float> t {2, 2};
+
     float t1 = (-b + discriminant) / a;
 
     if (t1 >= 0 && t1 <= 1)
-        return t1;
+        t.front() = t1;
 
     float t2 = (-b - discriminant) / a;
 
     if (t2 >= 0 && t2 <= 1)
-        return t2;
+        t.back() = t2;
 
-    return 2;
+    return *std::min_element(t.begin(), t.end());
 }
 
 Translation::Translation(const Vector& initial_position)
@@ -747,7 +751,7 @@ void Translation::Reset(const Vector &start, const Vector &end)
 
     displacement = (end - start) / Param::translation_step;
 
-    latest_translation = Line(start, start + displacement);
+    latest_translation = Line(start, start);
 }
 
 bool Translation::Finish() const
