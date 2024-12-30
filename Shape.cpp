@@ -581,12 +581,23 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     rectangle.Translate(Vector(moving_circle.Radius(), moving_circle.Radius()));
     rectangle.Add_size_by(-2 * Vector(moving_circle.Radius(), moving_circle.Radius()));
 
-    std::vector<float> ts = {
-        Intersect(circle_translation.Latest_translation(), rectangle.Top()),
-        Intersect(circle_translation.Latest_translation(), rectangle.Right()),
-        Intersect(circle_translation.Latest_translation(), rectangle.Bottom()),
-        Intersect(circle_translation.Latest_translation(), rectangle.Left())
+    // std::vector<float> ts = {
+    //     Intersect(circle_translation.Latest_translation(), rectangle.Top()),
+    //     Intersect(circle_translation.Latest_translation(), rectangle.Right()),
+    //     Intersect(circle_translation.Latest_translation(), rectangle.Bottom()),
+    //     Intersect(circle_translation.Latest_translation(), rectangle.Left())
+    // };
+    std::vector<Line> rectangle_line
+    {
+        rectangle.Top(),
+        rectangle.Right(),
+        rectangle.Bottom(),
+        rectangle.Left()
     };
+    std::vector<float> ts = {0, 0, 0, 0};
+    float t_dummy;
+    for (unsigned int i = 0; i < 4; i++)
+        Intersect(circle_translation.Latest_translation(), ts.at(i), rectangle_line.at(i), t_dummy);
 
     unsigned int min_t_index = std::distance(ts.begin(), std::min_element(ts.begin(), ts.end()));
 
@@ -594,9 +605,10 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
         return;
 
     // collision solving:
-    ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
-    // moving_circle.Translate((1 - ts.at(min_t_index)) * circle_translation.Displacement());
-    moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
+    // ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
+    // moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
+    ts.at(min_t_index) = std::truncf(ts.at(min_t_index) * 10) / 10;
+    moving_circle.Translate((1 - ts.at(min_t_index)) * circle_translation.Displacement());
     circle_translation.Stop(); return;
 
     // reflection:
@@ -664,6 +676,45 @@ float Collision::Intersect(const Line& line1, const Line& line2)
     // float u = u_numerator / denominator;
 
     return t;
+}
+
+// assign 0 to 1 to t1 and t2 if intersect
+// assign 2 to t1 and t2 if not intersect
+void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float &t2)
+{
+    Vector v = line1.End() - line1.Start();
+    Vector s = line2.End() - line2.Start();
+    Vector d = line2.Start() - line1.Start();
+
+    float denom = Vector::Dot(v, Matrix(0, -1, 1, 0) * s);
+
+    if (denom == 0)
+    {
+        t1 = 2;
+        t2 = 2;
+        return;
+    }
+
+    float t1_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * s);
+
+    if (t1_num < 0 || t1_num > 1)
+    {
+        t1 = 2;
+        t2 = 2;
+        return;
+    }
+
+    float t2_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * v);
+
+    if (t2_num < 0 || t2_num > 1)
+    {
+        t1 = 2;
+        t2 = 2;
+        return;
+    }
+
+    t1 = t1_num / denom;
+    t2 = t2_num / denom;
 }
 
 // return 0 to 1 if intersect
