@@ -503,90 +503,12 @@ const Vector& Triangle::Vertex_3() const
     return vertex_3;
 }
 
-// float Collision::Circle_vs_line(const Circle& moving_circle, const Line& nonmoving_line, const Line& velocity)
-// {
-//     Line line_1 = nonmoving_line;
-//     Line line_2 = nonmoving_line;
-//     Circle start = moving_circle;
-//     Circle end = moving_circle;
-
-//     Vector translate = nonmoving_line.Direction().Unit().Swap() * moving_circle.Radius();
-
-//     line_1.Translate(translate);
-//     line_2.Translate(-translate);
-//     start.Center(nonmoving_line.Start());
-//     end.Center(nonmoving_line.End());
-
-//     std::vector<float> ts;
-//     ts.reserve(4);
-
-//     ts.push_back(Intersect(velocity, line_1));
-//     ts.push_back(Intersect(velocity, line_2));
-//     ts.push_back(Intersect(velocity, start));
-//     ts.push_back(Intersect(velocity, end));
-
-//     return *std::min_element(ts.begin(), ts.end());
-// }
-
-// float Collision::Circle_vs_rectangle(const Circle& moving_circle, const Rectangle& nonmoving_rectangle, const Line& velocity)
-// {
-//     // Vector rectangle_to_circle_past = velocity.Start()
-//     //                                   - nonmoving_rectangle.Closest_point_to(velocity.Start());
-
-//     // if (rectangle_to_circle_past.Magsq() <= moving_circle.Radius() * moving_circle.Radius()) {
-//     //     if (Vector::Dot(rectangle_to_circle_past, velocity.Direction()) >= 0)
-//     //         return 2; // angle <= abs(90)
-//     //     // if () return 0; // angle > abs(90)
-//     // }
-
-//     Line top = nonmoving_rectangle.Top();
-//     Line right = nonmoving_rectangle.Right();
-//     Line bottom = nonmoving_rectangle.Bottom();
-//     Line left = nonmoving_rectangle.Left();
-
-//     Circle top_left = moving_circle;
-//     Circle top_right = moving_circle;
-//     Circle bottom_right = moving_circle;
-//     Circle bottom_left = moving_circle;
-
-//     top_left.Center(nonmoving_rectangle.Top_left());
-//     top_right.Center(nonmoving_rectangle.Top_right());
-//     bottom_right.Center(nonmoving_rectangle.Bottom_right());
-//     bottom_left.Center(nonmoving_rectangle.Bottom_left());
-
-//     top.Translate(Vector(0, -moving_circle.Radius()));
-//     right.Translate(Vector(moving_circle.Radius(), 0));
-//     bottom.Translate(Vector(0, moving_circle.Radius()));
-//     left.Translate(Vector(-moving_circle.Radius(), 0));
-
-//     std::vector<float> ts;
-//     ts.reserve(8);
-
-//     ts.push_back(Intersect(velocity, top));
-//     ts.push_back(Intersect(velocity, right));
-//     ts.push_back(Intersect(velocity, bottom));
-//     ts.push_back(Intersect(velocity, left));
-
-//     ts.push_back(Intersect(velocity, top_left));
-//     ts.push_back(Intersect(velocity, top_right));
-//     ts.push_back(Intersect(velocity, bottom_right));
-//     ts.push_back(Intersect(velocity, bottom_left));
-
-//     return *std::min_element(ts.begin(), ts.end());
-// }
-
 void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translation &circle_translation, const Rectangle &nonmoving_rectangle)
 {
     Rectangle rectangle = nonmoving_rectangle;
     rectangle.Translate(Vector(moving_circle.Radius(), moving_circle.Radius()));
     rectangle.Add_size_by(-2 * Vector(moving_circle.Radius(), moving_circle.Radius()));
 
-    // std::vector<float> ts = {
-    //     Intersect(circle_translation.Latest_translation(), rectangle.Top()),
-    //     Intersect(circle_translation.Latest_translation(), rectangle.Right()),
-    //     Intersect(circle_translation.Latest_translation(), rectangle.Bottom()),
-    //     Intersect(circle_translation.Latest_translation(), rectangle.Left())
-    // };
     std::vector<Line> rectangle_line
     {
         rectangle.Top(),
@@ -606,12 +528,9 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
 
     // collision solving:
 
-    // ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
-    // moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
-    ts.at(min_t_index) = std::truncf(ts.at(min_t_index) * 10) / 10;
-    moving_circle.Translate((ts.at(min_t_index) - 1) * circle_translation.Displacement());
-    // circle_translation.Translate_to(moving_circle.Center());
-    // circle_translation.Stop(); return; // no need to compensate collision resolution in Translation when stopping
+    float retreat = std::floorf((ts.at(min_t_index) - 1) * 10) / 10;
+
+    moving_circle.Translate(retreat * circle_translation.Displacement());
 
     // reflection:
     
@@ -625,8 +544,6 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     circle_translation.Reflected_by(moving_circle.Center(), normal_unit);
 }
 
-// circle1 is the moving circle
-// circle2 is initially nonmoving, moved by circle1 if they collide
 void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1, Circle &circle2, Translation &translation2)
 {
     float t = Intersect(circle1, translation1, circle2, translation2);
@@ -636,22 +553,26 @@ void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1
 
     // collision solving
 
-    t = std::truncf(t * 10) / 10;
+    float retreat = std::floorf((t - 1) * 10) / 10;
 
-    circle1.Translate((t - 1) * translation1.Displacement());
+    // if (retreat < 0)
+    //     retreat = 0;
+
+    circle1.Translate(retreat * translation1.Displacement());
     // translation1.Translate_to(circle1.Center());
     
-    circle2.Translate((t - 1) * translation2.Displacement());
+    circle2.Translate(retreat * translation2.Displacement());
     // translation2.Translate_to(circle2.Center());
 
     // reflection
 
     Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
-    translation1.Reflected_by(circle1.Center(), normal_unit);
-    translation2.Reflected_by(circle2.Center(), -normal_unit);
+    // translation1.Reflected_by(circle1.Center(), normal_unit);
+    translation2.Reflected_by(circle2.Center(), normal_unit);
 
     // stop
-    // translation1.Stop();
+
+    translation1.Stop();
     // translation2.Stop();
 }
 

@@ -39,6 +39,8 @@ const Vector& Player::Center() const
 
 void Player::Move(const Map& map, Player* const enemy)
 {
+    // Move -> Collision check, solve and respond -> Draw
+
     if (Finish_moving() && enemy->Finish_moving())
         return;
     
