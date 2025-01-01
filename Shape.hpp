@@ -190,7 +190,6 @@ public:
         const Rectangle& nonmoving_rectangle
     );
 private:
-    static float Intersect(const Line& line1, const Line& line2);
     static void Intersect(const Line& line1, float& t1, const Line& line2, float& t2);
     static float Intersect(const Line& line, const Circle& circle);
     static float Intersect(

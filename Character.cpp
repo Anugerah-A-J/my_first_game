@@ -55,7 +55,7 @@ void Player::Move(const Map& map, Player* const enemy)
         Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
     }
 
-    // Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
+    Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
 }
 
 // void Player::Reflect(Player &enemy)

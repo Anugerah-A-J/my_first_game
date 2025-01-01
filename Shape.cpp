@@ -605,13 +605,16 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
         return;
 
     // collision solving:
+
     // ts.at(min_t_index) = std::ceilf(ts.at(min_t_index) * 10) / 10;
     // moving_circle.Translate(-ts.at(min_t_index) * circle_translation.Displacement());
     ts.at(min_t_index) = std::truncf(ts.at(min_t_index) * 10) / 10;
     moving_circle.Translate((ts.at(min_t_index) - 1) * circle_translation.Displacement());
-    circle_translation.Stop(); return;
+    // circle_translation.Translate_to(moving_circle.Center());
+    // circle_translation.Stop(); return; // no need to compensate collision resolution in Translation when stopping
 
     // reflection:
+    
     Vector normal_unit = Vector(0, 0);
 
     if (min_t_index % 2 == 0)
@@ -632,50 +635,24 @@ void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1
         return;
 
     // collision solving
+
+    t = std::truncf(t * 10) / 10;
+
     circle1.Translate((t - 1) * translation1.Displacement());
+    // translation1.Translate_to(circle1.Center());
+    
     circle2.Translate((t - 1) * translation2.Displacement());
+    // translation2.Translate_to(circle2.Center());
 
     // reflection
-    // Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
-    // translation1.Reflected_by(circle1.Center(), normal_unit);
-    // translation2.Reflected_by(circle2.Center(), -normal_unit);
 
-    translation1.Stop();
-    translation2.Stop();
-}
+    Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
+    translation1.Reflected_by(circle1.Center(), normal_unit);
+    translation2.Reflected_by(circle2.Center(), -normal_unit);
 
-// return 0 to 1 if intersect
-// return 2 if not intersect
-float Collision::Intersect(const Line& line1, const Line& line2)
-{
-    Vector A = line1.End() - line1.Start();
-    Vector B = line2.Start() - line2.End();
-    Vector C = line1.Start() - line2.Start();
-
-    float t_numerator = B.Y() * C.X() - B.X() * C.Y();
-    float u_numerator = C.Y() * A.X() - C.X() * A.Y();
-    float denominator = A.Y() * B.X() - A.X() * B.Y();
-
-    // // t < 0 and u < 0
-    if (denominator > 0 && (t_numerator < 0 || u_numerator < 0))
-        return 2;
-    if (denominator < 0 && (t_numerator > 0 || u_numerator > 0))
-        return 2;
-
-    // // t > 1 and u > 1
-    if (denominator > 0 && (t_numerator > denominator || u_numerator > denominator))
-        return 2;
-    if (denominator < 0 && (t_numerator < denominator || u_numerator < denominator))
-        return 2;
-
-    // if (equal(denominator, 0, 0.05f))
-    if (denominator == 0)
-        return 2;
-
-    float t = t_numerator / denominator;
-    // float u = u_numerator / denominator;
-
-    return t;
+    // stop
+    // translation1.Stop();
+    // translation2.Stop();
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -697,16 +674,36 @@ void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float
 
     float t1_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * s);
 
-    if (t1_num < 0 || t1_num > 1)wrong
+    // t1 < 0
+    if ((denom > 0 && t1_num < 0) || (denom < 0 && t1_num > 0))
     {
         t1 = 2;
         t2 = 2;
         return;
     }
 
+    // t1 > 1, where t1_num and denom same sign
+    if ((denom > 0 && denom < t1_num) || (denom < 0 && denom > t1_num))
+    {
+        t1 = 2;
+        t2 = 2;
+        return;
+    }
+
+    // repeat the process for t2
+
     float t2_num = Vector::Dot(d, Matrix(0, -1, 1, 0) * v);
 
-    if (t2_num < 0 || t2_num > 1)wrong
+    // t2 < 0
+    if ((denom > 0 && t2_num < 0) || (denom < 0 && t2_num > 0))
+    {
+        t1 = 2;
+        t2 = 2;
+        return;
+    }
+
+    // t2 > 1, where t2_num and denom same sign
+    if ((denom > 0 && denom < t2_num) || (denom < 0 && denom > t2_num))
     {
         t1 = 2;
         t2 = 2;
@@ -822,7 +819,10 @@ void Translation::Next()
 
 const Vector Translation::Displacement() const
 {
-    return displacement;
+    if (translation_step_count != Param::translation_step)
+        return displacement;
+
+    return Vector(0, 0);
 }
 
 void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
@@ -832,8 +832,6 @@ void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
         translation_step_count = 0;
 
         displacement = Param::reach_radius / Param::translation_step * normal_unit;
-
-        latest_translation = Line(start, start + displacement);
     }
     else
     {
@@ -842,6 +840,8 @@ void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
 
         displacement = tangential_displacement - normal_displacement;
     }
+
+    latest_translation = Line(start, start);
 }
 
 Line Translation::Latest_translation() const
@@ -853,3 +853,8 @@ void Translation::Stop()
 {
     translation_step_count = Param::translation_step;
 }
+
+// void Translation::Translate_to(const Vector& position)
+// {
+//     latest_translation = Line(position, position);
+// }
