@@ -1,8 +1,8 @@
 #include "Shape.hpp"
 #include "Param.hpp"
 #include <algorithm>
-#include <set>
 #include <math.h>
+#include <vector>
 
 bool Equal(float f1, float f2, float margin)
 {
@@ -526,9 +526,9 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     if (ts.at(min_t_index) == 2)
         return;
 
-    // collision solving:
+    // collision solving: make them don't touch each other.
 
-    float retreat = std::floorf((ts.at(min_t_index) - 1) * 10) / 10;
+    float retreat = ts.at(min_t_index) - 1 - 1 / circle_translation.Displacement().Magsq();
 
     moving_circle.Translate(retreat * circle_translation.Displacement());
 
@@ -544,35 +544,38 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     circle_translation.Reflected_by(moving_circle.Center(), normal_unit);
 }
 
-void Collision::Reflect_circle_circle(Circle &circle1, Translation &translation1, Circle &circle2, Translation &translation2)
+void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation_1, Circle &circle_2, Translation &translation_2)
 {
-    float t = Intersect(circle1, translation1, circle2, translation2);
+    float t = Intersect(circle_1, translation_1, circle_2, translation_2);
 
     if (t == 2)
         return;
 
     // collision solving
 
-    float retreat = std::floorf((t - 1) * 10) / 10;
+    float retreat_1 = translation_1.Finish() ? 0 : t - 1 - 1 / translation_1.Displacement().Magsq();
+    float retreat_2 = translation_2.Finish() ? 0 : t - 1 - 1 / translation_2.Displacement().Magsq();
 
     // if (retreat < 0)
     //     retreat = 0;
 
-    circle1.Translate(retreat * translation1.Displacement());
+    circle_1.Translate(retreat_1 * translation_1.Displacement());
     // translation1.Translate_to(circle1.Center());
     
-    circle2.Translate(retreat * translation2.Displacement());
+    circle_2.Translate(retreat_2 * translation_2.Displacement());
     // translation2.Translate_to(circle2.Center());
 
     // reflection
 
-    Vector normal_unit = (circle1.Center() - circle2.Center()).Unit();
+    // Vector normal_unit = (circle_1.Center() - circle_2.Center()).Unit();
     // translation1.Reflected_by(circle1.Center(), normal_unit);
-    translation2.Reflected_by(circle2.Center(), normal_unit);
+    // translation_2.Reflected_by(circle_2.Center(), -normal_unit);
+    // translation_2.Reflected_by(circle_2.Center(), Vector(0, -1));
+    translation_2.Reset(circle_2.Center(), Vector(0, 0));
 
     // stop
 
-    translation1.Stop();
+    translation_1.Stop();
     // translation2.Stop();
 }
 
@@ -756,6 +759,8 @@ void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
     }
     else
     {
+        // nd nu = |nd| cos th
+        // th = 0 -> nd = 0
         Vector normal_displacement = Vector::Dot(displacement, normal_unit) * normal_unit;
         Vector tangential_displacement = displacement - normal_displacement;
 

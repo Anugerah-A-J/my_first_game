@@ -1,5 +1,4 @@
 #include "Shape.hpp"
-#include "Param.hpp"
 #include <vector>
 #include "Object.hpp"
 #pragma once

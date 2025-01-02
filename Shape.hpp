@@ -1,5 +1,4 @@
 #include <allegro5/allegro_primitives.h>
-#include <vector>
 #pragma once
 
 bool Equal(float f1, float f2, float margin);
@@ -174,10 +173,10 @@ public:
     );
 
     static void Reflect_circle_circle(
-        Circle& circle1,
-        Translation& translation1,
-        Circle& circle2,
-        Translation& translation2
+        Circle& circle_1,
+        Translation& translation_1,
+        Circle& circle_2,
+        Translation& translation_2
     );
     static void Reflect_circle_line(
         Circle& moving_circle,
