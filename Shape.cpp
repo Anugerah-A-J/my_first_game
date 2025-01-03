@@ -224,6 +224,12 @@ void Line::Center(const Vector& point)
 {
     Translate(point - Center());
 }
+
+Vector Line::Direction() const
+{
+    return end - start;
+}
+
     
 Rectangle::Rectangle(const Vector& origin, const Vector& size)
 :
@@ -528,11 +534,14 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
 
     // collision solving: make them don't touch each other.
 
-    float retreat = ts.at(min_t_index) - 1 - 1 / circle_translation.Displacement().Magsq();
+    float retreat = ts.at(min_t_index) - 1 - 1 / circle_translation.Latest_translation().Length();
 
-    moving_circle.Translate(retreat * circle_translation.Displacement());
+    moving_circle.Translate(retreat * circle_translation.Latest_translation().Direction());
 
     // reflection:
+
+    if (circle_translation.Finish())
+        return;
     
     Vector normal_unit = Vector(0, 0);
 
@@ -553,16 +562,18 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
 
     // collision solving
 
-    float retreat_1 = translation_1.Finish() ? 0 : t - 1 - 1 / translation_1.Displacement().Magsq();
-    float retreat_2 = translation_2.Finish() ? 0 : t - 1 - 1 / translation_2.Displacement().Magsq();
+    float retreat_1 = t - 1 - 1 / translation_1.Latest_translation().Length();
+    float retreat_2 = t - 1 - 1 / translation_2.Latest_translation().Length();
+
+    translation finish -> retreat != 0
 
     // if (retreat < 0)
     //     retreat = 0;
 
-    circle_1.Translate(retreat_1 * translation_1.Displacement());
+    circle_1.Translate(retreat_1 * translation_1.Latest_translation().Direction());
     // translation1.Translate_to(circle1.Center());
     
-    circle_2.Translate(retreat_2 * translation_2.Displacement());
+    circle_2.Translate(retreat_2 * translation_2.Latest_translation().Direction());
     // translation2.Translate_to(circle2.Center());
 
     // reflection
@@ -571,12 +582,12 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
     // translation1.Reflected_by(circle1.Center(), normal_unit);
     // translation_2.Reflected_by(circle_2.Center(), -normal_unit);
     // translation_2.Reflected_by(circle_2.Center(), Vector(0, -1));
-    translation_2.Reset(circle_2.Center(), Vector(0, 0));
+    // translation_2.Reset(circle_2.Center(), Vector(0, 0));
 
     // stop
 
     translation_1.Stop();
-    // translation2.Stop();
+    translation_2.Stop();
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -733,20 +744,23 @@ bool Translation::Finish() const
 
 void Translation::Next()
 {
+    if (Finish())
+        return;
+
     translation_step_count++;
 
     Vector new_start = latest_translation.End();
     Vector new_end = new_start + displacement;
 
     latest_translation = Line(new_start, new_end);
+
+    if (Finish())
+        displacement = Vector(0, 0);
 }
 
 const Vector Translation::Displacement() const
 {
-    if (translation_step_count != Param::translation_step)
-        return displacement;
-
-    return Vector(0, 0);
+    return displacement;
 }
 
 void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
@@ -759,8 +773,6 @@ void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
     }
     else
     {
-        // nd nu = |nd| cos th
-        // th = 0 -> nd = 0
         Vector normal_displacement = Vector::Dot(displacement, normal_unit) * normal_unit;
         Vector tangential_displacement = displacement - normal_displacement;
 
@@ -778,6 +790,7 @@ Line Translation::Latest_translation() const
 void Translation::Stop()
 {
     translation_step_count = Param::translation_step;
+    displacement = Vector(0, 0);
 }
 
 // void Translation::Translate_to(const Vector& position)

@@ -67,6 +67,7 @@ public:
     Line Mirror_y(const Vector& point) const;
     Vector Center() const;
     void Center(const Vector& point);
+    Vector Direction() const;
 private:
     Vector start;
     Vector end;
