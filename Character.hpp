@@ -14,7 +14,7 @@ public:
     
     // The functions below are needed to move player
     const Vector& Center() const;
-    void Update_translation(const Vector& start, const Vector& end);
+    void Update_translation(const Vector& end);
     void Move(const Map& map, Player* const enemy);
     bool Finish_moving();
     const ALLEGRO_COLOR& Color() const;

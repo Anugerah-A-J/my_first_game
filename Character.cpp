@@ -122,9 +122,9 @@ const ALLEGRO_COLOR &Player::Color() const
 //     life = Param::life;
 // }
 
-void Player::Update_translation(const Vector &start, const Vector &end)
+void Player::Update_translation(const Vector &end)
 {
-    translation.Reset(start, end);
+    translation.Reset_all(end);
 }
 
 // void Player::Reset_translation_step_count()

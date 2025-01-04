@@ -50,7 +50,7 @@ Game::Game()
         {    
             aim.Hide();
             what_to_do = &moving;
-            active_player->Update_translation(aim.Center(), aim.End_point());
+            active_player->Update_translation(aim.End_point());
         }
     };
 

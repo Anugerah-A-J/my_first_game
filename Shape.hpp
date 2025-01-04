@@ -154,7 +154,8 @@ class Translation
 {
 public:
     Translation(Vector& start_position);
-    void Reset(const Vector& start, const Vector& end);
+    void Reset_all(const Vector& end);
+    void Reset_count();
     bool Finish() const;
     bool Just_finish() const;
     void Move(Circle& circle);

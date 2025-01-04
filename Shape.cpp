@@ -577,8 +577,6 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
     if (t == 2)
         return;
 
-    std::cout << t << '\n';
-    
     // collision solving
 
     if (!translation_1.Finish())
@@ -591,16 +589,16 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
 
     // reflection
 
-    // Vector normal_unit = (circle_1.Center() - circle_2.Center()).Unit();
+    Vector normal_unit = (circle_1.Center() - circle_2.Center()).Unit();
     // translation1.Reflected_by(circle1.Center(), normal_unit);
     // translation_2.Reflected_by(circle_2.Center(), -normal_unit);
     // translation_2.Reflected_by(circle_2.Center(), Vector(0, -1));
     // translation_2.Reset(circle_2.Center(), Vector(0, 0));
 
-    // stop
-
-    translation_1.Stop();
-    translation_2.Stop();
+    // translation_1.Stop();
+    translation_1.Reflected_by(normal_unit);
+    translation_2.Displacement() = Param::reach_radius / Param::translation_step * -normal_unit;
+    translation_2.Reset_count();
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -761,13 +759,16 @@ Translation::Translation(Vector& start_position)
     previous_position{start_position}
 {}
 
-void Translation::Reset(const Vector &start, const Vector &end)
+void Translation::Reset_all(const Vector &end)
 {
     step_count = 0;
 
-    ideal_displacement = (end - start) / Param::translation_step;
+    ideal_displacement = (end - previous_position) / Param::translation_step;
+}
 
-    previous_position = start;
+void Translation::Reset_count()
+{
+    step_count = 0;
 }
 
 bool Translation::Finish() const
