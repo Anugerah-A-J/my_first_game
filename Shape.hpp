@@ -155,11 +155,9 @@ class Translation
 public:
     Translation(Vector& start_position);
     void Reset_all(const Vector& end);
-    void Reset_count();
     bool Finish() const;
     bool Just_finish() const;
     void Move(Circle& circle);
-    Vector& Displacement();
     void Reflected_by(const Vector &normal_unit);
     Line Latest() const;
     void Stop();

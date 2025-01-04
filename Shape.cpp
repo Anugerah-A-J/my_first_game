@@ -1,7 +1,6 @@
 #include "Shape.hpp"
 #include "Param.hpp"
 #include <algorithm>
-#include <iostream>
 #include <math.h>
 #include <vector>
 
@@ -581,24 +580,17 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
 
     if (!translation_1.Finish())
         circle_1.Translate((t - 1 - 1 / translation_1.Latest().Length()) * translation_1.Latest().Direction());
-    // translation1.Translate_to(circle1.Center());
     
     if (!translation_2.Finish())
         circle_2.Translate((t - 1 - 1 / translation_2.Latest().Length()) * translation_2.Latest().Direction());
-    // translation2.Translate_to(circle2.Center());
 
     // reflection
 
     Vector normal_unit = (circle_1.Center() - circle_2.Center()).Unit();
-    // translation1.Reflected_by(circle1.Center(), normal_unit);
-    // translation_2.Reflected_by(circle_2.Center(), -normal_unit);
-    // translation_2.Reflected_by(circle_2.Center(), Vector(0, -1));
-    // translation_2.Reset(circle_2.Center(), Vector(0, 0));
 
     // translation_1.Stop();
     translation_1.Reflected_by(normal_unit);
-    translation_2.Displacement() = Param::reach_radius / Param::translation_step * -normal_unit;
-    translation_2.Reset_count();
+    translation_2.Reflected_by(-normal_unit);
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -702,11 +694,6 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
     Vector v1 = translation1.Latest().Direction();
     Vector v2 = translation2.Latest().Direction();
 
-    // std::cout << "c1 " << c1.X() << ' ' << c1.Y() << ' ';
-    // std::cout << "c2 " << c2.X() << ' ' << c2.Y() << ' ';
-    // std::cout << "v1 " << v1.X() << ' ' << v1.Y() << ' ';
-    // std::cout << "v2 " << v2.X() << ' ' << v2.Y() << ' ';
-
     Vector c = c2 - c1;
     Vector v = v2 - v1;
     float r = circle1.Radius() + circle2.Radius();
@@ -714,20 +701,12 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
     float a = v.Magsq();
 
     if (a == 0)
-    {
-        // std::cout << "v2 == v1 = " << (v2 == v1) << '\n';
-        // std::cout << "v2 == 0 = " << (v2 == Vector(0, 0)) << '\n';
-        std::cout << "a == 0 " << c.Magsq() - r << '\n';
         return 2;
-    }
 
     float discriminant_square = Square(r) * a - Square(Vector::Dot(c, Matrix(0, 1, -1, 0) * v));
 
     if (discriminant_square < 0)
-    {
-        std::cout << "discriminant_square < 0 " << c.Magsq() - r << '\n';
         return 2;
-    }
 
     float discriminant = sqrtf(discriminant_square);
 
@@ -736,18 +715,15 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
     std::vector<float> t {2, 2};
 
     float t_num = -b + discriminant;
-    std::cout <<t_num << ' ';
 
     if (t_num >= 0 && t_num <= a)
         t.front() = t_num / a;
 
     t_num = -b - discriminant;
-    std::cout <<t_num << ' ';
 
     if (t_num >= 0 && t_num <= a)
         t.back() = t_num / a;
 
-    std::cout << "end " << c.Magsq() - r << '\n';
     return *std::min_element(t.begin(), t.end());
 }
 
@@ -764,11 +740,6 @@ void Translation::Reset_all(const Vector &end)
     step_count = 0;
 
     ideal_displacement = (end - previous_position) / Param::translation_step;
-}
-
-void Translation::Reset_count()
-{
-    step_count = 0;
 }
 
 bool Translation::Finish() const
@@ -798,28 +769,20 @@ void Translation::Move(Circle& circle)
     circle.Translate(ideal_displacement);
 }
 
-Vector& Translation::Displacement()
-{
-    return ideal_displacement;
-}
-
 void Translation::Reflected_by(const Vector &normal_unit)
 {
-    // if (Finish())
-    // {
-    //     translation_step_count = 0;
-    //
-    //     displacement = Param::reach_radius / Param::translation_step * normal_unit;
-    // }
-    // else
-    // {
+    if (Finish())
+    {
+        step_count = 0;
+        ideal_displacement = Param::reach_radius / Param::translation_step * normal_unit;
+    }
+    else
+    {
         Vector normal_displacement = Vector::Dot(ideal_displacement, normal_unit) * normal_unit;
         Vector tangential_displacement = ideal_displacement - normal_displacement;
 
         ideal_displacement = tangential_displacement - normal_displacement;
-    // }
-
-    // latest_translation = Line(start, start);
+    }
 }
 
 Line Translation::Latest() const

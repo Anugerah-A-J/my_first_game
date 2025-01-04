@@ -1,5 +1,6 @@
 #include "Object.hpp"
-#include "Character.hpp"
+#include "Param.hpp"
+#include "Shape.hpp"
 
 Aim::Aim()
 : 
@@ -182,31 +183,39 @@ const Rectangle &Fence::Shape() const
 //     dying_pawns.insert(&moving_pawn);
 // }
 
-// class Wall
-// {
-// public:
-//     Wall(const Vector& origin, const Vector& size)
-//     :
-//         shape{origin, size}
-//     {}
+Wall::Wall(const Vector& origin, const Vector& size)
+:
+    shape{origin, size}
+{}
 
-//     void Draw() const
-//     {
-//         shape.Draw(Param::yellow);
-//     }
+void Wall::Draw() const
+{
+    shape.Draw(Param::yellow);
+}
 
-//     const Rectangle& Shape() const
-//     {
-//         return shape;
-//     }
+const Rectangle& Wall::Shape() const
+{
+    return shape;
+}
 
-//     void Center(const Vector& point)
-//     {
-//         shape.Center(point);
-//     }
-// private:
-//     Rectangle shape;
-// };
+void Wall::Center(const Vector& point)
+{
+    shape.Center(point);
+}
+
+Wall Wall::Mirror_x(const Vector& point) const
+{
+    Wall temp = *this;
+    temp.shape = shape.Mirror_x(point);
+    return temp;
+}
+
+Wall Wall::Mirror_y(const Vector& point) const
+{
+    Wall temp = *this;
+    temp.shape = shape.Mirror_y(point);
+    return temp;
+}
 
 // class Tree
 // {
@@ -403,11 +412,11 @@ void Map::Draw() const
 {
     clipper.Draw();
     fence.Draw();
+    for (const Wall& w : wall)
+        w.Draw();
+
     // for (const Glass& g : glass)
     //     g.Draw();
-
-    // for (const Wall& w : wall)
-    //     w.Draw();
 
     // for (const Tree& t : tree)
     //     t.Draw();
@@ -429,6 +438,11 @@ Vector Map::Cyan_lives_start_position() const
 const Rectangle &Map::Fence_shape() const
 {
     return fence.Shape();
+}
+
+const Rectangle& Map::Wall_shape(unsigned int index) const
+{
+    return wall.at(index).Shape();
 }
 
 // void Map::Reflect_and_hurt(Player *const player) const
@@ -519,7 +533,7 @@ Map_1::Map_1()
     Map{Vector(720, 720)}
     // Map{Vector(720, 720), 0, 0, 0, 0}
 {
-    // Arrange_walls();
+    Arrange_wall();
     // Arrange_windows();
     // Arrange_xs();
     // Arrange_trees();
@@ -535,15 +549,19 @@ Vector Map_1::Cyan_spawn_position() const
     return (fence.Top_left() + fence.Bottom_left()) / 2 + Vector(1.5, 0) * Param::unit_length;
 }
 
-    // void Arrange_walls()
-    // {
-    //     walls.emplace_back(
-    //         fence.Origin(),
-    //         Vector(fence.Height() / 3, fence.Height() / 3)
-    //     );
+void Map_1::Arrange_wall()
+{
+    float temp = fence.Height() / 5;
 
-    //     walls.front().Center(fence.Center());
-    // }
+    wall.emplace_back(
+        fence.Origin() + Vector(temp, temp),
+        Vector(temp, temp)
+    );
+
+    wall.push_back(wall.front().Mirror_y(fence.Center()));
+    wall.push_back(wall.front().Mirror_x(fence.Center()));
+    wall.push_back(wall.back().Mirror_y(fence.Center()));
+}
 
     // void Arrange_windows()
     // {

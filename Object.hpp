@@ -1,6 +1,4 @@
 #include "Shape.hpp"
-#include "Param.hpp"
-#include <array>
 #include <vector>
 #pragma once
 
@@ -63,16 +61,18 @@ private:
     float line_width;
 };
 
-// class Wall
-// {
-// public:
-//     Wall(const Vector& origin, const Vector& size);
-//     void Draw() const;
-//     const Rectangle& Shape() const;
-//     void Center(const Vector& point);
-// private:
-//     Rectangle shape;
-// };
+class Wall
+{
+public:
+    Wall(const Vector& origin, const Vector& size);
+    void Draw() const;
+    const Rectangle& Shape() const;
+    void Center(const Vector& point);
+    Wall Mirror_x(const Vector& point) const;
+    Wall Mirror_y(const Vector& point) const;
+private:
+    Rectangle shape;
+};
 
 // class Tree
 // {
@@ -125,6 +125,7 @@ public:
     Vector Magenta_lives_start_position() const;
     Vector Cyan_lives_start_position() const;
     const Rectangle& Fence_shape() const;
+    const Rectangle& Wall_shape(unsigned int index) const;
     // void Reflect_and_hurt(Player* const player) const;
     // void Reflect(Player* const player) const;
     // void Hide(Player* const player) const;
@@ -134,7 +135,7 @@ protected:
     // Map(const Vector& size, float the_number_of_wall, float the_number_of_xs, float the_number_of_glass, float the_number_of_tree);
     Fence fence;
     Clipper clipper;
-    // std::vector<Wall> wall;
+    std::vector<Wall> wall;
     // std::vector<X> xs;
     // std::vector<Glass> glass;
     // std::vector<Tree> tree;
@@ -147,7 +148,7 @@ public:
     Vector Magenta_spawn_position() const override;
     Vector Cyan_spawn_position() const override;
 private:
-    // void Arrange_walls();
+    void Arrange_wall();
     // void Arrange_windows();
     // void Arrange_xs();
     // void Arrange_trees();

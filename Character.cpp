@@ -1,4 +1,5 @@
 #include "Character.hpp"
+#include "Param.hpp"
 #include <algorithm>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
@@ -48,50 +49,12 @@ void Player::Move(const Map& map, Player* const enemy)
     enemy->translation.Move(enemy->shape);
 
     if (!Finish_moving())
-    {
         Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
-    }
     if (!enemy->Finish_moving())
-    {
         Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
-    }
 
     Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
 }
-
-// void Player::Reflect(Player &enemy)
-// {
-//     Line last_translation = Last_translation();
-
-//     float t = Collision::Circle_vs_circle(shape, enemy.shape, last_translation);
-
-//     if (t == 2)
-//         return;
-
-//     Retreat(t);
-
-//     Vector normal = last_translation.Start() - enemy.Center();
-
-    // Vector 
-
-    // Collision::reflect(Shape& shape, float factor, const Vector& normal)
-
-	// Vector normal_translation{ shape.get_translation_per_frame() * normal * normal };
-	// Vector tangential_translation{ shape.get_translation_per_frame() - normal_translation };
-
-	// if (normal == shape.get_translation_per_frame())
-	// 	shape.set_translation_per_frame(
-	// 		-1 * shape.get_translation_per_frame()
-	// 	);
-	// else
-	// 	shape.set_translation_per_frame(
-	// 		(tangential_translation - normal_translation) * factor
-	// 	);
-
-    // if (normal.Magsq() <= 4 * moving_circle.Radius() * moving_circle.Radius() &&
-    //     Vector::Dot(normal, velocity.Direction()) >= 0)
-    //     return 2;
-// }
 
 bool Player::Finish_moving()
 {
@@ -158,8 +121,6 @@ void Player::Update_translation(const Vector &end)
     //     : shape{center, Param::unit_length / 2}
     //     , color{color}
     // {}
-
-    // void Draw() const { shape.Draw(color); }
 
     // bool Contain(const Vector& point) const { return shape.Contain(point); }
 
