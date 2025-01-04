@@ -29,6 +29,7 @@ public:
     void operator+=(const Vector& v);
     void operator-=(const Vector& v);
     bool operator==(const Vector& v) const;
+    bool operator!=(const Vector& v) const;
     Vector Swap() const;
     Vector Unit() const;
     Vector Abs() const;
@@ -121,6 +122,7 @@ public:
     void Add_radius_by(float value);
     bool Contain(const Vector& point) const;
     const Vector& Center() const;
+    Vector& Center();
     void Center(const Vector& position);
     float Radius() const;
     Circle Mirror_x(const Vector& point) const;
@@ -151,20 +153,20 @@ private:
 class Translation
 {
 public:
-    Translation(const Vector& initial_position);
+    Translation(Vector& start_position);
     void Reset(const Vector& start, const Vector& end);
     bool Finish() const;
-    void Next();
-    const Vector& Displacement() const;
-    void Displacement(const Vector& set_value);
+    bool Just_finish() const;
+    void Move(Circle& circle);
+    Vector& Displacement();
     void Reflected_by(const Vector &normal_unit);
-    const Line& Latest_translation() const;
+    Line Latest() const;
     void Stop();
-    void End(const Vector& end);
 private:
-    unsigned int translation_step_count;
-    Vector displacement;
-    Line latest_translation;
+    unsigned int step_count;
+    Vector ideal_displacement; // without considering collision resolving
+    Vector& current_position;
+    Vector previous_position;
 };
 
 class Collision

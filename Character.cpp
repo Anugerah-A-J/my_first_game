@@ -1,6 +1,5 @@
 #include "Character.hpp"
 #include <algorithm>
-#include <iostream>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
 :
@@ -9,7 +8,7 @@ Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
     life{Param::life},
     life_shapes{Param::life, shape},
     decrease_life{false},
-    translation{center}
+    translation{shape.Center()}
 {}
 
 void Player::Draw() const
@@ -45,21 +44,16 @@ void Player::Move(const Map& map, Player* const enemy)
     if (Finish_moving() && enemy->Finish_moving())
         return;
     
+    translation.Move(shape);
+    enemy->translation.Move(enemy->shape);
+
     if (!Finish_moving())
     {
-        shape.Translate(translation.Displacement());
-        translation.Next();
         Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
     }
     if (!enemy->Finish_moving())
     {
-        enemy->shape.Translate(translation.Displacement());
-        enemy->translation.Next();
         Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
-        std::cout << enemy->translation.Finish() << '|'
-        << enemy->translation.Displacement().X() << '|'
-        << enemy->translation.Displacement().Y() << '|'
-        << '\n';
     }
 
     Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
