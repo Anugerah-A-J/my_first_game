@@ -61,6 +61,7 @@ public:
     void Translate(const Vector& displacement);
     const Vector& Start() const;
     const Vector& End() const;
+    void End(const Vector& end);
     float Length() const;
     void Draw(const ALLEGRO_COLOR& color, float line_width) const;
     Line Mirror_x(const Vector& point) const;
@@ -154,10 +155,12 @@ public:
     void Reset(const Vector& start, const Vector& end);
     bool Finish() const;
     void Next();
-    const Vector Displacement() const;
-    void Reflected_by(const Vector &start, const Vector &normal_unit);
-    Line Latest_translation() const;
+    const Vector& Displacement() const;
+    void Displacement(const Vector& set_value);
+    void Reflected_by(const Vector &normal_unit);
+    const Line& Latest_translation() const;
     void Stop();
+    void End(const Vector& end);
 private:
     unsigned int translation_step_count;
     Vector displacement;

@@ -1,6 +1,7 @@
 #include "Shape.hpp"
 #include "Param.hpp"
 #include <algorithm>
+#include <iostream>
 #include <math.h>
 #include <vector>
 
@@ -184,6 +185,11 @@ const Vector& Line::Start() const
 const Vector& Line::End() const
 {
     return end;
+}
+
+void Line::End(const Vector& end)
+{
+    this->end = end;
 }
 
 float Line::Length() const
@@ -532,16 +538,17 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     if (ts.at(min_t_index) == 2)
         return;
 
-    // collision solving: make them don't touch each other.
+    // collision solving: make them don't touch each other. Give space of 1 pixel between them.
 
     float retreat = ts.at(min_t_index) - 1 - 1 / circle_translation.Latest_translation().Length();
 
     moving_circle.Translate(retreat * circle_translation.Latest_translation().Direction());
-
-    // reflection:
+    circle_translation.End(moving_circle.Center());
 
     if (circle_translation.Finish())
         return;
+
+    // reflection:
     
     Vector normal_unit = Vector(0, 0);
 
@@ -550,7 +557,7 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
     else
         normal_unit = Vector(1, 0);
 
-    circle_translation.Reflected_by(moving_circle.Center(), normal_unit);
+    circle_translation.Reflected_by(normal_unit);
 }
 
 void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation_1, Circle &circle_2, Translation &translation_2)
@@ -560,20 +567,22 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
     if (t == 2)
         return;
 
+    std::cout << t << '\n';
+    
     // collision solving
 
-    float retreat_1 = t - 1 - 1 / translation_1.Latest_translation().Length();
-    float retreat_2 = t - 1 - 1 / translation_2.Latest_translation().Length();
-
-    translation finish -> retreat != 0
-
-    // if (retreat < 0)
-    //     retreat = 0;
-
-    circle_1.Translate(retreat_1 * translation_1.Latest_translation().Direction());
+    if (!translation_1.Finish())
+    {
+        circle_1.Translate((t - 1 - 1 / translation_1.Latest_translation().Length()) * translation_1.Latest_translation().Direction());
+        translation_1.End(circle_1.Center());
+    }
     // translation1.Translate_to(circle1.Center());
     
-    circle_2.Translate(retreat_2 * translation_2.Latest_translation().Direction());
+    if (!translation_2.Finish())
+    {
+        circle_2.Translate((t - 1 - 1 / translation_2.Latest_translation().Length()) * translation_2.Latest_translation().Direction());
+        translation_2.End(circle_2.Center());
+    }
     // translation2.Translate_to(circle2.Center());
 
     // reflection
@@ -686,10 +695,10 @@ float Collision::Intersect(const Line& line, const Circle& circle)
 // return 2 if not intersect
 float Collision::Intersect(const Circle &circle1, const Translation &translation1, const Circle &circle2, const Translation &translation2)
 {
-    Vector c1 = translation1.Latest_translation().Start();
-    Vector c2 = translation2.Latest_translation().Start();
-    Vector v1 = translation1.Displacement();
-    Vector v2 = translation2.Displacement();
+    Vector c1 = translation1.Finish() ? translation1.Latest_translation().End() : translation1.Latest_translation().Start();
+    Vector c2 = translation2.Finish() ? translation2.Latest_translation().End() : translation2.Latest_translation().Start();
+    Vector v1 = translation1.Finish() ? Vector(0, 0) : translation1.Latest_translation().End() - translation1.Latest_translation().Start();
+    Vector v2 = translation2.Finish() ? Vector(0, 0) : translation2.Latest_translation().End() - translation2.Latest_translation().Start();
 
     Vector c = c2 - c1;
     Vector v = v2 - v1;
@@ -708,15 +717,15 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
 
     std::vector<float> t {2, 2};
 
-    float t1 = (-b + discriminant) / a;
+    float t1_num = -b + discriminant;
 
-    if (t1 >= 0 && t1 <= 1)
-        t.front() = t1;
+    if (t1_num >= 0 && t1_num <= 1)
+        t.front() = t1_num / a;
 
-    float t2 = (-b - discriminant) / a;
+    float t2_num = -b - discriminant;
 
-    if (t2 >= 0 && t2 <= 1)
-        t.back() = t2;
+    if (t2_num >= 0 && t2_num <= 1)
+        t.back() = t2_num / a;
 
     return *std::min_element(t.begin(), t.end());
 }
@@ -744,45 +753,44 @@ bool Translation::Finish() const
 
 void Translation::Next()
 {
-    if (Finish())
-        return;
-
     translation_step_count++;
 
     Vector new_start = latest_translation.End();
     Vector new_end = new_start + displacement;
 
     latest_translation = Line(new_start, new_end);
-
-    if (Finish())
-        displacement = Vector(0, 0);
 }
 
-const Vector Translation::Displacement() const
+const Vector& Translation::Displacement() const
 {
     return displacement;
 }
 
-void Translation::Reflected_by(const Vector &start, const Vector &normal_unit)
+void Translation::Displacement(const Vector& set_value)
 {
-    if (Finish())
-    {
-        translation_step_count = 0;
+    displacement = set_value;
+}
 
-        displacement = Param::reach_radius / Param::translation_step * normal_unit;
-    }
-    else
-    {
+void Translation::Reflected_by(const Vector &normal_unit)
+{
+    // if (Finish())
+    // {
+    //     translation_step_count = 0;
+    //
+    //     displacement = Param::reach_radius / Param::translation_step * normal_unit;
+    // }
+    // else
+    // {
         Vector normal_displacement = Vector::Dot(displacement, normal_unit) * normal_unit;
         Vector tangential_displacement = displacement - normal_displacement;
 
         displacement = tangential_displacement - normal_displacement;
-    }
+    // }
 
-    latest_translation = Line(start, start);
+    // latest_translation = Line(start, start);
 }
 
-Line Translation::Latest_translation() const
+const Line& Translation::Latest_translation() const
 {
     return latest_translation;
 }
@@ -790,7 +798,11 @@ Line Translation::Latest_translation() const
 void Translation::Stop()
 {
     translation_step_count = Param::translation_step;
-    displacement = Vector(0, 0);
+}
+
+void Translation::End(const Vector& end)
+{
+    latest_translation.End(end);
 }
 
 // void Translation::Translate_to(const Vector& position)
