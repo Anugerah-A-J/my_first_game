@@ -125,7 +125,7 @@ public:
     Vector Magenta_lives_start_position() const;
     Vector Cyan_lives_start_position() const;
     const Rectangle& Fence_shape() const;
-    const Rectangle& Wall_shape(unsigned int index) const;
+    const std::vector<Wall>& Get_wall() const;
     // void Reflect_and_hurt(Player* const player) const;
     // void Reflect(Player* const player) const;
     // void Hide(Player* const player) const;

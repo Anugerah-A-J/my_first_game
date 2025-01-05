@@ -153,7 +153,7 @@ private:
 class Translation
 {
 public:
-    Translation(Vector& start_position);
+    explicit Translation(Vector& start_position);
     void Reset_all(const Vector& end);
     bool Finish() const;
     bool Just_finish() const;
@@ -171,35 +171,11 @@ private:
 class Collision
 {
 public:
-    static void Reflect_circle_inside_rectangle(
-        Circle& moving_circle,
-        Translation& circle_translation,
-        const Rectangle& nonmoving_rectangle
-    );
-
-    static void Reflect_circle_circle(
-        Circle& circle_1,
-        Translation& translation_1,
-        Circle& circle_2,
-        Translation& translation_2
-    );
-    static void Reflect_circle_line(
-        Circle& moving_circle,
-        Translation& circle_translation,
-        const Line& nonmoving_line
-    );
-    static void Reflect_circle_rectangle(
-        Circle& moving_circle,
-        Translation& circle_translation,
-        const Rectangle& nonmoving_rectangle
-    );
+    static void Reflect_circle_inside_rectangle(Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
+    static void Reflect_circle_circle(Circle& circle_1, Translation& translation_1, Circle& circle_2, Translation& translation_2);
+    static void Reflect_circle_rectangle(Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
 private:
     static void Intersect(const Line& line1, float& t1, const Line& line2, float& t2);
-    static float Intersect(const Line& line, const Circle& circle);
-    static float Intersect(
-        const Circle& circle1,
-        const Translation& translation1,
-        const Circle& circle2,
-        const Translation& translation2
-    );
+    static float Intersect(const Circle& circle1, const Translation& translation1, const Circle& circle2, const Translation& translation2);
+    static float Intersect(const Circle& moving_circle, const Translation& translation, Circle& nonmoving_circle);
 };

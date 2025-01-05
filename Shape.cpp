@@ -538,7 +538,8 @@ void Collision::Reflect_circle_inside_rectangle(Circle &moving_circle, Translati
         rectangle.Bottom(),
         rectangle.Left()
     };
-    std::vector<float> ts = {0, 0, 0, 0};
+    std::vector<float> ts;
+    ts.assign(4, 2);
     float t_dummy;
     for (unsigned int i = 0; i < 4; i++)
         Intersect(circle_translation.Latest(), ts.at(i), rectangle_line.at(i), t_dummy);
@@ -591,6 +592,102 @@ void Collision::Reflect_circle_circle(Circle &circle_1, Translation &translation
     // translation_1.Stop();
     translation_1.Reflected_by(normal_unit);
     translation_2.Reflected_by(-normal_unit);
+}
+
+void Collision::Reflect_circle_rectangle(Circle &moving_circle, Translation &circle_translation, const Rectangle &nonmoving_rectangle)
+{
+    Circle top_left = moving_circle;
+    Circle top_right = moving_circle;
+    Circle bottom_left = moving_circle;
+    Circle bottom_right = moving_circle;
+
+    top_left.Center(nonmoving_rectangle.Top_left());
+    top_right.Center(nonmoving_rectangle.Top_right());
+    bottom_left.Center(nonmoving_rectangle.Bottom_left());
+    bottom_right.Center(nonmoving_rectangle.Bottom_right());
+
+    std::vector<Circle*> rectangle_corner
+    {
+        &top_left,
+        &bottom_left,
+        &top_right,
+        &bottom_right
+    };
+
+    for (Circle* c : rectangle_corner)
+        c->Draw(Param::white, Param::line_width);
+
+    std::vector<float> ts;
+    ts.assign(8, 2);
+
+    for (unsigned int i = 0; i != 4; i++)
+        ts.at(i) = Intersect(moving_circle, circle_translation, *rectangle_corner.at(i));
+
+    Line top = nonmoving_rectangle.Top();
+    Line left = nonmoving_rectangle.Left();
+    Line bottom = nonmoving_rectangle.Bottom();
+    Line right = nonmoving_rectangle.Right();
+
+    top.Translate(Vector(0, -moving_circle.Radius()));
+    left.Translate(Vector(-moving_circle.Radius(), 0));
+    bottom.Translate(Vector(0, moving_circle.Radius()));
+    right.Translate(Vector(moving_circle.Radius(), 0));
+
+    std::vector<const Line*> rectangle_side
+    {
+        &top,
+        &bottom,
+        &left,
+        &right
+    };
+
+    for (const Line* l : rectangle_side)
+        l->Draw(Param::white, Param::line_width);
+
+    float t_dum;
+
+    for (unsigned int i = 4; i != ts.size(); i++)
+        Intersect(circle_translation.Latest(), ts.at(i), *rectangle_side.at(i - 4), t_dum);
+
+    unsigned int min_t_index = std::distance(ts.begin(), std::min_element(ts.begin(), ts.end()));
+
+    if (ts.at(min_t_index) == 2)
+        return;
+
+    // collision solving: make them don't touch each other. Give space of 1 pixel between them.
+
+    float retreat = ts.at(min_t_index) - 1 - 1 / circle_translation.Latest().Length();
+
+    moving_circle.Translate(retreat * circle_translation.Latest().Direction());
+
+    if (circle_translation.Just_finish())
+        return;
+
+    // reflection:
+    
+    Vector normal_unit = Vector(0, 0);
+
+    switch (min_t_index)
+    {
+    case 0:
+    case 1:
+        normal_unit = (nonmoving_rectangle.Top_left() - nonmoving_rectangle.Bottom_left()).Unit();
+        break;
+    case 2:
+    case 3:
+        normal_unit = (nonmoving_rectangle.Top_right() - nonmoving_rectangle.Bottom_right()).Unit();
+        break;
+    case 4:
+    case 5:
+        normal_unit = Vector(0, 1);
+        break;
+    case 6:
+    case 7:
+        normal_unit = Vector(1, 0);
+        break;
+    }
+
+    circle_translation.Reflected_by(normal_unit);
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -654,39 +751,6 @@ void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float
 
 // return 0 to 1 if intersect
 // return 2 if not intersect
-float Collision::Intersect(const Line& line, const Circle& circle)
-{
-    Vector X = line.Start() - circle.Center();
-    Vector Y = line.End() - line.Start();
-
-    float a = Vector::Dot(Y, Y);
-    float b = 2 * Vector::Dot(X, Y);
-    float c = Vector::Dot(X, X) - circle.Radius() * circle.Radius();
-
-    float discriminant = b * b - 4 * a * c;
-
-    if (discriminant < 0) {
-        return 2;
-    } else {
-        discriminant = sqrtf(discriminant);
-
-        // Compute min and max solutions of t
-        float t_min = (-b - discriminant) / (2 * a);
-        float t_max = (-b + discriminant) / (2 * a);
-
-        // Check whether either t is within bounds of segment
-        if (t_min >= 0 && t_min <= 1) {
-            return t_min;
-        } else if (t_max >= 0 && t_max <= 1) {
-            return t_max;
-        } else {
-            return 2;
-        }
-    }
-}
-
-// return 0 to 1 if intersect
-// return 2 if not intersect
 float Collision::Intersect(const Circle &circle1, const Translation &translation1, const Circle &circle2, const Translation &translation2)
 {
     Vector c1 = translation1.Latest().Start();
@@ -725,6 +789,13 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
         t.back() = t_num / a;
 
     return *std::min_element(t.begin(), t.end());
+}
+
+float Collision::Intersect(const Circle& moving_circle, const Translation& translation, Circle& nonmoving_circle)
+{
+    return Intersect(
+        moving_circle, translation,
+        nonmoving_circle, Translation(nonmoving_circle.Center()));
 }
 
 Translation::Translation(Vector& start_position)
@@ -794,13 +865,3 @@ void Translation::Stop()
 {
     step_count = Param::translation_step;
 }
-
-// void Translation::End(const Vector& end)
-// {
-//     latest_translation.End(end);
-// }
-
-// void Translation::Translate_to(const Vector& position)
-// {
-//     latest_translation = Line(position, position);
-// }

@@ -49,9 +49,19 @@ void Player::Move(const Map& map, Player* const enemy)
     enemy->translation.Move(enemy->shape);
 
     if (!Finish_moving())
+    {
         Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
+
+        for (Wall w : map.Get_wall())
+            Collision::Reflect_circle_rectangle(shape, translation, w.Shape());
+    }
     if (!enemy->Finish_moving())
+    {
         Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
+
+        for (Wall w : map.Get_wall())
+            Collision::Reflect_circle_rectangle(enemy->shape, enemy->translation, w.Shape());
+    }
 
     Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
 }

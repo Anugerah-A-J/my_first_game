@@ -440,9 +440,9 @@ const Rectangle &Map::Fence_shape() const
     return fence.Shape();
 }
 
-const Rectangle& Map::Wall_shape(unsigned int index) const
+const std::vector<Wall>& Map::Get_wall() const
 {
-    return wall.at(index).Shape();
+    return wall;
 }
 
 // void Map::Reflect_and_hurt(Player *const player) const
