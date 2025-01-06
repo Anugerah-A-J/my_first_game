@@ -1,6 +1,7 @@
 #include "Shape.hpp"
 #include <vector>
 #include "Object.hpp"
+#include "Collision.hpp"
 #pragma once
 
 class Player

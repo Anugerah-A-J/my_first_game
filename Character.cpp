@@ -1,5 +1,6 @@
 #include "Character.hpp"
 #include "Param.hpp"
+#include "Shape.hpp"
 #include <algorithm>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
@@ -44,26 +45,50 @@ void Player::Move(const Map& map, Player* const enemy)
 
     if (Finish_moving() && enemy->Finish_moving())
         return;
-    
+
     translation.Move(shape);
     enemy->translation.Move(enemy->shape);
 
-    if (!Finish_moving())
+    if (Finish_moving() && enemy->Finish_moving())
+        return;
+
+    Collision&& earliest = Circle_inside_rectangle(shape, translation, map.Fence_shape());
+    Collision&& temp = Circle_outside_circle(shape, translation, enemy->shape, enemy->translation);
+
+    if (temp.Earlier_than(earliest))
+        earliest = temp;
+
+    for (Wall w : map.Get_wall())
     {
-        Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
+        temp = Circle_outside_rectangle(shape, translation, w.Shape());
 
-        for (Wall w : map.Get_wall())
-            Collision::Reflect_circle_rectangle(shape, translation, w.Shape());
-    }
-    if (!enemy->Finish_moving())
-    {
-        Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
+        if (temp.Earlier_than(earliest))
+            earliest = temp;
 
-        for (Wall w : map.Get_wall())
-            Collision::Reflect_circle_rectangle(enemy->shape, enemy->translation, w.Shape());
+        temp = Circle_outside_rectangle(enemy->shape, enemy->translation, w.Shape());
+
+        if (temp.Earlier_than(earliest))
+            earliest = temp;
     }
 
-    Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
+    earliest.Reflect();
+
+    // if (!Finish_moving())
+    // {
+    //     Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
+    //
+    //     for (Wall w : map.Get_wall())
+    //         Collision::Reflect_circle_rectangle(shape, translation, w.Shape());
+    // }
+    // if (!enemy->Finish_moving())
+    // {
+    //     Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
+    //
+    //     for (Wall w : map.Get_wall())
+    //         Collision::Reflect_circle_rectangle(enemy->shape, enemy->translation, w.Shape());
+    // }
+    //
+    // Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
 }
 
 bool Player::Finish_moving()
