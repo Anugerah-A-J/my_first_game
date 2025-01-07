@@ -5,7 +5,7 @@ project(my_first_game)
 find_package(Allegro CONFIG REQUIRED)
 
 # add_link_options(-static-libstdc++ -static-libgcc)
-add_executable(my_first_game Character.cpp Game.cpp main.cpp Object.cpp Shape.cpp)
+add_executable(my_first_game Character.cpp Game.cpp main.cpp Object.cpp Shape.cpp Collision.cpp)
 
 if(MSVC)
     target_compile_options(my_first_game PRIVATE /W4 /WX)

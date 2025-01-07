@@ -27,10 +27,12 @@ public:
     // virtual void Stop() = 0;
     // virtual void Slide() = 0;
 protected:
+    Collision();
     float t;
     static void Intersect(const Line& line1, float& t1, const Line& line2, float& t2);
     static float Intersect(const Circle& circle1, const Translation& translation1, const Circle& circle2, const Translation& translation2);
     static float Intersect(const Circle& moving_circle, const Translation& translation, Circle& nonmoving_circle);
+    static float Intersect_circle_circle(const Vector& c, const Vector& v, float r);
 };
 
 class Circle_inside_rectangle : public Collision
@@ -40,9 +42,9 @@ public:
 private:
     void Reflect() override;
     Vector normal_unit;
-    Circle& circle;
+    Circle& moving_circle;
     Translation& circle_translation;
-    Rectangle& rectangle;
+    const Rectangle& nonmoving_rectangle;
 };
 
 class Circle_outside_circle : public Collision
@@ -53,7 +55,9 @@ private:
     void Reflect() override;
     Vector normal_unit;
     Circle& circle_1;
+    Translation& translation_1;
     Circle& circle_2;
+    Translation& translation_2;
 };
 
 class Circle_outside_rectangle : public Collision
@@ -63,7 +67,7 @@ public:
 private:
     void Reflect() override;
     Vector normal_unit;
-    Circle& circle;
+    Circle& moving_circle;
     Translation& circle_translation;
-    Rectangle& rectangle;
+    const Rectangle& nonmoving_rectangle;
 };
