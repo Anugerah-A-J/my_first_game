@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <math.h>
+#include <iostream>
 
 Translation::Translation(Vector& start_position)
 :
@@ -79,7 +80,7 @@ Collision::Collision()
 
 bool Collision::Earlier_than(const Collision& collision) const
 {
-    return t <collision.t;
+    return t < collision.t;
 }
 
 // assign 0 to 1 to t1 and t2 if intersect
@@ -229,10 +230,13 @@ Circle_inside_rectangle::Circle_inside_rectangle(Circle &moving_circle, Translat
 
     unsigned int min_t_index = std::distance(ts.begin(), std::min_element(ts.begin(), ts.end()));
 
+    std::cout << "ts.at(min_t_index) : " << ts.at(min_t_index) << "\n";
+    // std::cout << "t : " << t << "\n";
+
     if (ts.at(min_t_index) == 2)
         return;
-    else
-        t = ts.at(min_t_index);
+
+    t = ts.at(min_t_index);
 
     if (min_t_index % 2 == 0)
         normal_unit = Vector(0, 1);
@@ -242,6 +246,10 @@ Circle_inside_rectangle::Circle_inside_rectangle(Circle &moving_circle, Translat
 
 void Circle_inside_rectangle::Reflect()
 {
+    if (t == 2)
+        return;
+
+    std::cout << "t : " << t << "\n";
     // collision solving: make them don't touch each other. Give space of 1 pixel between them.
 
     float retreat = t - 1 - 1 / circle_translation.Latest().Length();
@@ -264,13 +272,13 @@ Circle_outside_circle::Circle_outside_circle(Circle &circle_1, Translation &tran
     translation_2{translation_2}
 {
     t = Intersect(circle_1, translation_1, circle_2, translation_2);
-
-    if (t == 2)
-        return;
 }
 
 void Circle_outside_circle::Reflect()
 {
+    if (t == 2)
+        return;
+
     // collision solving
 
     if (!translation_1.Finish())
@@ -379,6 +387,9 @@ Circle_outside_rectangle::Circle_outside_rectangle(Circle &moving_circle, Transl
 
 void Circle_outside_rectangle::Reflect()
 {
+    if (t == 2)
+        return;
+
     // collision solving: make them don't touch each other. Give space of 1 pixel between them.
 
     float retreat = t - 1 - 1 / circle_translation.Latest().Length();
