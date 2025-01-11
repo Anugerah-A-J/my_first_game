@@ -2,6 +2,11 @@
 #include <algorithm>
 #include <math.h>
 
+void Println()
+{
+    std::cout << '\n';
+}
+
 bool Equal(float f1, float f2, float margin)
 {
     return fabsf(f1 - f2) < margin;
@@ -38,7 +43,7 @@ Vector operator*(float f, const Vector& v)
 
 Vector operator*(const Matrix& m, const Vector& v)
 {
-    return Vector(Vector::Dot(m.Row_1(), v), Vector::Dot(m.Row_2(), v));
+    return Vector(Vector::Dot(m.row_1, v), Vector::Dot(m.row_2, v));
 }
 
 Vector::Vector(float x, float y)
@@ -46,26 +51,6 @@ Vector::Vector(float x, float y)
     x{x},
     y{y}
 {}
-
-float Vector::X() const
-{
-    return x;
-}
-
-float Vector::Y() const
-{
-    return y;
-}
-
-void Vector::X(float val)
-{
-    x = val;
-}
-
-void Vector::Y(float val)
-{
-    y = val;
-}
 
 Vector Vector::operator-() const
 {
@@ -157,16 +142,6 @@ Matrix::Matrix(float f1, float f2, float f3, float f4)
     row_2{f3, f4}
 {}
 
-const Vector& Matrix::Row_1() const
-{
-    return row_1;
-}
-
-const Vector& Matrix::Row_2() const
-{
-    return row_2;
-}
-
 Line::Line(const Vector& start, const Vector& end)
 :
     start{start},
@@ -179,21 +154,6 @@ void Line::Translate(const Vector& displacement)
     end += displacement;
 }
 
-const Vector& Line::Start() const
-{
-    return start;
-}
-
-const Vector& Line::End() const
-{
-    return end;
-}
-
-void Line::End(const Vector& end)
-{
-    this->end = end;
-}
-
 float Line::Length() const
 {
     return std::sqrtf((start - end).Magsq());
@@ -201,21 +161,21 @@ float Line::Length() const
 
 void Line::Draw(const ALLEGRO_COLOR& color, float line_width) const
 {
-    al_draw_line(start.X(), start.Y(), end.X(), end.Y(), color, line_width);
+    al_draw_line(start.x, start.y, end.x, end.y, color, line_width);
 }
 
 Line Line::Mirror_x(const Vector& point) const
 {
-    Vector translate_start = Vector(0, (point - start).Y()) * 2;
-    Vector translate_end = Vector(0, (point - end).Y()) * 2;
+    Vector translate_start = Vector(0, (point - start).y) * 2;
+    Vector translate_end = Vector(0, (point - end).y) * 2;
 
     return Line(start + translate_start, end + translate_end);
 }
 
 Line Line::Mirror_y(const Vector& point) const
 {
-    Vector translate_start = Vector((point - start).X(), 0) * 2;
-    Vector translate_end = Vector((point - end).X(), 0) * 2;
+    Vector translate_start = Vector((point - start).x, 0) * 2;
+    Vector translate_end = Vector((point - end).x, 0) * 2;
 
     return Line(start + translate_start, end + translate_end);
 }
@@ -223,8 +183,8 @@ Line Line::Mirror_y(const Vector& point) const
 Vector Line::Center() const
 {
     return Vector(
-        Average(start.X(), end.X()),
-        Average(start.Y(), end.Y())
+        Average(start.x, end.x),
+        Average(start.y, end.y)
     );
 }
 
@@ -247,12 +207,12 @@ Rectangle::Rectangle(const Vector& origin, const Vector& size)
 
 void Rectangle::Draw(const ALLEGRO_COLOR& color) const
 {
-    al_draw_filled_rectangle(origin.X(), origin.Y(), origin.X() + size.X(), origin.Y() + size.Y(), color);
+    al_draw_filled_rectangle(origin.x, origin.y, origin.x + size.x, origin.y + size.y, color);
 }
 
 void Rectangle::Draw(const ALLEGRO_COLOR& line_color, float line_width) const
 {
-    al_draw_rectangle(origin.X(), origin.Y(), origin.X() + size.X(), origin.Y() + size.Y(), line_color, line_width);
+    al_draw_rectangle(origin.x, origin.y, origin.x + size.x, origin.y + size.y, line_color, line_width);
 }
 
 void Rectangle::Translate(const Vector& displacement)
@@ -267,7 +227,7 @@ Vector Rectangle::Top_left() const
 
 Vector Rectangle::Top_right() const
 {
-    return origin + Vector(size.X(), 0);
+    return origin + Vector(size.x, 0);
 }
 
 Vector Rectangle::Bottom_right() const
@@ -277,7 +237,7 @@ Vector Rectangle::Bottom_right() const
 
 Vector Rectangle::Bottom_left() const
 {
-    return origin + Vector(0, size.Y());
+    return origin + Vector(0, size.y);
 }
 
 Line Rectangle::Top() const
@@ -304,8 +264,8 @@ bool Rectangle::Contain(const Vector& point) const
 {
     Vector distance_to_origin = point - origin;
 
-    return distance_to_origin.X() >= 0 && distance_to_origin.Y() >= 0
-        && distance_to_origin.X() <= size.X() && distance_to_origin.Y() <= size.Y();
+    return distance_to_origin.x >= 0 && distance_to_origin.y >= 0
+        && distance_to_origin.x <= size.x && distance_to_origin.y <= size.y;
 }
 
 const Vector& Rectangle::Size() const
@@ -316,36 +276,32 @@ const Vector& Rectangle::Size() const
 void Rectangle::Add_size_by(const Vector& value)
 {
     size += value;
+
+    if (size.x < 0)
+        size.x = 0;
+
+    if (size.y < 0)
+        size.y = 0;
 }
 
 float Rectangle::Width() const
 {
-    return size.X();
+    return size.x;
 }
 
 void Rectangle::Width(float val)
 {
-    size.X(val);
+    size.x = fabsf(val);
 }
 
 float Rectangle::Height() const
 {
-    return size.Y();
+    return size.y;
 }
 
 void Rectangle::Height(float val)
 {
-    size.Y(val);
-}
-
-const Vector& Rectangle::Origin() const
-{
-    return origin;
-}
-
-void Rectangle::Origin(const Vector& origin)
-{
-    this->origin = origin;
+    size.y = fabsf(val);
 }
 
 Vector Rectangle::Center() const
@@ -361,7 +317,7 @@ void Rectangle::Center(const Vector& point)
 Rectangle Rectangle::Mirror_x(const Vector& point) const
 {
     Vector center = Center();
-    Vector translate = Vector(0, (point - center).Y());
+    Vector translate = Vector(0, (point - center).y);
 
     return Rectangle(center + translate * 2 - size / 2, size);
 }
@@ -369,7 +325,7 @@ Rectangle Rectangle::Mirror_x(const Vector& point) const
 Rectangle Rectangle::Mirror_y(const Vector& point) const
 {
     Vector center = Center();
-    Vector translate = Vector((point - center).X(), 0);
+    Vector translate = Vector((point - center).x, 0);
 
     return Rectangle(center + translate * 2 - size / 2, size);
 }
@@ -378,13 +334,13 @@ Rectangle Rectangle::Mirror_y(const Vector& point) const
 // return arg itself if arg is inside rectangle
 Vector Rectangle::Closest_point_to(const Vector& point) const
 {
-    float x = point.X();
-    x = std::max(x, origin.X());
-    x = std::min(x, (origin + size).X());
+    float x = point.x;
+    x = std::max(x, origin.x);
+    x = std::min(x, (origin + size).x);
 
-    float y = point.Y();
-    y = std::max(y, origin.Y());
-    y = std::min(y, (origin + size).Y());
+    float y = point.y;
+    y = std::max(y, origin.y);
+    y = std::min(y, (origin + size).y);
 
     return Vector(x, y);
 }
@@ -392,17 +348,17 @@ Vector Rectangle::Closest_point_to(const Vector& point) const
 Circle::Circle(const Vector& center, float r)
 :
     center{center},
-    radius{r}
+    radius{fabsf(r)}
 {}
 
 void Circle::Draw(const ALLEGRO_COLOR& color) const
 {
-    al_draw_filled_circle(center.X(), center.Y(), radius, color);
+    al_draw_filled_circle(center.x, center.y, radius, color);
 }
 
 void Circle::Draw(const ALLEGRO_COLOR& line_color, float line_width) const
 {
-    al_draw_circle(center.X(), center.Y(), radius, line_color, line_width);
+    al_draw_circle(center.x, center.y, radius, line_color, line_width);
 }
 
 void Circle::Translate(const Vector& displacement)
@@ -412,32 +368,20 @@ void Circle::Translate(const Vector& displacement)
 
 void Circle::Scale(float multiplier)
 {
-    radius *= multiplier;
+    radius *= fabsf(multiplier);
 }
 
 void Circle::Add_radius_by(float value)
 {
     radius += value;
+
+    if (radius < 0)
+        radius = 0;
 }
 
 bool Circle::Contain(const Vector& point) const
 {
     return (point - center).Magsq() <= radius * radius;
-}
-
-const Vector& Circle::Center() const
-{
-    return center;
-}
-
-Vector& Circle::Center()
-{
-    return center;
-}
-
-void Circle::Center(const Vector& position)
-{
-    center = position;
 }
 
 float Circle::Radius() const
@@ -447,14 +391,14 @@ float Circle::Radius() const
 
 Circle Circle::Mirror_x(const Vector& point) const
 {
-    Vector translate = Vector(0, (point - center).Y());
+    Vector translate = Vector(0, (point - center).y);
 
     return Circle(center + translate * 2, radius);
 }
 
 Circle Circle::Mirror_y(const Vector& point) const
 {
-    Vector translate = Vector((point - center).X(), 0);
+    Vector translate = Vector((point - center).x, 0);
 
     return Circle(center + translate * 2, radius);
 }
@@ -469,12 +413,12 @@ Triangle::Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector&
 void Triangle::Draw(const ALLEGRO_COLOR& color) const
 {
     al_draw_filled_triangle(
-        vertex_1.X(),
-        vertex_1.Y(),
-        vertex_2.X(),
-        vertex_2.Y(),
-        vertex_3.X(),
-        vertex_3.Y(),
+        vertex_1.x,
+        vertex_1.y,
+        vertex_2.x,
+        vertex_2.y,
+        vertex_3.x,
+        vertex_3.y,
         color
     );
 }
@@ -482,43 +426,13 @@ void Triangle::Draw(const ALLEGRO_COLOR& color) const
 void Triangle::Draw(const ALLEGRO_COLOR& line_color, float line_width) const
 {
     al_draw_triangle(
-        vertex_1.X(),
-        vertex_1.Y(),
-        vertex_2.X(),
-        vertex_2.Y(),
-        vertex_3.X(),
-        vertex_3.Y(),
+        vertex_1.x,
+        vertex_1.y,
+        vertex_2.x,
+        vertex_2.y,
+        vertex_3.x,
+        vertex_3.y,
         line_color,
         line_width
     );
-}
-
-void Triangle::Vertex_1(const Vector& point)
-{
-    vertex_1 = point;
-}
-
-void Triangle::Vertex_2(const Vector& point)
-{
-    vertex_2 = point;
-}
-
-void Triangle::Vertex_3(const Vector& point)
-{
-    vertex_3 = point;
-}
-
-const Vector& Triangle::Vertex_1() const
-{
-    return vertex_1;
-}
-
-const Vector& Triangle::Vertex_2() const
-{
-    return vertex_2;
-}
-
-const Vector& Triangle::Vertex_3() const
-{
-    return vertex_3;
 }

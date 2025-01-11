@@ -1,5 +1,23 @@
 #include <allegro5/allegro_primitives.h>
+#include <iostream>
+#include <vector>
 #pragma once
+
+void Println();
+
+template <typename T>
+void Println(const T& t)
+{
+    std::cout << t << '\n';
+}
+
+template <typename First, typename... Rest>
+void Println(const First& first, const Rest&... rest)
+{
+    std::cout << first << ' ';
+    Println(rest...); // recursive call using pack expansion syntax
+}
+
 
 bool Equal(float f1, float f2, float margin);
 
@@ -14,11 +32,9 @@ float Square(float f);
 class Vector
 {
 public:
+    float x;
+    float y;
     Vector(float x, float y);
-    float X() const;
-    float Y() const;
-    void X(float val);
-    void Y(float val);
     Vector operator-() const;
     Vector operator+(const Vector& v) const;
     Vector operator-(const Vector& v) const;
@@ -35,22 +51,27 @@ public:
     Vector Abs() const;
     static float Dot(const Vector& v1, const Vector& v2);
     float Magsq() const;
-private:
-    float x;
-    float y;
 };
 
 Vector operator*(float f, const Vector& v);
 
+template<typename T>
+T Sum(const std::vector<T>& ts)
+{
+    T out = ts.front();
+
+    for (unsigned int i = 1; i != ts.size(); i++)
+        out += ts.at(i);
+
+    return out;
+};
+
 class Matrix
 {
 public:
-    Matrix(float f1, float f2, float f3, float f4);
-    const Vector& Row_1() const;
-    const Vector& Row_2() const;
-private:
     Vector row_1;
     Vector row_2;
+    Matrix(float f1, float f2, float f3, float f4);
 };
 
 Vector operator*(const Matrix& m, const Vector& v);
@@ -58,11 +79,10 @@ Vector operator*(const Matrix& m, const Vector& v);
 class Line
 {
 public:
+    Vector start;
+    Vector end;
     Line(const Vector& start, const Vector& end);
     void Translate(const Vector& displacement);
-    const Vector& Start() const;
-    const Vector& End() const;
-    void End(const Vector& end);
     float Length() const;
     void Draw(const ALLEGRO_COLOR& color, float line_width) const;
     Line Mirror_x(const Vector& point) const;
@@ -70,14 +90,12 @@ public:
     Vector Center() const;
     void Center(const Vector& point);
     Vector Direction() const;
-private:
-    Vector start;
-    Vector end;
 };
 
 class Rectangle
 {
 public:
+    Vector origin;
     Rectangle(const Vector& origin, const Vector& size);
     void Draw(const ALLEGRO_COLOR& color) const;
     void Draw(const ALLEGRO_COLOR& line_color, float line_width) const;
@@ -97,8 +115,6 @@ public:
     void Width(float val);
     float Height() const;
     void Height(float val);
-    const Vector& Origin() const;
-    void Origin(const Vector& origin);
     Vector Center() const;
     void Center(const Vector& point);
     Rectangle Mirror_x(const Vector& point) const;
@@ -107,13 +123,13 @@ public:
     // return arg itself if arg is inside rectangle
     Vector Closest_point_to(const Vector& point) const;
 private:
-    Vector origin;
     Vector size;
 };
 
 class Circle
 {
 public:
+    Vector center;
     Circle(const Vector& center, float r);
     void Draw(const ALLEGRO_COLOR& color) const;
     void Draw(const ALLEGRO_COLOR& line_color, float line_width) const;
@@ -121,31 +137,20 @@ public:
     void Scale(float multiplier);
     void Add_radius_by(float value);
     bool Contain(const Vector& point) const;
-    const Vector& Center() const;
-    Vector& Center();
-    void Center(const Vector& position);
     float Radius() const;
     Circle Mirror_x(const Vector& point) const;
     Circle Mirror_y(const Vector& point) const;
 private:
-    Vector center;
     float radius;
 };
 
 class Triangle
 {
 public:
-    Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector& vertex_3);
-    void Draw(const ALLEGRO_COLOR& color) const;
-    void Draw(const ALLEGRO_COLOR& line_color, float line_width) const;
-    void Vertex_1(const Vector& point);
-    void Vertex_2(const Vector& point);
-    void Vertex_3(const Vector& point);
-    const Vector& Vertex_1() const;
-    const Vector& Vertex_2() const;
-    const Vector& Vertex_3() const;
-private:
     Vector vertex_1;
     Vector vertex_2;
     Vector vertex_3;
+    Triangle(const Vector& vertex_1, const Vector& vertex_2, const Vector& vertex_3);
+    void Draw(const ALLEGRO_COLOR& color) const;
+    void Draw(const ALLEGRO_COLOR& line_color, float line_width) const;
 };

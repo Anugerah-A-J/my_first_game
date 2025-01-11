@@ -68,6 +68,8 @@ Game::Game()
 
         if (active_player->Finish_moving() && passive_player->Finish_moving())
         {
+            Println();
+
             passive_player->Update_life();
             active_player->Update_life();
 

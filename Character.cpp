@@ -1,7 +1,10 @@
 #include "Character.hpp"
+#include "Collision.hpp"
 #include "Param.hpp"
 #include "Shape.hpp"
 #include <algorithm>
+#include <functional>
+#include <memory>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
 :
@@ -10,7 +13,7 @@ Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
     life{Param::life},
     life_shapes{Param::life, shape},
     decrease_life{false},
-    translation{shape.Center()}
+    translation{shape.center}
 {}
 
 void Player::Draw() const
@@ -30,21 +33,18 @@ bool Player::Contain(const Vector &point) const
 
 bool Player::Reach(const Vector &point) const
 {
-    Circle c {shape.Center(), Param::reach_radius};
+    Circle c {shape.center, Param::reach_radius};
     return c.Contain(point);
 }
 
 const Vector& Player::Center() const
 {
-    return shape.Center();
+    return shape.center;
 }
 
 void Player::Move(const Map& map, Player* const enemy)
 {
     // Move -> Collision check, solve and respond -> Draw
-
-    if (Finish_moving() && enemy->Finish_moving())
-        return;
 
     translation.Move(shape);
     enemy->translation.Move(enemy->shape);
@@ -52,43 +52,40 @@ void Player::Move(const Map& map, Player* const enemy)
     if (Finish_moving() && enemy->Finish_moving())
         return;
 
-    Collision&& earliest = Circle_inside_rectangle(shape, translation, map.Fence_shape());
-    Collision&& temp = Circle_outside_circle(shape, translation, enemy->shape, enemy->translation);
-
-    if (temp.Earlier_than(earliest))
-        earliest = temp;
-
-    for (Wall w : map.Get_wall())
+    std::vector<std::shared_ptr<Collision>> earliest
     {
-        temp = Circle_outside_rectangle(shape, translation, w.Shape());
+        std::make_shared<Circle_inside_rectangle>(shape, translation, map.Fence_shape())
+    };
 
-        if (temp.Earlier_than(earliest))
-            earliest = temp;
+    std::shared_ptr<Collision> temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
 
-        temp = Circle_outside_rectangle(enemy->shape, enemy->translation, w.Shape());
+    std::function<void()> update_earliest = [&]()
+    {
+        if (temp->Get_t() < earliest.back()->Get_t())
+            earliest = {temp};
 
-        if (temp.Earlier_than(earliest))
-            earliest = temp;
+        else if (temp->Get_t() == earliest.back()->Get_t())
+            earliest.push_back(temp);
+    };
+
+    update_earliest();
+
+    for (auto w : map.Get_wall())
+    {
+        temp = std::make_shared<Circle_outside_rectangle>(shape, translation, w.Shape());
+
+        update_earliest();
+
+        temp = std::make_shared<Circle_outside_rectangle>(enemy->shape, enemy->translation, w.Shape());
+
+        update_earliest();
     }
 
-    earliest.Reflect();
+    for (auto e :earliest)
+        e->Reflect();
 
-    // if (!Finish_moving())
-    // {
-    //     Collision::Reflect_circle_inside_rectangle(shape, translation, map.Fence_shape());
-    //
-    //     for (Wall w : map.Get_wall())
-    //         Collision::Reflect_circle_rectangle(shape, translation, w.Shape());
-    // }
-    // if (!enemy->Finish_moving())
-    // {
-    //     Collision::Reflect_circle_inside_rectangle(enemy->shape, enemy->translation, map.Fence_shape());
-    //
-    //     for (Wall w : map.Get_wall())
-    //         Collision::Reflect_circle_rectangle(enemy->shape, enemy->translation, w.Shape());
-    // }
-    //
-    // Collision::Reflect_circle_circle(shape, translation, enemy->shape, enemy->translation);
+    translation.Update();
+    enemy->translation.Update();
 }
 
 bool Player::Finish_moving()
@@ -234,7 +231,7 @@ Player_magenta::Player_magenta(const Map& map)
     Player{map.Magenta_spawn_position(), Param::magenta}
 {
     Circle c = shape;
-    c.Center(map.Magenta_lives_start_position());
+    c.center = map.Magenta_lives_start_position();
 
     std::fill(life_shapes.begin(), life_shapes.end(), c);
 
@@ -250,7 +247,7 @@ Player_cyan::Player_cyan(const Map& map)
     Player{map.Cyan_spawn_position(), Param::cyan}
 {
     Circle c = shape;
-    c.Center(map.Cyan_lives_start_position());
+    c.center = map.Cyan_lives_start_position();
 
     std::fill(life_shapes.begin(), life_shapes.end(), c);
 
