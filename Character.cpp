@@ -82,10 +82,10 @@ void Player::Move(const Map& map, Player* const enemy)
     }
 
     for (auto e :earliest)
-        e->Reflect();
+        e->Update_translation_reflection();
 
-    translation.Update();
-    enemy->translation.Update();
+    translation.Respond_to_reflection();
+    enemy->translation.Respond_to_reflection();
 }
 
 bool Player::Finish_moving()

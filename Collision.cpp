@@ -1,6 +1,7 @@
 #include "Collision.hpp"
 #include "Param.hpp"
 #include "Shape.hpp"
+#include <functional>
 #include <vector>
 #include <algorithm>
 #include <math.h>
@@ -49,18 +50,19 @@ void Translation::Move(Circle& circle)
     circle.Translate(ideal_displacement);
 }
 
-void Translation::Reflected_by(const std::vector<Vector>& normal_unit)
+void Translation::Respond_to_reflection()
 {
-    Vector total_normal_unit = Sum(normal_unit).Unit();
+    if (Just_finish())
+        return;
 
     if (Finish())
     {
         step_count = 0;
-        ideal_displacement = Param::reach_radius / Param::translation_step * total_normal_unit;
+        ideal_displacement = Param::reach_radius / Param::translation_step * normal_unit;
     }
     else
     {
-        Vector normal_displacement = Vector::Dot(ideal_displacement, total_normal_unit) * total_normal_unit;
+        Vector normal_displacement = Vector::Dot(ideal_displacement, normal_unit) * normal_unit;
         Vector tangential_displacement = ideal_displacement - normal_displacement;
 
         ideal_displacement = tangential_displacement - normal_displacement;
@@ -77,9 +79,41 @@ void Translation::Stop()
     step_count = Param::translation_step;
 }
 
+void Translation::Update_t(Circle& circle, float t)
+{
+    if (this->t == t)
+        return;
+
+    this->t = t;
+
+    float retreat = t - 1 - 1 / Latest().Length();
+
+    circle.Translate(retreat * Latest().Direction());
+}
+
+void Translation::Update_normal_unit(const Vector& normal_unit)
+{
+    this->normal_unit = (this->normal_unit + normal_unit).Unit();
+}
+
+void Translation::Update_t_and_normal_unit(Circle& circle, float t, const Vector& point)
+{
+    if (this->t == t)
+    {
+        normal_unit = (circle.center - point).Unit();
+        return;
+    }
+
+    // if (!Finish())
+        circle.Translate((t - 1 - 1 / Latest().Length()) * Latest().Direction());
+
+    normal_unit = (circle.center - point).Unit();
+}
+
 Collision::Collision()
 :
-    t{2}
+    t{2},
+    normal_unit{0, 0}
 {}
 
 float Collision::Get_t() const
@@ -91,9 +125,9 @@ float Collision::Get_t() const
 // assign 2 to t1 and t2 if not intersect
 void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float &t2)
 {
-    Vector v = line1.End() - line1.Start();
-    Vector s = line2.End() - line2.Start();
-    Vector d = line2.Start() - line1.Start();
+    Vector v = line1.end - line1.start;
+    Vector s = line2.end - line2.start;
+    Vector d = line2.start - line1.start;
 
     float denom = Vector::Dot(v, Matrix(0, -1, 1, 0) * s);
 
@@ -150,8 +184,8 @@ void Collision::Intersect(const Line &line1, float &t1, const Line &line2, float
 // return 2 if not intersect
 float Collision::Intersect(const Circle &circle1, const Translation &translation1, const Circle &circle2, const Translation &translation2)
 {
-    Vector c1 = translation1.Latest().Start();
-    Vector c2 = translation2.Latest().Start();
+    Vector c1 = translation1.Latest().start;
+    Vector c2 = translation2.Latest().start;
     Vector v1 = translation1.Latest().Direction();
     Vector v2 = translation2.Latest().Direction();
 
@@ -162,10 +196,10 @@ float Collision::Intersect(const Circle &circle1, const Translation &translation
     return Intersect_circle_circle(c, v, r);
 }
 
-float Collision::Intersect(const Circle& moving_circle, const Translation& translation, Circle& nonmoving_circle)
+float Collision::Intersect(const Circle& moving_circle, const Translation& translation, const Circle& nonmoving_circle)
 {
-    Vector c1 = translation.Latest().Start();
-    Vector c2 = nonmoving_circle.Center();
+    Vector c1 = translation.Latest().start;
+    Vector c2 = nonmoving_circle.center;
     Vector v = translation.Latest().Direction();
 
     Vector c = c2 - c1;
@@ -226,52 +260,54 @@ Circle_inside_rectangle::Circle_inside_rectangle(Circle &moving_circle, Translat
     };
 
     std::vector<float> ts;
+
     ts.assign(4, 2);
+
     float t_dummy;
+
     for (unsigned int i = 0; i < 4; i++)
         Intersect(circle_translation.Latest(), ts.at(i), rectangle_line.at(i), t_dummy);
 
-    unsigned int min_t_index = std::distance(ts.begin(), std::min_element(ts.begin(), ts.end()));
+    std::vector<unsigned int> min_t_index = {0};
 
-    Println("ts.at(min_t_index) :", ts.at(min_t_index));
-    // std::cout << "t : " << t << "\n";
-
-    if (ts.at(min_t_index) == 2)
+    for (unsigned int i = 1; i < 4; i++)
     {
-        Println("t before return :", t);
+        if (ts.at(i) < ts.at(min_t_index.back()))
+            min_t_index = {i};
+        else if (ts.at(i) == ts.at(min_t_index.back()))
+            min_t_index.push_back(i);
+    }
+
+    // unsigned int min_t_index = std::distance(ts.begin(), std::min_element(ts.begin(), ts.end()));
+
+    if (ts.at(min_t_index.back()) == 2)
+    {
+        // Println("t before return :", t);
         return;
     }
 
-    t = ts.at(min_t_index);
+    t = ts.at(min_t_index.back());
+
+    std::function<Vector(unsigned int)>
 
     if (min_t_index % 2 == 0)
-        normal_unit.emplace_back(0, 1);
+        normal_unit = Vector(0, 1);
     else
-        normal_unit.emplace_back(1, 0);
+        normal_unit = Vector(1, 0);
 }
 
-void Circle_inside_rectangle::Reflect()
+void Circle_inside_rectangle::Update_translation_reflection()
 {
     if (t == 2)
         return;
 
-    Println("t circle inside rectangle :", t);
-    // collision solving: make them don't touch each other. Give space of 1 pixel between them.
-
-    float retreat = t - 1 - 1 / circle_translation.Latest().Length();
-
-    moving_circle.Translate(retreat * circle_translation.Latest().Direction());
-
-    if (circle_translation.Just_finish())
-        return;
-
-    circle_translation.Reflected_by(normal_unit);
+    circle_translation.Update_t(moving_circle, t);
+    circle_translation.Update_normal_unit(normal_unit);
 }
 
 Circle_outside_circle::Circle_outside_circle(Circle &circle_1, Translation &translation_1, Circle &circle_2, Translation &translation_2)
 :
     Collision{},
-    normal_unit{0, 0},
     circle_1{circle_1},
     translation_1{translation_1},
     circle_2{circle_2},
@@ -280,34 +316,18 @@ Circle_outside_circle::Circle_outside_circle(Circle &circle_1, Translation &tran
     t = Intersect(circle_1, translation_1, circle_2, translation_2);
 }
 
-void Circle_outside_circle::Reflect()
+void Circle_outside_circle::Update_translation_reflection()
 {
     if (t == 2)
         return;
 
-    Println("t circle outside circle :", t);
-
-    // collision solving
-
-    if (!translation_1.Finish())
-        circle_1.Translate((t - 1 - 1 / translation_1.Latest().Length()) * translation_1.Latest().Direction());
-
-    if (!translation_2.Finish())
-        circle_2.Translate((t - 1 - 1 / translation_2.Latest().Length()) * translation_2.Latest().Direction());
-
-    // reflection
-
-    normal_unit = (circle_1.Center() - circle_2.Center()).Unit();
-
-    // translation_1.Stop();
-    translation_1.Reflected_by(normal_unit);
-    translation_2.Reflected_by(-normal_unit);
+    translation_1.Update_t_and_normal_unit(circle_1, t, circle_2.center);
+    translation_2.Update_t_and_normal_unit(circle_2, t, circle_1.center);
 }
 
 Circle_outside_rectangle::Circle_outside_rectangle(Circle &moving_circle, Translation &circle_translation, const Rectangle &nonmoving_rectangle)
 :
     Collision{},
-    normal_unit{0, 0},
     moving_circle{moving_circle},
     circle_translation{circle_translation},
     nonmoving_rectangle{nonmoving_rectangle}
@@ -317,10 +337,10 @@ Circle_outside_rectangle::Circle_outside_rectangle(Circle &moving_circle, Transl
     Circle bottom_left = moving_circle;
     Circle bottom_right = moving_circle;
 
-    top_left.Center(nonmoving_rectangle.Top_left());
-    top_right.Center(nonmoving_rectangle.Top_right());
-    bottom_left.Center(nonmoving_rectangle.Bottom_left());
-    bottom_right.Center(nonmoving_rectangle.Bottom_right());
+    top_left.center = nonmoving_rectangle.Top_left();
+    top_right.center = nonmoving_rectangle.Top_right();
+    bottom_left.center = nonmoving_rectangle.Bottom_left();
+    bottom_right.center = nonmoving_rectangle.Bottom_right();
 
     std::vector<Circle*> rectangle_corner
     {
@@ -393,7 +413,7 @@ Circle_outside_rectangle::Circle_outside_rectangle(Circle &moving_circle, Transl
     }
 }
 
-void Circle_outside_rectangle::Reflect()
+void Circle_outside_rectangle::Update_translation_reflection()
 {
     if (t == 2)
         return;

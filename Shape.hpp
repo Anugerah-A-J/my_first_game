@@ -55,16 +55,16 @@ public:
 
 Vector operator*(float f, const Vector& v);
 
-template<typename T>
-T Sum(const std::vector<T>& ts)
-{
-    T out = ts.front();
-
-    for (unsigned int i = 1; i != ts.size(); i++)
-        out += ts.at(i);
-
-    return out;
-};
+// template<typename T>
+// T Sum(const std::vector<T>& ts)
+// {
+//     T out = ts.front();
+//
+//     for (unsigned int i = 1; i != ts.size(); i++)
+//         out += ts.at(i);
+//
+//     return out;
+// };
 
 class Matrix
 {
