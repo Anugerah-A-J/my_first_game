@@ -46,12 +46,12 @@ void Player::Move(const Map& map, Player* const enemy)
 {
     // Move -> Collision check, solve and respond -> Draw
 
-    Println("active player:");
+    // Println("active player:");
     translation.Move(shape);
-    Println();
-    Println("passive player:");
+    // Println();
+    // Println("passive player:");
     enemy->translation.Move(enemy->shape);
-    Println();
+    // Println();
 
     if (Finish_moving() && enemy->Finish_moving())
         return;
@@ -61,19 +61,19 @@ void Player::Move(const Map& map, Player* const enemy)
         std::make_shared<Circle_inside_rectangle>(shape, translation, map.Fence_shape())
     };
 
-    // std::shared_ptr<Collision> temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
+    std::shared_ptr<Collision> temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
 
-    // constexpr auto update_earliest = [](
-    //     const std::shared_ptr<Collision> temp, std::vector<std::shared_ptr<Collision>>& earliest)
-    // {
-    //     if (temp->Get_t() < earliest.back()->Get_t())
-    //         earliest = {temp};
+    constexpr auto update_earliest = [](
+        const std::shared_ptr<Collision> temp, std::vector<std::shared_ptr<Collision>>& earliest)
+    {
+        if (temp->Get_t() < earliest.back()->Get_t())
+            earliest = {temp};
 
-    //     else if (temp->Get_t() == earliest.back()->Get_t())
-    //         earliest.push_back(temp);
-    // };
+        else if (temp->Get_t() == earliest.back()->Get_t())
+            earliest.push_back(temp);
+    };
 
-    // update_earliest(temp, earliest);
+    update_earliest(temp, earliest);
 
     // for (auto w : map.Get_wall())
     // {

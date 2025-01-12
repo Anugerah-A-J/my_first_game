@@ -120,7 +120,8 @@ void Translation::Solve_and_update_normal_unit(float t, const Vector& point)
     }
 
     this->t = t;
-    // if (!Finish())
+    
+    if (!Finish())
         current_position += (t - 1 - 1 / Latest().Length()) * Latest().Direction();
 
     normal_unit = (current_position - point).Unit();
@@ -133,10 +134,10 @@ Collision::Collision()
     normal_unit{0, 0}
 {}
 
-// float Collision::Get_t() const
-// {
-//     return t;
-// }
+float Collision::Get_t() const
+{
+    return t;
+}
 
 // assign 0 to 1 to t1 and t2 if intersect
 // assign 2 to t1 and t2 if not intersect

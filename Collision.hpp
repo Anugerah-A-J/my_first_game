@@ -28,7 +28,7 @@ private:
 class Collision
 {
 public:
-    // float Get_t() const;
+    float Get_t() const;
     virtual void Update_translation() = 0;
     // virtual void Stop() = 0;
     // virtual void Slide() = 0;
