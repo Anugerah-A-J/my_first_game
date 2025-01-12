@@ -182,18 +182,18 @@ void Game::Draw() const
     player_magenta.Draw();
     // end_dialog_box.Draw();
 
-    // std::string mx = std::to_string(player_magenta.Center().X());
-    // std::string my = std::to_string(player_magenta.Center().Y());
-    // std::string cx = std::to_string(player_cyan.Center().X());
-    // std::string cy = std::to_string(player_cyan.Center().Y());
-    // std::string max_x = std::to_string(map_1.Fence_shape().Bottom_right().X());
-    // std::string max_y = std::to_string(map_1.Fence_shape().Bottom_right().Y());
-    //
-    // std::string text_m = "Magenta: " + mx + ", " + my;
-    // std::string text_c = "Cyan: " + cx + ", " + cy;
-    //
-    // al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length, ALLEGRO_ALIGN_CENTER, &text_m.front());
-    // al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length * 2, ALLEGRO_ALIGN_CENTER, &text_c.front());
-    // al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y), ALLEGRO_ALIGN_LEFT, &max_x.front());
-    // al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y) + Param::unit_length, ALLEGRO_ALIGN_LEFT, &max_y.front());
+    std::string mx = std::to_string(player_magenta.Center().x);
+    std::string my = std::to_string(player_magenta.Center().y);
+    std::string cx = std::to_string(player_cyan.Center().x);
+    std::string cy = std::to_string(player_cyan.Center().y);
+    std::string max_x = std::to_string(map_1.Fence_shape().Bottom_right().x);
+    std::string max_y = std::to_string(map_1.Fence_shape().Bottom_right().y);
+    
+    std::string text_m = "Magenta: " + mx + ", " + my;
+    std::string text_c = "Cyan: " + cx + ", " + cy;
+    
+    al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length, ALLEGRO_ALIGN_CENTER, &text_m.front());
+    al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length * 2, ALLEGRO_ALIGN_CENTER, &text_c.front());
+    al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y), ALLEGRO_ALIGN_LEFT, &max_x.front());
+    al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y) + Param::unit_length, ALLEGRO_ALIGN_LEFT, &max_y.front());
 }

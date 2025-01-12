@@ -20,18 +20,18 @@ void Aim::Draw() const
 
     if (direction_sign_is_visible) {
         direction_sign.Draw(color, line_width);
-        // Line(reach_circle.Center(), pawn_destination).Draw(color, line_width);
+        Line(reach_circle.center, end_point).Draw(color, line_width);
     }
 }
 
 void Aim::Center(const Vector& point)
 {
-    reach_circle.Center(point);
+    reach_circle.center = point;
 }
 
 const Vector& Aim::Center()
 {
-    return reach_circle.Center();
+    return reach_circle.center;
 }
 
 const Vector& Aim::End_point() const
@@ -41,17 +41,17 @@ const Vector& Aim::End_point() const
 
 void Aim::Update_direction(const Vector& mouse_coordinate)
 {
-    Vector unit = (mouse_coordinate - reach_circle.Center()).Unit();
+    Vector unit = (mouse_coordinate - reach_circle.center).Unit();
 
-    end_point = reach_circle.Center() - unit * reach_circle.Radius();
+    end_point = reach_circle.center - unit * reach_circle.Radius();
 
-    direction_sign.Vertex_1(reach_circle.Center() + unit * Param::unit_length);
+    direction_sign.vertex_1 = reach_circle.center + unit * Param::unit_length;
 
-    Vector temp = direction_sign.Vertex_1() + unit * Param::unit_length;
+    Vector temp = direction_sign.vertex_1 + unit * Param::unit_length;
 
-    direction_sign.Vertex_2(temp + Matrix(0, 1, -1, 0) * unit * Param::unit_length / Param::sqrt_3);
+    direction_sign.vertex_2 = temp + Matrix(0, 1, -1, 0) * unit * Param::unit_length / Param::sqrt_3;
 
-    direction_sign.Vertex_3(temp + Matrix(0, -1, 1, 0) * unit * Param::unit_length / Param::sqrt_3);
+    direction_sign.vertex_3 = temp + Matrix(0, -1, 1, 0) * unit * Param::unit_length / Param::sqrt_3;
 }
 
 void Aim::Show_reach_circle()
@@ -128,7 +128,7 @@ void Fence::Draw() const
 
 const Vector& Fence::Origin() const
 {
-    return shape.Origin();
+    return shape.origin;
 }
 
 Vector Fence::Top_right() const
@@ -412,8 +412,8 @@ void Map::Draw() const
 {
     clipper.Draw();
     fence.Draw();
-    for (const Wall& w : wall)
-        w.Draw();
+    // for (const Wall& w : wall)
+    //     w.Draw();
 
     // for (const Glass& g : glass)
     //     g.Draw();

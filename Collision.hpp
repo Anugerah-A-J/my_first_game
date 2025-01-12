@@ -9,12 +9,12 @@ public:
     bool Finish() const;
     bool Just_finish() const;
     void Move(Circle& circle);
-    void Respond_to_reflection();
+    void Update_displacement();
     Line Latest() const;
     void Stop();
-    void Update_t(Circle& circle, float t);
+    void Solve(float t);
     void Update_normal_unit(const Vector& normal_unit);
-    void Update_t_and_normal_unit(Circle& circle, float t, const Vector& point);
+    void Solve_and_update_normal_unit(float t, const Vector& point);
 private:
     float t;
     Vector normal_unit;
@@ -22,13 +22,14 @@ private:
     Vector ideal_displacement; // without considering collision resolving
     Vector& current_position;
     Vector previous_position;
+    bool normal_unit_changing;
 };
 
 class Collision
 {
 public:
-    float Get_t() const;
-    virtual void Update_translation_reflection() = 0;
+    // float Get_t() const;
+    virtual void Update_translation() = 0;
     // virtual void Stop() = 0;
     // virtual void Slide() = 0;
 protected:
@@ -44,10 +45,10 @@ protected:
 class Circle_inside_rectangle : public Collision
 {
 public:
-    Circle_inside_rectangle(Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
+    Circle_inside_rectangle(const Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
 private:
-    void Update_translation_reflection() override;
-    Circle& moving_circle;
+    void Update_translation() override;
+    const Circle& moving_circle;
     Translation& circle_translation;
     const Rectangle& nonmoving_rectangle;
 };
@@ -55,22 +56,23 @@ private:
 class Circle_outside_circle : public Collision
 {
 public:
-    Circle_outside_circle(Circle& circle_1, Translation& translation_1, Circle& circle_2, Translation& translation_2);
+    Circle_outside_circle(const Circle& circle_1, Translation& translation_1, const Circle& circle_2, Translation& translation_2);
 private:
-    void Update_translation_reflection() override;
-    Circle& circle_1;
+    void Update_translation() override;
+    const Circle& circle_1;
     Translation& translation_1;
-    Circle& circle_2;
+    const Circle& circle_2;
     Translation& translation_2;
 };
 
 class Circle_outside_rectangle : public Collision
 {
 public:
-    Circle_outside_rectangle(Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
+    Circle_outside_rectangle(const Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
 private:
-    void Update_translation_reflection() override;
-    Circle& moving_circle;
+    void Update_translation() override;
+    unsigned int min_t_index;
+    const Circle& moving_circle;
     Translation& circle_translation;
     const Rectangle& nonmoving_rectangle;
 };

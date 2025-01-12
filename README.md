@@ -19,20 +19,17 @@ To build the source code, you need:
 <!-- Make sure all of them are installed and available in your platform's path (`%PATH` on Windows, `$PATH` on Linux and macOS) before proceeding. -->
 
 The building process begins by **turning on your internet connection** because CMake requires an active connection to download the Allegro5 source code. After that, run the following command:
-```
-cmake -B build
-```
+
+	cmake -B build
 
 If you don’t want to use the previously selected compiler and build system settings, use the following command instead.
-```
-cmake -D CMAKE_C_COMPILER=<c-compiler> -D CMAKE_CXX_COMPILER=<c++-compiler> -G <build-system> -B build
-```
+
+	cmake -D CMAKE_C_COMPILER=<c-compiler> -D CMAKE_CXX_COMPILER=<c++-compiler> -G <build-system> -B build
 
 Replace the word inside `< >` with the one you want to use. For example, if you want to use GCC and Ninja, the command would be:
-```
+
 <!-- cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Debug -G Ninja -B build -->
-cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Debug -G Ninja -B build
-```
+	cmake -D CMAKE_C_COMPILER=gcc -D CMAKE_CXX_COMPILER=g++ -G Ninja -B build
 
 After that, run the build system. If you are using Ninja, the command will be `ninja -C build`. If you are using Make, the command will be `make -C build`.
 
