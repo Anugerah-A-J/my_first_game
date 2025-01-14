@@ -5,6 +5,7 @@
 #include <algorithm>
 // #include <functional>
 #include <memory>
+#include <vector>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
 :
@@ -56,38 +57,45 @@ void Player::Move(const Map& map, Player* const enemy)
     if (Finish_moving() && enemy->Finish_moving())
         return;
 
-    std::vector<std::shared_ptr<Collision>> earliest
+    std::vector<std::shared_ptr<Collision>> collided;
+    float earliest = 2;
+
+    constexpr auto update_collided_and_earliest = [](
+        std::vector<std::shared_ptr<Collision>>& collided,
+        float& earliest,
+        std::shared_ptr<Collision> temp)
     {
-        std::make_shared<Circle_inside_rectangle>(shape, translation, map.Fence_shape())
+        if (temp->Get_t() == 2)
+            return;
+
+        collided.emplace_back(temp);
+
+        if (temp->Get_t() < earliest)
+            earliest = temp->Get_t();
     };
 
-    std::shared_ptr<Collision> temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
+    std::shared_ptr<Collision> temp = std::make_shared<Circle_inside_rectangle>(shape, translation, map.Fence_shape());
+    update_collided_and_earliest(collided, earliest, temp);
 
-    constexpr auto update_earliest = [](
-        const std::shared_ptr<Collision> temp, std::vector<std::shared_ptr<Collision>>& earliest)
-    {
-        if (temp->Get_t() < earliest.back()->Get_t())
-            earliest = {temp};
+    temp = std::make_shared<Circle_inside_rectangle>(enemy->shape, enemy->translation, map.Fence_shape());
+    update_collided_and_earliest(collided, earliest, temp);
 
-        else if (temp->Get_t() == earliest.back()->Get_t())
-            earliest.push_back(temp);
-    };
-
-    update_earliest(temp, earliest);
+    temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
+    update_collided_and_earliest(collided, earliest, temp);
 
     // for (auto w : map.Get_wall())
     // {
     //     temp = std::make_shared<Circle_outside_rectangle>(shape, translation, w.Shape());
 
-    //     update_earliest(temp, earliest);
+    //     update_collided_and_earliest(collided, earliest, temp);
 
     //     temp = std::make_shared<Circle_outside_rectangle>(enemy->shape, enemy->translation, w.Shape());
 
-    //     update_earliest(temp, earliest);
+    //     update_collided_and_earliest(collided, earliest, temp);
     // }
 
-    for (auto e : earliest)
-        e->Update_translation();
+    for (auto c : collided)
+        c->Update_translation(earliest);
 
     translation.Update_displacement();
     enemy->translation.Update_displacement();

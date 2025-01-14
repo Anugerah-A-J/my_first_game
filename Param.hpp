@@ -27,7 +27,7 @@ class Param
 {
 public:
     static constexpr float unit_length = 10;
-    static constexpr int translation_step = 10;
+    static constexpr int translation_step = 20;
     static constexpr float reach_radius = 300;
     static constexpr float line_width = 1;
     // static constexpr float reach_radius    = window_height;

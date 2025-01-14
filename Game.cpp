@@ -24,7 +24,7 @@ Game::Game()
     mouse_position{0, 0},
     exit{false}
 {
-    aiming = [&]()
+    aiming = [this]()
     {
         if (event.type == ALLEGRO_EVENT_MOUSE_AXES)
         {
@@ -54,7 +54,7 @@ Game::Game()
         }
     };
 
-    moving = [&]()
+    moving = [this]()
     {
         if (event.type != ALLEGRO_EVENT_TIMER)
             return;

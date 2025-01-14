@@ -29,7 +29,7 @@ class Collision
 {
 public:
     float Get_t() const;
-    virtual void Update_translation() = 0;
+    virtual void Update_translation(float t) = 0;
     // virtual void Stop() = 0;
     // virtual void Slide() = 0;
 protected:
@@ -47,7 +47,7 @@ class Circle_inside_rectangle : public Collision
 public:
     Circle_inside_rectangle(const Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
 private:
-    void Update_translation() override;
+    void Update_translation(float t) override;
     const Circle& moving_circle;
     Translation& circle_translation;
     const Rectangle& nonmoving_rectangle;
@@ -58,7 +58,7 @@ class Circle_outside_circle : public Collision
 public:
     Circle_outside_circle(const Circle& circle_1, Translation& translation_1, const Circle& circle_2, Translation& translation_2);
 private:
-    void Update_translation() override;
+    void Update_translation(float t) override;
     const Circle& circle_1;
     Translation& translation_1;
     const Circle& circle_2;
@@ -70,7 +70,7 @@ class Circle_outside_rectangle : public Collision
 public:
     Circle_outside_rectangle(const Circle& moving_circle, Translation& circle_translation, const Rectangle& nonmoving_rectangle);
 private:
-    void Update_translation() override;
+    void Update_translation(float t) override;
     unsigned int min_t_index;
     const Circle& moving_circle;
     Translation& circle_translation;

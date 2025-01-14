@@ -318,10 +318,10 @@ Circle_inside_rectangle::Circle_inside_rectangle(const Circle &moving_circle, Tr
     normal_unit = normal_unit.Unit();
 }
 
-void Circle_inside_rectangle::Update_translation()
+void Circle_inside_rectangle::Update_translation(float t)
 {
-    if (t == 2)
-        return;
+    // if (t == 2)
+    //     return;
 
     circle_translation.Solve(t);
     circle_translation.Update_normal_unit(normal_unit);
@@ -338,10 +338,10 @@ Circle_outside_circle::Circle_outside_circle(const Circle &circle_1, Translation
     t = Intersect(circle_1, translation_1, circle_2, translation_2);
 }
 
-void Circle_outside_circle::Update_translation()
+void Circle_outside_circle::Update_translation(float t)
 {
-    if (t == 2)
-        return;
+    // if (t == 2)
+    //     return;
 
     translation_1.Solve_and_update_normal_unit(t, circle_2.center);
     translation_2.Solve_and_update_normal_unit(t, circle_1.center);
@@ -415,10 +415,10 @@ Circle_outside_rectangle::Circle_outside_rectangle(const Circle &moving_circle, 
     t = ts.at(min_t_index);
 }
 
-void Circle_outside_rectangle::Update_translation()
+void Circle_outside_rectangle::Update_translation(float t)
 {
-    if (t == 2)
-        return;
+    // if (t == 2)
+    //     return;
 
     switch (min_t_index)
     {
