@@ -48,7 +48,7 @@ void Translation::Move(Circle& circle)
     step_count++;
     previous_position = current_position;
     circle.Translate(ideal_displacement);
-    Println("ideal_displacement:", ideal_displacement.x, ',', ideal_displacement.y);
+    // Println("ideal_displacement:", ideal_displacement.x, ',', ideal_displacement.y);
 }
 
 void Translation::Update_displacement()
@@ -67,7 +67,12 @@ void Translation::Update_displacement()
     if (Finish())
     {
         step_count = 0;
+        Println();
+        Println("before", ideal_displacement.x, ',', ideal_displacement.y);
+        Println("normal", normal_unit.x, normal_unit.y);
         ideal_displacement = Param::reach_radius / Param::translation_step * normal_unit;
+        Println("after", ideal_displacement.x, ',', ideal_displacement.y);
+        Println();
         normal_unit_changing = false;
         t = 2;
         normal_unit = Vector(0, 0);
@@ -77,7 +82,12 @@ void Translation::Update_displacement()
     Vector normal_displacement = Vector::Dot(ideal_displacement, normal_unit) * normal_unit;
     Vector tangential_displacement = ideal_displacement - normal_displacement;
 
+    Println();
+    Println("before", ideal_displacement.x, ',', ideal_displacement.y);
+    Println("normal", normal_unit.x, normal_unit.y);
     ideal_displacement = tangential_displacement - normal_displacement;
+    Println("after", ideal_displacement.x, ',', ideal_displacement.y);
+    Println();
     normal_unit_changing = false;
     t = 2;
     normal_unit = Vector(0, 0);
@@ -113,16 +123,19 @@ void Translation::Update_normal_unit(const Vector& normal_unit)
 
 void Translation::Solve_and_update_normal_unit(float t, const Vector& point)
 {
-    if (this->t == t)
+    if (this->t == t) // already solved
     {
         Update_normal_unit((current_position - point).Unit());
         return;
     }
 
     this->t = t;
-    
-    if (!Finish())
-        current_position += (t - 1 - 1 / Latest().Length()) * Latest().Direction();
+
+    if (!Finish()) // only solve the active one
+    {
+        float retreat = t - 1 - 1 / Latest().Length();
+        current_position += retreat * Latest().Direction();
+    }
 
     normal_unit = (current_position - point).Unit();
     normal_unit_changing = true;
@@ -372,9 +385,6 @@ Circle_outside_rectangle::Circle_outside_rectangle(const Circle &moving_circle, 
         &bottom_right
     };
 
-    for (Circle* c : rectangle_corner)
-        c->Draw(Param::white, Param::line_width);
-
     std::vector<float> ts;
     ts.assign(8, 2);
 
@@ -399,9 +409,6 @@ Circle_outside_rectangle::Circle_outside_rectangle(const Circle &moving_circle, 
         &right
     };
 
-    for (const Line* l : rectangle_side)
-        l->Draw(Param::white, Param::line_width);
-
     float t_dum;
 
     for (unsigned int i = 4; i != ts.size(); i++)
@@ -424,15 +431,27 @@ void Circle_outside_rectangle::Update_translation(float t)
     {
     case 0:
         circle_translation.Solve_and_update_normal_unit(t, nonmoving_rectangle.Top_left());
+        // normal_unit = Vector(-1, -1).Unit();
+        // circle_translation.Solve(t);
+        // circle_translation.Update_normal_unit(normal_unit);
         break;
     case 1:
         circle_translation.Solve_and_update_normal_unit(t, nonmoving_rectangle.Bottom_left());
+        // normal_unit = Vector(-1, 1).Unit();
+        // circle_translation.Solve(t);
+        // circle_translation.Update_normal_unit(normal_unit);
         break;
     case 2:
         circle_translation.Solve_and_update_normal_unit(t, nonmoving_rectangle.Top_right());
+        // normal_unit = Vector(1, -1).Unit();
+        // circle_translation.Solve(t);
+        // circle_translation.Update_normal_unit(normal_unit);
         break;
     case 3:
         circle_translation.Solve_and_update_normal_unit(t, nonmoving_rectangle.Bottom_right());
+        // normal_unit = Vector(1, 1).Unit();
+        // circle_translation.Solve(t);
+        // circle_translation.Update_normal_unit(normal_unit);
         break;
     case 4:
     case 5:

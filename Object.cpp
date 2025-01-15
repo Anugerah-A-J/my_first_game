@@ -3,7 +3,7 @@
 #include "Shape.hpp"
 
 Aim::Aim()
-: 
+:
     reach_circle{Vector(0, 0), Param::reach_radius},
     end_point{0, 0},
     direction_sign{Vector(0, 0), Vector(0, 0), Vector(0, 0)},
@@ -86,7 +86,7 @@ bool Aim::Direction_sign_is_visible() const
 }
 
 Clipper::Clipper(const Rectangle& map_fence_shape)
-: 
+:
     left{
         Vector(0, 0),
         Vector((Param::window_width - map_fence_shape.Width()) / 2, Param::window_height)
@@ -258,7 +258,7 @@ Wall Wall::Mirror_y(const Vector& point) const
 
 //         temp.filler = temp.filler.Mirror_x(point);
 
-//         std::transform(temp.shape.begin(), temp.shape.end(), temp.shape.begin(), [&](const Circle& c) 
+//         std::transform(temp.shape.begin(), temp.shape.end(), temp.shape.begin(), [&](const Circle& c)
 //         {
 //             return c.Mirror_x(point);
 //         });
@@ -272,7 +272,7 @@ Wall Wall::Mirror_y(const Vector& point) const
 
 //         temp.filler = temp.filler.Mirror_y(point);
 
-//         std::transform(temp.shape.begin(), temp.shape.end(), temp.shape.begin(), [&](const Circle& c) 
+//         std::transform(temp.shape.begin(), temp.shape.end(), temp.shape.begin(), [&](const Circle& c)
 //         {
 //             return c.Mirror_y(point);
 //         });
@@ -348,7 +348,7 @@ Wall Wall::Mirror_y(const Vector& point) const
 //         {
 //             return l.Mirror_y(point);
 //         });
-        
+
 //         return temp;
 //     }
 
@@ -360,7 +360,7 @@ Wall Wall::Mirror_y(const Vector& point) const
 //         {
 //             return l.Mirror_x(point);
 //         });
-        
+
 //         return temp;
 //     }
 // private:
@@ -412,8 +412,8 @@ void Map::Draw() const
 {
     clipper.Draw();
     fence.Draw();
-    // for (const Wall& w : wall)
-    //     w.Draw();
+    for (const Wall& w : wall)
+        w.Draw();
 
     // for (const Glass& g : glass)
     //     g.Draw();

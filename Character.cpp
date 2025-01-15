@@ -83,16 +83,14 @@ void Player::Move(const Map& map, Player* const enemy)
     temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
     update_collided_and_earliest(collided, earliest, temp);
 
-    // for (auto w : map.Get_wall())
-    // {
-    //     temp = std::make_shared<Circle_outside_rectangle>(shape, translation, w.Shape());
+    for (auto w : map.Get_wall())
+    {
+        temp = std::make_shared<Circle_outside_rectangle>(shape, translation, w.Shape());
+        update_collided_and_earliest(collided, earliest, temp);
 
-    //     update_collided_and_earliest(collided, earliest, temp);
-
-    //     temp = std::make_shared<Circle_outside_rectangle>(enemy->shape, enemy->translation, w.Shape());
-
-    //     update_collided_and_earliest(collided, earliest, temp);
-    // }
+        temp = std::make_shared<Circle_outside_rectangle>(enemy->shape, enemy->translation, w.Shape());
+        update_collided_and_earliest(collided, earliest, temp);
+    }
 
     for (auto c : collided)
         c->Update_translation(earliest);
