@@ -231,7 +231,7 @@ float Collision::Intersect(const Circle& moving_circle, const Translation& trans
 {
     Vector c1 = translation.Latest().start;
     Vector c2 = nonmoving_circle.center;
-    Vector v = translation.Latest().Direction();
+    Vector v = -translation.Latest().Direction();
 
     Vector c = c2 - c1;
     float r = moving_circle.Radius() + nonmoving_circle.Radius();
