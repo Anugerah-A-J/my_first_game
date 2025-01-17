@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include <memory>
 
 Game::Game()
 :
@@ -12,10 +13,10 @@ Game::Game()
     display{al_create_display(Param::window_width, Param::window_height)},
     font{al_create_builtin_font()},
 
-    // end_dialog_box{font},
-
     player_magenta{map_1},
     player_cyan{map_1},
+
+    end_dialog_box{font},
 
     active_player{&player_magenta},
     passive_player{&player_cyan},
@@ -59,75 +60,68 @@ Game::Game()
         if (event.type != ALLEGRO_EVENT_TIMER)
             return;
 
-        active_player->Move(map_1, passive_player);
+        Move();
         // trail.emplace_back(active_pawns->back().Last_translation());
-        // active_player->Reflect(*passive_player);
-
-        // map_1.Reflect(active_player);
-        // map_1.Reflect_and_hurt(active_player);
 
         if (active_player->Finish_moving() && passive_player->Finish_moving())
         {
-            Println();
-
             passive_player->Update_life();
             active_player->Update_life();
 
-            // if (passive_player->Dead())
-            // {
-            //     std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
-            //     end_dialog_box.Add_message(message, active_player->Color());
-            //     end_dialog_box.Show();
-            //     what_to_do = &ending;
-            // }
-            // else
-            // {
-                std::swap(active_player, passive_player);
-                aim.Color(active_player->Color());
-                what_to_do = &aiming;
-            // }
+            if (passive_player->Dead())
+            {
+                std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
+                end_dialog_box.Add_message(message, active_player->Color());
+                end_dialog_box.Show();
+                what_to_do = &ending;
+                return;
+            }
+
+            std::swap(active_player, passive_player);
+            aim.Color(active_player->Color());
+            what_to_do = &aiming;
         }
     };
 
-    // ending = [&]()
-    // {
-    //     if (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode != ALLEGRO_KEY_ENTER)
-    //     {
-    //         end_dialog_box.Update_selected_choice(event.keyboard.keycode);
-    //     }
-    //     else if (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button != 1)
-    //     {
-    //         end_dialog_box.Update_selected_choice(mouse_position);
-    //     }
-    //     else if (
-    //         (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode == ALLEGRO_KEY_ENTER) &&
-    //         (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button == 1))
-    //     {
-    //         switch (end_dialog_box.Selected_choice_index())
-    //         {
-    //         case 0:
-    //             aim.Color(Param::magenta);
+    ending = [&]()
+    {
+        if (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode != ALLEGRO_KEY_ENTER)
+        {
+            end_dialog_box.Update_selected_choice(event.keyboard.keycode);
+        }
+        else if (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button != 1)
+        {
+            end_dialog_box.Update_selected_choice(mouse_position);
+        }
+        else if (
+            (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode == ALLEGRO_KEY_ENTER) &&
+            (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button == 1))
+        {
+            switch (end_dialog_box.Selected_choice_index())
+            {
+            case 0:
+                aim.Color(Param::magenta);
 
-    //             player_cyan.Reset_life();
-    //             player_magenta.Reset_life();
+                player_cyan.Reset_life();
+                player_magenta.Reset_life();
 
-    //             active_player = &player_magenta;
-    //             passive_player = &player_cyan;
+                active_player = &player_magenta;
+                passive_player = &player_cyan;
 
-    //             what_to_do = &aiming;
+                what_to_do = &aiming;
 
-    //             end_dialog_box.Erase_message();
-    //             end_dialog_box.Hide();
+                end_dialog_box.Erase_message();
+                end_dialog_box.Hide();
 
-    //             break;
-    //         case 1:
-    //             exit = true;
-    //             break;
-    //         default:
-    //             break;
-    //         }
-    //     }
-    // };
+                break;
+            case 1:
+                exit = true;
+                break;
+            default:
+                break;
+            }
+        }
+    };
 }
 
 Game::~Game()
@@ -180,20 +174,81 @@ void Game::Draw() const
     
     player_cyan.Draw();
     player_magenta.Draw();
-    // end_dialog_box.Draw();
+    end_dialog_box.Draw();
 
-    std::string mx = std::to_string(player_magenta.Center().x);
-    std::string my = std::to_string(player_magenta.Center().y);
-    std::string cx = std::to_string(player_cyan.Center().x);
-    std::string cy = std::to_string(player_cyan.Center().y);
-    std::string max_x = std::to_string(map_1.Fence_shape().Bottom_right().x);
-    std::string max_y = std::to_string(map_1.Fence_shape().Bottom_right().y);
+    // std::string mx = std::to_string(player_magenta.Center().x);
+    // std::string my = std::to_string(player_magenta.Center().y);
+    // std::string cx = std::to_string(player_cyan.Center().x);
+    // std::string cy = std::to_string(player_cyan.Center().y);
+    // std::string max_x = std::to_string(map_1.Fence_shape().Bottom_right().x);
+    // std::string max_y = std::to_string(map_1.Fence_shape().Bottom_right().y);
     
-    std::string text_m = "Magenta: " + mx + ", " + my;
-    std::string text_c = "Cyan: " + cx + ", " + cy;
+    // std::string text_m = "Magenta: " + mx + ", " + my;
+    // std::string text_c = "Cyan: " + cx + ", " + cy;
     
-    al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length, ALLEGRO_ALIGN_CENTER, &text_m.front());
-    al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length * 2, ALLEGRO_ALIGN_CENTER, &text_c.front());
-    al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y), ALLEGRO_ALIGN_LEFT, &max_x.front());
-    al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y) + Param::unit_length, ALLEGRO_ALIGN_LEFT, &max_y.front());
+    // al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length, ALLEGRO_ALIGN_CENTER, &text_m.front());
+    // al_draw_text(font, Param::white, Param::window_width / 2, Param::unit_length * 2, ALLEGRO_ALIGN_CENTER, &text_c.front());
+    // al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y), ALLEGRO_ALIGN_LEFT, &max_x.front());
+    // al_draw_text(font, Param::white, std::stof(max_x), std::stof(max_y) + Param::unit_length, ALLEGRO_ALIGN_LEFT, &max_y.front());
+}
+
+void Game::Move()
+{
+    active_player->Move();
+    passive_player->Move();
+
+    if (active_player->Finish_moving() && passive_player->Finish_moving())
+        return;
+
+    std::vector<std::shared_ptr<Collision>> collided;
+    float earliest = 2;
+
+    constexpr auto update_collided_and_earliest = [](
+        std::vector<std::shared_ptr<Collision>>& collided,
+        float& earliest,
+        std::shared_ptr<Collision> temp)
+    {
+        if (temp->Get_t() == 2)
+            return;
+
+        collided.emplace_back(temp);
+
+        if (temp->Get_t() < earliest)
+            earliest = temp->Get_t();
+    };
+
+    std::shared_ptr<Collision> temp = active_player->Inside(map_1.Fence_shape());
+    
+    if (temp->Get_t() == 2)
+        active_player->Decrease_life();
+
+    update_collided_and_earliest(collided, earliest, temp);
+
+    temp = passive_player->Inside(map_1.Fence_shape());
+
+    if (temp->Get_t() == 2)
+        passive_player->Decrease_life();
+
+    update_collided_and_earliest(collided, earliest, temp);
+
+    temp = active_player->Between(*passive_player);
+
+    update_collided_and_earliest(collided, earliest, temp);
+
+    for (auto w : map_1.Get_wall())
+    {
+        temp = active_player->Between(w.Shape());
+
+        update_collided_and_earliest(collided, earliest, temp);
+
+        temp = passive_player->Between(w.Shape());
+
+        update_collided_and_earliest(collided, earliest, temp);
+    }
+
+    for (auto c : collided)
+        c->Update_translation(earliest);
+
+    active_player->Update_displacement();
+    passive_player->Update_displacement();
 }

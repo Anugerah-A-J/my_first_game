@@ -11,7 +11,7 @@ One_line_text::One_line_text( const Vector& origin, const std::string& text, con
 
 void One_line_text::Draw() const
 {
-    al_draw_text(font, text_color, shape.Origin().X(), shape.Origin().Y(), ALLEGRO_ALIGN_LEFT, &text.front());
+    al_draw_text(font, text_color, shape.origin.x, shape.origin.y, ALLEGRO_ALIGN_LEFT, &text.front());
 }
 
 bool One_line_text::Contain(const Vector& point) const
@@ -41,7 +41,7 @@ void One_line_text::Make_passive()
 
 const Vector& One_line_text::Origin() const
 {
-    return shape.Origin();
+    return shape.origin;
 }
 
 void One_line_text::Translate(const Vector& displacement)
@@ -90,6 +90,16 @@ void Dialog_box::Update_selected_choice(const Vector& mouse_coordinate)
     }
 }
 
+void Dialog_box::Hide()
+{
+    visible = false;
+}
+
+void Dialog_box::Show()
+{
+    visible = true;
+}
+
 void Dialog_box::Draw() const
 {
     if (!visible)
@@ -107,15 +117,12 @@ void Dialog_box::Draw() const
 
 int Dialog_box::Selected_choice_index() const { return selected_choice_index; }
 
-void Dialog_box::Add_message(
-    const std::string& text,
-    const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
-    const ALLEGRO_COLOR& background_color = Param::default_theme.background_color)
+void Dialog_box::Add_message(const std::string& text, const ALLEGRO_COLOR& text_color)
 {
     if (Messages_width() + (text.length() + 1) * monospaced_font_width > shape.Width())
         shape.Width(Messages_width() + (text.length() + 1) * monospaced_font_width);
 
-    shape.Origin(center - shape.Size() * 0.5f);
+    shape.origin = center - shape.Size() * 0.5f;
 
     Update_messages_origin();
 
@@ -130,8 +137,8 @@ void Dialog_box::Erase_message()
 Dialog_box::Dialog_box(
     const Vector& center,
     const ALLEGRO_FONT* const monospaced_font,
-    const ALLEGRO_COLOR& color = Param::default_theme.background_color,
-    const ALLEGRO_COLOR& line_color = Param::default_theme.line_color)
+    const ALLEGRO_COLOR& color,
+    const ALLEGRO_COLOR& line_color)
 :
     visible{false},
     center{center},
@@ -148,17 +155,14 @@ Dialog_box::Dialog_box(
     selected_choice_index{0}
 {}
 
-void Dialog_box::Add_choice(
-    const std::string& text,
-    const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
-    const ALLEGRO_COLOR& background_color = Param::default_theme.background_color)
+void Dialog_box::Add_choice(const std::string& text, const ALLEGRO_COLOR& text_color)
 {
     if ((text.length() + 1) * monospaced_font_width > shape.Width())
         shape.Width((text.length() + 1) * monospaced_font_width);
 
     shape.Height(shape.Height() + 1.5 * monospaced_font_height);
 
-    shape.Origin(center - shape.Size() * 0.5);
+    shape.origin = center - shape.Size() * 0.5;
 
     Update_choices_origin();
 
@@ -180,7 +184,7 @@ float Dialog_box::Messages_width() const
 
 Vector Dialog_box::Message_origin() const
 {
-    return shape.Origin()
+    return shape.origin
             + Vector(Messages_width() + monospaced_font_width * 0.5f,
                     monospaced_font_height * 0.5f);
 }
@@ -190,7 +194,7 @@ void Dialog_box::Update_messages_origin()
     if (messages.empty())
         return;
 
-    Vector displacement = shape.Origin() - messages.front().Origin();
+    Vector displacement = shape.origin - messages.front().Origin();
 
     std::for_each(messages.begin(), messages.end(), [&](One_line_text& message) {
         message.Translate(displacement);
@@ -202,7 +206,7 @@ void Dialog_box::Update_choices_origin()
     if (choices.empty())
         return;
 
-    Vector displacement = shape.Origin()
+    Vector displacement = shape.origin
                             + Vector(monospaced_font_width * 0.5f, monospaced_font_height * 2)
                             - choices.front().Origin();
 
@@ -213,7 +217,7 @@ void Dialog_box::Update_choices_origin()
 
 Vector Dialog_box::Choice_origin() const
 {
-    return shape.Origin()
+    return shape.origin
             + Vector(monospaced_font_width * 0.5f,
                     (2 + choices.size() * 1.5) * monospaced_font_height);
 }

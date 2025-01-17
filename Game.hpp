@@ -13,6 +13,7 @@ public:
     void Run();
 private:
     void Draw() const;
+    void Move();
     std::function<void()> aiming;
     std::function<void()> moving;
     std::function<void()> ending;
@@ -34,7 +35,7 @@ private:
     Player_magenta player_magenta;
     Player_cyan player_cyan;
     
-    // End_dialog_box end_dialog_box;
+    End_dialog_box end_dialog_box;
 
     Player* active_player;
     Player* passive_player;

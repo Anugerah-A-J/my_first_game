@@ -29,14 +29,13 @@ class Dialog_box
 public:
     void Update_selected_choice(int allegro_keyboard_event_keycode);
     void Update_selected_choice(const Vector& mouse_coordinate);
-    void Hide() const;
-    void Show() const;
+    void Hide();
+    void Show();
     void Draw() const;
     int Selected_choice_index() const;
     void Add_message(
         const std::string& text,
-        const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
-        const ALLEGRO_COLOR& background_color = Param::default_theme.background_color);
+        const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color);
     void Erase_message();
 protected:
     Dialog_box(
@@ -46,8 +45,7 @@ protected:
         const ALLEGRO_COLOR& line_color = Param::default_theme.line_color);
     void Add_choice(
         const std::string& text,
-        const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color,
-        const ALLEGRO_COLOR& background_color = Param::default_theme.background_color);
+        const ALLEGRO_COLOR& text_color = Param::default_theme.passive_text_color);
 private:
     float Messages_width() const;
     Vector Message_origin() const;
@@ -66,7 +64,7 @@ private:
     float line_width;
     std::vector<One_line_text> messages;
     std::vector<One_line_text> choices;
-    int selected_choice_index;
+    unsigned int selected_choice_index;
 };
 
 class End_dialog_box : public Dialog_box

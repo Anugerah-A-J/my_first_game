@@ -2,6 +2,7 @@
 #include <vector>
 #include "Object.hpp"
 #include "Collision.hpp"
+#include <memory>
 #pragma once
 
 class Player
@@ -13,26 +14,27 @@ public:
     bool Contain(const Vector& point) const;
     bool Reach(const Vector& point) const;
     
-    // The functions below are needed to move player
     const Vector& Center() const;
     void Update_translation(const Vector& end);
-    void Move(const Map& map, Player* const enemy);
+    void Update_displacement();
+    void Move();
     bool Finish_moving();
     const ALLEGRO_COLOR& Color() const;
 
-    // The functions below are needed to reflect and hurt player
     void Update_life();
-    // void Reflect(Player& enemy);
-    // bool Dead();
-    // void Reset_life();
+    bool Dead();
+    void Reset_life();
+
+    std::shared_ptr<Collision> Inside(const Rectangle& rectangle);
+    std::shared_ptr<Collision> Between(Player& passive_player);
+    std::shared_ptr<Collision> Between(const Rectangle& rectangle);
     
-    // const Circle& Shape() const;
     // Line Last_translation() const;
     // static void Reset_translation_step_count();
 
     // int Life() const;
     // void Life_will_be_decreased();
-    // void Decrease_life();
+    void Decrease_life();
     // void Transform_color_to_vanish();
     // bool Color_equal_vanish();
     // const Circle& Shape() const;
@@ -41,9 +43,9 @@ public:
 protected:
     Circle shape;
     ALLEGRO_COLOR color;
-    int life;
+    unsigned int life;
     std::vector<Circle> life_shapes;
-    bool decrease_life;
+    int decrease_life;
     Translation translation;
 };
 

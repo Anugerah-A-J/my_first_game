@@ -3,8 +3,6 @@
 #include "Param.hpp"
 #include "Shape.hpp"
 #include <algorithm>
-// #include <functional>
-#include <memory>
 #include <vector>
 
 Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
@@ -13,7 +11,7 @@ Player::Player(const Vector &center, const ALLEGRO_COLOR &color)
     color{color},
     life{Param::life},
     life_shapes{Param::life, shape},
-    decrease_life{false},
+    decrease_life{0},
     translation{shape.center}
 {}
 
@@ -21,10 +19,8 @@ void Player::Draw() const
 {
     shape.Draw(color);
 
-    std::for_each(life_shapes.begin(), life_shapes.end(), [&](const Circle& c)
-    {
-        c.Draw(color);
-    });
+    for (unsigned int i = 0; i < life; i++)
+        life_shapes.at(i).Draw(color);
 }
 
 bool Player::Contain(const Vector &point) const
@@ -43,60 +39,9 @@ const Vector& Player::Center() const
     return shape.center;
 }
 
-void Player::Move(const Map& map, Player* const enemy)
+void Player::Move()
 {
-    // Move -> Collision check, solve and respond -> Draw
-
-    // Println("active player:");
     translation.Move(shape);
-    // Println();
-    // Println("passive player:");
-    enemy->translation.Move(enemy->shape);
-    // Println();
-
-    if (Finish_moving() && enemy->Finish_moving())
-        return;
-
-    std::vector<std::shared_ptr<Collision>> collided;
-    float earliest = 2;
-
-    constexpr auto update_collided_and_earliest = [](
-        std::vector<std::shared_ptr<Collision>>& collided,
-        float& earliest,
-        std::shared_ptr<Collision> temp)
-    {
-        if (temp->Get_t() == 2)
-            return;
-
-        collided.emplace_back(temp);
-
-        if (temp->Get_t() < earliest)
-            earliest = temp->Get_t();
-    };
-
-    std::shared_ptr<Collision> temp = std::make_shared<Circle_inside_rectangle>(shape, translation, map.Fence_shape());
-    update_collided_and_earliest(collided, earliest, temp);
-
-    temp = std::make_shared<Circle_inside_rectangle>(enemy->shape, enemy->translation, map.Fence_shape());
-    update_collided_and_earliest(collided, earliest, temp);
-
-    temp = std::make_shared<Circle_outside_circle>(shape, translation, enemy->shape, enemy->translation);
-    update_collided_and_earliest(collided, earliest, temp);
-
-    for (auto w : map.Get_wall())
-    {
-        temp = std::make_shared<Circle_outside_rectangle>(shape, translation, w.Shape());
-        update_collided_and_earliest(collided, earliest, temp);
-
-        temp = std::make_shared<Circle_outside_rectangle>(enemy->shape, enemy->translation, w.Shape());
-        update_collided_and_earliest(collided, earliest, temp);
-    }
-
-    for (auto c : collided)
-        c->Update_translation(earliest);
-
-    translation.Update_displacement();
-    enemy->translation.Update_displacement();
 }
 
 bool Player::Finish_moving()
@@ -106,31 +51,38 @@ bool Player::Finish_moving()
 
 void Player::Update_life()
 {
-    if (!decrease_life)
-        return;
-
-    life--;
-    decrease_life = false;
+    life -= decrease_life;
+    decrease_life = 0;
 }
 
-// bool Player::Dead()
-// {
-//     return life == 0;
-// }
+bool Player::Dead()
+{
+    return life == 0;
+}
 
 const ALLEGRO_COLOR &Player::Color() const
 {
     return color;
 }
 
-// void Player::Reset_life()
-// {
-//     life = Param::life;
-// }
+void Player::Reset_life()
+{
+    life = Param::life;
+}
 
 void Player::Update_translation(const Vector &end)
 {
     translation.Reset_all(end);
+}
+
+void Player::Update_displacement()
+{
+    translation.Update_displacement();
+}
+
+void Player::Decrease_life()
+{
+    decrease_life--;
 }
 
 // void Player::Reset_translation_step_count()
@@ -183,7 +135,34 @@ void Player::Update_translation(const Vector &end)
     // }
 
 
-    // const Circle& Shape() const { return shape; }
+std::shared_ptr<Collision> Player::Inside(const Rectangle& rectangle)
+{
+    return std::make_shared<Circle_inside_rectangle>(
+        shape,
+        translation,
+        rectangle
+    );
+}
+
+std::shared_ptr<Collision> Player::Between(Player& passive_player)
+{
+    return std::make_shared<Circle_outside_circle>(
+        shape,
+        translation,
+        passive_player.shape,
+        passive_player.translation
+    );
+}
+
+std::shared_ptr<Collision> Player::Between(const Rectangle& rectangle)
+{
+    return std::make_shared<Circle_outside_rectangle>(
+        shape,
+        translation,
+        rectangle
+    );
+}
+
 
     // Vector Center() const { return shape.Center(); }
 
