@@ -65,11 +65,6 @@ const ALLEGRO_COLOR &Player::Color() const
     return color;
 }
 
-void Player::Reset_life()
-{
-    life = Param::life;
-}
-
 void Player::Update_translation(const Vector &end)
 {
     translation.Reset_all(end);
@@ -82,7 +77,7 @@ void Player::Update_displacement()
 
 void Player::Decrease_life()
 {
-    decrease_life--;
+    decrease_life++;
 }
 
 // void Player::Reset_translation_step_count()
@@ -232,6 +227,13 @@ Player_magenta::Player_magenta(const Map& map)
         life_shapes.at(i).Translate(Vector(0, i * 2 * Param::unit_length));
 }
 
+void Player_magenta::Reset_all(const Map& map)
+{
+    life = Param::life;
+    shape.center = map.Magenta_spawn_position();
+    translation.Reset_all();
+}
+
 Player_cyan::Player_cyan(const Map& map)
 :
     Player{map.Cyan_spawn_position(), Param::cyan}
@@ -246,4 +248,11 @@ Player_cyan::Player_cyan(const Map& map)
     // 2 -> 4u
     for(int i = 0; i < Param::life; i++)
         life_shapes.at(i).Translate(Vector(0, i * 2 * Param::unit_length));
+}
+
+void Player_cyan::Reset_all(const Map& map)
+{
+    life = Param::life;
+    shape.center = map.Cyan_spawn_position();
+    translation.Reset_all();
 }

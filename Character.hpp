@@ -23,7 +23,6 @@ public:
 
     void Update_life();
     bool Dead();
-    void Reset_life();
 
     std::shared_ptr<Collision> Inside(const Rectangle& rectangle);
     std::shared_ptr<Collision> Between(Player& passive_player);
@@ -53,10 +52,12 @@ class Player_magenta : public Player
 {
 public:
     Player_magenta(const Map& map);
+    void Reset_all(const Map& map);
 };
 
 class Player_cyan : public Player
 {
 public:
     Player_cyan(const Map& map);
+    void Reset_all(const Map& map);
 };

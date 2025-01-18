@@ -61,21 +61,30 @@ Game::Game()
             return;
 
         Move();
+        passive_player->Update_life();
+        active_player->Update_life();
         // trail.emplace_back(active_pawns->back().Last_translation());
+
+        if (passive_player->Dead())
+        {
+            std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
+            end_dialog_box.Set_message(message, active_player->Color());
+            end_dialog_box.Show();
+            what_to_do = &ending;
+            return;
+        }
+
+        if (active_player->Dead())
+        {
+            std::string message = active_player == &player_magenta ? "Cyan Win" : "Magenta Win";
+            end_dialog_box.Set_message(message, passive_player->Color());
+            end_dialog_box.Show();
+            what_to_do = &ending;
+            return;
+        }
 
         if (active_player->Finish_moving() && passive_player->Finish_moving())
         {
-            passive_player->Update_life();
-            active_player->Update_life();
-
-            if (passive_player->Dead())
-            {
-                std::string message = passive_player == &player_magenta ? "Cyan Win" : "Magenta Win";
-                end_dialog_box.Add_message(message, active_player->Color());
-                end_dialog_box.Show();
-                what_to_do = &ending;
-                return;
-            }
 
             std::swap(active_player, passive_player);
             aim.Color(active_player->Color());
@@ -85,39 +94,28 @@ Game::Game()
 
     ending = [&]()
     {
-        if (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode != ALLEGRO_KEY_ENTER)
+        if (event.type == ALLEGRO_EVENT_MOUSE_AXES || event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
         {
-            end_dialog_box.Update_selected_choice(event.keyboard.keycode);
-        }
-        else if (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button != 1)
-        {
-            end_dialog_box.Update_selected_choice(mouse_position);
-        }
-        else if (
-            (event.type == ALLEGRO_EVENT_KEY_CHAR && event.keyboard.keycode == ALLEGRO_KEY_ENTER) &&
-            (event.type == ALLEGRO_EVENT_MOUSE_AXES && event.mouse.button == 1))
-        {
-            switch (end_dialog_box.Selected_choice_index())
+            bool mouse_is_left_clicked = event.mouse.button == 1;
+
+            switch (end_dialog_box.Selected_choice_index(mouse_position, mouse_is_left_clicked))
             {
             case 0:
                 aim.Color(Param::magenta);
 
-                player_cyan.Reset_life();
-                player_magenta.Reset_life();
+                player_cyan.Reset_all(map_1);
+                player_magenta.Reset_all(map_1);
 
                 active_player = &player_magenta;
                 passive_player = &player_cyan;
 
                 what_to_do = &aiming;
 
-                end_dialog_box.Erase_message();
                 end_dialog_box.Hide();
 
                 break;
             case 1:
                 exit = true;
-                break;
-            default:
                 break;
             }
         }
@@ -144,10 +142,10 @@ void Game::Run()
     while (true) {
         al_wait_for_event(queue, &event);
 
-        bool window_is_closed = event.type == ALLEGRO_EVENT_DISPLAY_CLOSE;
-        bool esc_is_pressed = event.keyboard.keycode == ALLEGRO_KEY_ESCAPE;
+        // bool window_is_closed = event.type == ALLEGRO_EVENT_DISPLAY_CLOSE;
+        // bool esc_is_pressed = event.keyboard.keycode == ALLEGRO_KEY_ESCAPE;
 
-        if (window_is_closed || esc_is_pressed)
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             exit = true;
 
         if (exit)
@@ -219,14 +217,14 @@ void Game::Move()
 
     std::shared_ptr<Collision> temp = active_player->Inside(map_1.Fence_shape());
     
-    if (temp->Get_t() == 2)
+    if (temp->Get_t() != 2)
         active_player->Decrease_life();
 
     update_collided_and_earliest(collided, earliest, temp);
 
     temp = passive_player->Inside(map_1.Fence_shape());
 
-    if (temp->Get_t() == 2)
+    if (temp->Get_t() != 2)
         passive_player->Decrease_life();
 
     update_collided_and_earliest(collided, earliest, temp);

@@ -427,12 +427,14 @@ void Map::Draw() const
 
 Vector Map::Magenta_lives_start_position() const
 {
-    return fence.Top_right() + Vector(1.5, 0.5) * Param::unit_length;
+    // return fence.Top_right() + Vector(1.5, 0.5) * Param::unit_length;
+    return fence.Shape().Right().Center() + Vector(1.5, 0) * Param::unit_length;
 }
 
 Vector Map::Cyan_lives_start_position() const
 {
-    return fence.Top_left() + Vector(-1.5, 0.5) * Param::unit_length;
+    // return fence.Top_left() + Vector(-1.5, 0.5) * Param::unit_length;
+    return fence.Shape().Left().Center() + Vector(-1.5, 0) * Param::unit_length;
 }
 
 const Rectangle &Map::Fence_shape() const
@@ -557,6 +559,15 @@ void Map_1::Arrange_wall()
         fence.Origin() + Vector(temp, temp),
         Vector(temp, temp)
     );
+
+    // below configuration still buggy
+    
+    // float temp = fence.Height() / 3;
+
+    // wall.emplace_back(
+    //     fence.Origin(),
+    //     Vector(temp, temp)
+    // );
 
     wall.push_back(wall.front().Mirror_y(fence.Center()));
     wall.push_back(wall.front().Mirror_x(fence.Center()));

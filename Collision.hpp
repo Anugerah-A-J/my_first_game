@@ -5,6 +5,7 @@ class Translation
 {
 public:
     explicit Translation(Vector& start_position);
+    void Reset_all();
     void Reset_all(const Vector& end);
     bool Finish() const;
     bool Just_finish() const;

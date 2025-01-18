@@ -16,6 +16,16 @@ Translation::Translation(Vector& start_position)
     normal_unit_changing{false}
 {}
 
+void Translation::Reset_all()
+{
+    t = 2;
+    normal_unit = Vector(0, 0);
+    step_count = Param::translation_step;
+    ideal_displacement = Vector(0, 0);
+    previous_position = current_position;
+    normal_unit_changing = false;
+}
+
 void Translation::Reset_all(const Vector &end)
 {
     step_count = 0;
