@@ -1,4 +1,6 @@
 #include "Game.hpp"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <memory>
 
 Game::Game()
@@ -11,7 +13,10 @@ Game::Game()
     timer{al_create_timer(1.0 / 30.0)},
     queue{al_create_event_queue()},
     display{al_create_display(Param::window_width, Param::window_height)},
-    font{al_create_builtin_font()},
+    // font{al_create_builtin_font()},
+    al_init_font_addon_is_success{al_init_font_addon()},
+    al_init_ttf_addon_is_success{al_init_ttf_addon()},
+    font{al_load_font("font/calibri.ttf", Param::unit_length * 2, ALLEGRO_TTF_NO_AUTOHINT)},
 
     player_magenta{map_1},
     player_cyan{map_1},

@@ -1,6 +1,5 @@
 #include <allegro5/allegro_primitives.h>
 #include <iostream>
-#include <vector>
 #pragma once
 
 void Println();
@@ -17,7 +16,6 @@ void Println(const First& first, const Rest&... rest)
     std::cout << first << ' ';
     Println(rest...); // recursive call using pack expansion syntax
 }
-
 
 bool Equal(float f1, float f2, float margin);
 

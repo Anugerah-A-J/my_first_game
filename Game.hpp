@@ -26,7 +26,11 @@ private:
     ALLEGRO_TIMER* timer;
     ALLEGRO_EVENT_QUEUE* queue;
     ALLEGRO_DISPLAY* display;
+
+    bool al_init_font_addon_is_success;
+    bool al_init_ttf_addon_is_success;
     ALLEGRO_FONT* font;
+    
     ALLEGRO_EVENT event;
 
     Map_1 map_1;

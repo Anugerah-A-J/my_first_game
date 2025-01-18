@@ -16,7 +16,7 @@ One_line_text_centered::One_line_text_centered(const Vector& position, const std
 
 void One_line_text_centered::Draw() const
 {
-    shape.Draw(Param::black);
+    // shape.Draw(Param::black);
     al_draw_text(font, text_color, Position().x, Position().y, ALLEGRO_ALIGN_CENTER, &text.front());
 }
 
@@ -65,8 +65,8 @@ void One_line_text_centered::Set(const std::string& text, const ALLEGRO_COLOR& t
     this->text = text;
     this->text_color = text_color;
     float new_width = al_get_text_width(font, &text.front());
-    shape.Width(new_width);
     shape.Translate(Vector(shape.Width() - new_width, 0) / 2.f);
+    shape.Width(new_width);
 }
 
 
@@ -183,7 +183,7 @@ Dialog_box::Dialog_box(
     const ALLEGRO_COLOR& color,
     const ALLEGRO_COLOR& line_color)
 :
-    visible{true},
+    visible{false},
     center{center},
     font{font},
     shape{
@@ -222,7 +222,7 @@ void Dialog_box::Add_choice(const std::string& text, const ALLEGRO_COLOR& text_c
 
 void Dialog_box::Update_message_and_choice_position()
 {
-    Vector v = shape.Top().Center() - message.Position() - Vector(0, Param::unit_length);
+    Vector v = shape.Top().Center() - message.Position() + Vector(0, Param::unit_length);
 
     message.Translate(v);
     

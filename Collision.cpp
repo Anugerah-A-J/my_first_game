@@ -77,12 +77,12 @@ void Translation::Update_displacement()
     if (Finish())
     {
         step_count = 0;
-        Println();
-        Println("before", ideal_displacement.x, ',', ideal_displacement.y);
-        Println("normal", normal_unit.x, normal_unit.y);
+        // Println();
+        // Println("before", ideal_displacement.x, ',', ideal_displacement.y);
+        // Println("normal", normal_unit.x, normal_unit.y);
         ideal_displacement = Param::reach_radius / Param::translation_step * normal_unit;
-        Println("after", ideal_displacement.x, ',', ideal_displacement.y);
-        Println();
+        // Println("after", ideal_displacement.x, ',', ideal_displacement.y);
+        // Println();
         normal_unit_changing = false;
         t = 2;
         normal_unit = Vector(0, 0);
@@ -92,12 +92,12 @@ void Translation::Update_displacement()
     Vector normal_displacement = Vector::Dot(ideal_displacement, normal_unit) * normal_unit;
     Vector tangential_displacement = ideal_displacement - normal_displacement;
 
-    Println();
-    Println("before", ideal_displacement.x, ',', ideal_displacement.y);
-    Println("normal", normal_unit.x, normal_unit.y);
+    // Println();
+    // Println("before", ideal_displacement.x, ',', ideal_displacement.y);
+    // Println("normal", normal_unit.x, normal_unit.y);
     ideal_displacement = tangential_displacement - normal_displacement;
-    Println("after", ideal_displacement.x, ',', ideal_displacement.y);
-    Println();
+    // Println("after", ideal_displacement.x, ',', ideal_displacement.y);
+    // Println();
     normal_unit_changing = false;
     t = 2;
     normal_unit = Vector(0, 0);

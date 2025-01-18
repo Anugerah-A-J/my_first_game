@@ -13,4 +13,4 @@ else()
     target_compile_options(my_first_game PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
-target_link_libraries(my_first_game PRIVATE allegro allegro_primitives allegro_font)
+target_link_libraries(my_first_game PRIVATE allegro allegro_primitives allegro_font allegro_ttf)
