@@ -1,6 +1,6 @@
 # What is it
 
-This is my first attempt at creating a desktop game, developed using C++ for the logic and the [Allegro5](https://liballeg.org/) library for rendering and processing input. The game is similar to pool but involves only two balls. Players take turns moving their respective balls, each starting with three lives. A player loses a life whenever their ball touches the <code style="color: red;">red line</code>. The objective is to deplete your opponent's lives by making their ball hit the <code style="color: red;">red line</code> three times. All elements on the map, including the <code style="color: red;">red line</code>, reflect the ball's movements.
+This is my first attempt at creating a desktop game, developed using C++ for the logic and the [Allegro5](https://liballeg.org/) library for rendering and processing input. The game is similar to pool but involves only two balls. Players take turns moving their respective balls, each starting with three lives. A player loses a life whenever their ball touches the red line. The objective is to deplete your opponent's lives by making their ball hit the red line three times. All elements on the map, including the red line, reflect the ball's movements.
 
 # How to build it
 
