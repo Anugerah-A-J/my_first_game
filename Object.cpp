@@ -20,7 +20,7 @@ void Aim::Draw() const
 
     if (direction_sign_is_visible) {
         direction_sign.Draw(color, line_width);
-        Line(reach_circle.center, end_point).Draw(color, line_width);
+        // Line(reach_circle.center, end_point).Draw(color, line_width);
     }
 }
 
